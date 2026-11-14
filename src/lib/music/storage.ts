@@ -81,6 +81,7 @@ export interface StoredFile {
   path?: string | undefined;
   folderName?: string | undefined;
   blob: Blob;
+  storagePath?: string | undefined;
   addedAt: number;
 }
 

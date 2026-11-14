@@ -16,7 +16,7 @@ const CUSTOM_FOLDERS_KEY = "player-music-custom-folders";
 
 type CustomFolderMap = Record<string, string[]>;
 
-function readCustomFolders(): CustomFolderMap {
+export function readCustomFolders(): CustomFolderMap {
   try { return JSON.parse(localStorage.getItem(CUSTOM_FOLDERS_KEY) || "{}") as CustomFolderMap; }
   catch { return {}; }
 }
@@ -42,7 +42,7 @@ export function addTracksToCustomFolder(name: string, trackIds: string[]): boole
   } catch { return false; }
 }
 
-export function customFolders<T extends { id: string }>(tracks: T[]): MusicFolder<T>[] {
+export function customFolders<T extends FolderSource & { id: string }>(tracks: T[]): MusicFolder<T>[] {
   const byId = new Map(tracks.map((track) => [track.id, track]));
   return Object.entries(readCustomFolders()).map(([name, ids]) => ({
     name, tracks: ids.flatMap((id) => { const track = byId.get(id); return track ? [track] : []; }),
@@ -66,7 +66,7 @@ function loadAiArtistFolders(): Record<string, string> {
 }
 
 /** Agrupa artistas da biblioteca sem alterar as pastas físicas dos arquivos. */
-export function artistFolders<T extends FolderSource & { artist: string }>(tracks: T[]): MusicFolder<T>[] {
+export function artistFolders<T extends FolderSource & { id: string; artist: string }>(tracks: T[]): MusicFolder<T>[] {
   const groups = new Map<string, MusicFolder<T>>();
   const aiFolders = loadAiArtistFolders();
   for (const track of tracks) {

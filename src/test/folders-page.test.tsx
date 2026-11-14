@@ -45,7 +45,7 @@ describe("reprodução das pastas", () => {
     expect(screen.queryByRole("button", { name: "Tocar Faixa C" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Tocar Faixa B" }));
     expect(player.playList).toHaveBeenCalledExactlyOnceWith(["a", "b"], "b");
-    fireEvent.click(screen.getByRole("button", { name: "Voltar para pastas" }));
+    fireEvent.click(screen.getByRole("button", { name: "Voltar para todas as pastas" }));
     fireEvent.click(screen.getByRole("button", { name: "Abrir pasta Cantor A" }));
     expect(screen.getByRole("button", { name: "Tocar Faixa C" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Tocar Faixa A" })).toBeNull();
