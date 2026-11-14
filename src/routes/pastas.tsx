@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, FolderOpen, Play, Shuffle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -48,7 +48,18 @@ function FoldersPage() {
   };
   const folders = savedFolders(p.tracks);
   const manualFolders = customFolders(p.tracks);
-  const [selected, setSelected] = useState<{ kind: "artist" | "physical" | "custom"; name: string } | null>(null);
+  const [selected, setSelected] = useState<{ kind: "artist" | "physical" | "custom"; name: string } | null>(() => {
+    try {
+      const saved = sessionStorage.getItem("player-music-open-folder");
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  });
+  useEffect(() => {
+    try {
+      if (selected) sessionStorage.setItem("player-music-open-folder", JSON.stringify(selected));
+      else sessionStorage.removeItem("player-music-open-folder");
+    } catch { /* armazenamento de sessão opcional */ }
+  }, [selected]);
   const artistGroups = artistFolders(p.tracks);
   const selectedFolder = (selected?.kind === "physical" ? folders : selected?.kind === "custom" ? manualFolders : artistGroups)
     .find((folder) => folder.name === selected?.name);
