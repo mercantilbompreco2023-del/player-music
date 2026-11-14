@@ -14,6 +14,8 @@ export interface Track {
   fingerprint?: string | undefined;
   /** Caminho de origem dentro da pasta importada */
   path?: string | undefined;
+  /** Nome da pasta escolhida pelo usuário, preservado no aparelho. */
+  folderName?: string | undefined;
   /** Caminho privado do arquivo no Supabase Storage. */
   storagePath?: string | undefined;
 }

@@ -42,6 +42,7 @@ export interface StoredFile {
   duration?: number | undefined;
   fingerprint?: string | undefined;
   path?: string | undefined;
+  folderName?: string | undefined;
   blob: Blob;
   addedAt: number;
 }

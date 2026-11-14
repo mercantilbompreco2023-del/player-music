@@ -6,6 +6,7 @@ export interface ImportItem {
   file: File;
   /** Caminho relativo dentro da pasta escolhida (só para exibição). */
   path: string;
+  folderName?: string | undefined;
 }
 
 export interface SkippedItem {
