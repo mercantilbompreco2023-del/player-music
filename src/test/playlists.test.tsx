@@ -30,6 +30,7 @@ afterEach(cleanup);
 describe("ações das playlists", () => {
   const open = () => {
     const Page = Route.options.component;
+    if (!Page) throw new Error("Tela de playlists não registrada");
     render(<Page />);
   };
 
