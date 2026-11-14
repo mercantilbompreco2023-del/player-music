@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, FolderOpen, Heart, LogIn, Music, Play, Plus, Search, Settings, Sparkles } from "lucide-react";
+import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArtistPhoto, HomePlayer } from "@/components/music/HomePlayer";
@@ -48,7 +48,6 @@ function Index() {
           <Button type="button" size="icon" variant="ghost" onClick={toggleHomeStyle} aria-label={homeStyle === "showcase" ? "Voltar ao modelo clássico" : "Ativar modelo visual da segunda foto"} title={homeStyle === "showcase" ? "Modelo clássico" : "Modelo vitrine"} className={homeStyle === "showcase" ? "text-primary" : ""}><Sparkles /></Button>
           <Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button>
           <Button asChild size="icon" variant="ghost"><Link to="/configuracoes" aria-label="Configurações"><Settings /></Link></Button>
-          {!user && <Button asChild size="icon" variant="ghost"><Link to="/auth" search={{ redirect: undefined }} aria-label="Entrar na conta"><LogIn /></Link></Button>}
         </div>
       </header>
       <div className="flex items-center justify-between gap-2"><p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{homeStyle === "showcase" ? "Modelo vitrine ativado" : "Modelo clássico"}</p><button type="button" onClick={toggleHomeStyle} className="rounded-full border border-primary/40 px-3 py-1.5 text-xs font-semibold text-primary">{homeStyle === "showcase" ? "Usar modelo clássico" : "Ver modelo da 2ª foto"}</button></div>
