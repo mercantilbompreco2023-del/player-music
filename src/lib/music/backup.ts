@@ -35,7 +35,8 @@ const keyOf = (t: Track) => t.fingerprint ?? t.id;
 /** Monta o conteúdo que vai para a conta: metadados das faixas próprias, playlists e favoritos. */
 export function buildBackup(tracks: Track[], prefs: Prefs): BackupPayload {
   const mine = tracks.filter((t) => !isDemo(t));
-  const byKey = new Map(mine.map((t) => [keyOf(t), t]));
+  const byTrackId = new Map(mine.map((t) => [t.id, t]));
+  const keyOfId = (id: string) => keyOf(byTrackId.get(id) ?? ({ id } as Track));
   return {
     version: 1,
     savedAt: Date.now(),
@@ -52,9 +53,9 @@ export function buildBackup(tracks: Track[], prefs: Prefs): BackupPayload {
       id: pl.id,
       name: pl.name,
       createdAt: pl.createdAt,
-      trackIds: pl.trackIds.map((id) => keyOf(byKey.get(id) ?? ({ id } as Track))),
+      trackIds: pl.trackIds.map(keyOfId),
     })),
-    favorites: prefs.favorites.map((id) => keyOf(byKey.get(id) ?? ({ id } as Track))),
+    favorites: prefs.favorites.map(keyOfId),
   };
 }
 

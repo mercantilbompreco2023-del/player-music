@@ -26,7 +26,7 @@ describe("backup da lista na conta", () => {
     const prefs = { ...defaultPrefs, favorites: ["local-abc"], playlists: [{ id: "p1", name: "Festa", trackIds: ["local-abc"], createdAt: 5 }] };
     const payload = buildBackup([track({})], prefs);
     expect(payload.favorites).toEqual(["abc"]);
-    expect(payload.playlists[0].trackIds).toEqual(["abc"]);
+    expect(payload.playlists[0]?.trackIds).toEqual(["abc"]);
   });
 
   it("restaura a pasta da música que já tem áudio no aparelho", () => {
@@ -50,7 +50,7 @@ describe("backup da lista na conta", () => {
     const live = track({ id: "cloud-abc", source: "cloud", url: "https://x/y" });
     const r = mergeBackup(payload, [live], prefs);
     expect(r.playlists).toHaveLength(1);
-    expect(r.playlists[0].trackIds).toEqual(["cloud-abc"]);
+    expect(r.playlists[0]?.trackIds).toEqual(["cloud-abc"]);
     expect(r.favorites).toEqual([]);
   });
 
