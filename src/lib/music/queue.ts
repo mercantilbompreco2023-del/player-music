@@ -47,3 +47,13 @@ export function formatTime(sec: number | undefined): string {
   const s = Math.floor(sec % 60);
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
+
+/** Move um item da fila e devolve a nova fila e o novo índice da faixa atual. */
+export function moveItem(queue: string[], current: number, from: number, dir: -1 | 1): { queue: string[]; index: number } {
+  const to = from + dir;
+  if (to < 0 || to >= queue.length) return { queue, index: current };
+  const q = [...queue];
+  [q[from], q[to]] = [q[to]!, q[from]!];
+  const index = current === from ? to : current === to ? from : current;
+  return { queue: q, index };
+}
