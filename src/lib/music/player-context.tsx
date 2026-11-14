@@ -24,6 +24,8 @@ interface PlayerCtx {
   prefs: Prefs;
   backgroundPlayback: boolean;
   setBackgroundPlayback: (enabled: boolean) => void;
+  autoNext: boolean;
+  setAutoNext: (enabled: boolean) => void;
   playList: (ids: string[], startId?: string, mode?: "ordered" | "shuffle") => void;
   toggle: () => void;
   next: () => void;
@@ -138,6 +140,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [backgroundPlayback, setBackgroundPlaybackState] = useState(true);
+  const [autoNext, setAutoNextState] = useState(true);
+  useEffect(() => { try { setAutoNextState(localStorage.getItem("player-music-auto-next") !== "false"); } catch { /* padrão */ } }, []);
+  const setAutoNext = useCallback((enabled: boolean) => { setAutoNextState(enabled); try { localStorage.setItem("player-music-auto-next", String(enabled)); } catch { /* preferência opcional */ } }, []);
   const [backgroundPreferenceReady, setBackgroundPreferenceReady] = useState(false);
   useEffect(() => {
     try { setBackgroundPlaybackState(localStorage.getItem("player-music-background-playback") !== "false"); } catch { /* mantém ativado por padrão */ }
@@ -166,8 +171,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const current = currentId ? map.get(currentId) ?? null : null;
 
   // refs para handlers do elemento de áudio
-  const stateRef = useRef({ queue, index, repeat: prefs.repeat });
-  stateRef.current = { queue, index, repeat: prefs.repeat };
+  const stateRef = useRef({ queue, index, repeat: prefs.repeat, autoNext });
+  stateRef.current = { queue, index, repeat: prefs.repeat, autoNext };
 
   // Carregar preferências e arquivos
   useEffect(() => {
@@ -244,12 +249,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     a.onplay = () => setIsPlaying(true);
     a.onpause = () => setIsPlaying(false);
     a.onended = () => {
-      const { queue: q, index: i, repeat } = stateRef.current;
+      const { queue: q, index: i, repeat, autoNext: shouldAutoNext } = stateRef.current;
       if (repeat === "one") {
         a.currentTime = 0;
         void a.play();
         return;
       }
+      if (!shouldAutoNext) { setIsPlaying(false); wantPlay.current = false; return; }
       const n = nextIndex(q.length, i, repeat);
       if (n === null) setIsPlaying(false);
       else setIndex(n);
@@ -575,7 +581,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const value: PlayerCtx = {
     ready, tracks, byId, queue, index, current, isPlaying, currentTime, duration, prefs,
-    backgroundPlayback, setBackgroundPlayback,
+    backgroundPlayback, setBackgroundPlayback, autoNext, setAutoNext,
     playList, toggle, next, prev, seek,
     setVolume: (v) => updatePrefs((p) => ({ ...p, volume: Math.max(0, Math.min(1, v)) })),
     toggleShuffle: () => {
