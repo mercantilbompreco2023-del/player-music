@@ -142,7 +142,7 @@ function Index() {
         </nav>
       )}
       <p className="text-center text-xs text-muted-foreground">
-        App web (MVP) — não é um aplicativo instalado. <Link to="/privacidade" className="underline">Privacidade</Link>
+        Sua biblioteca musical, do seu jeito. <Link to="/privacidade" className="underline">Privacidade e dados</Link>
       </p>
       <p className="pb-2 text-center text-xs font-semibold tracking-wide text-primary">Feito por Adevaldo Marques</p>
     </div>
