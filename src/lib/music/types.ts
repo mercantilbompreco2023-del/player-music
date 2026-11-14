@@ -1,4 +1,4 @@
-export type TrackSource = "demo" | "local";
+export type TrackSource = "demo" | "local" | "cloud";
 
 export interface Track {
   id: string;
@@ -14,6 +14,8 @@ export interface Track {
   fingerprint?: string | undefined;
   /** Caminho de origem dentro da pasta importada */
   path?: string | undefined;
+  /** Caminho privado do arquivo no Supabase Storage. */
+  storagePath?: string | undefined;
 }
 
 export interface Playlist {
