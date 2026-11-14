@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, FolderOpen, Play, Shuffle } from "lucide-react";
+import { ArrowLeft, FolderOpen, ListPlus, Play, Shuffle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Sparkles, Loader2 } from "lucide-react";
@@ -76,6 +76,7 @@ function FoldersPage() {
       {selected.kind === "artist" && <div className="mb-4 max-w-xs"><CustomFolderCover artistName={selected.name} editable /></div>}
       {shownTracks.length > 0 && <div className="mb-4 flex flex-wrap gap-2">
         <Button onClick={() => p.playList(shownTracks.map((t) => t.id), undefined, "ordered")}><Play /> Ouvir pasta</Button>
+        <Button variant="outline" onClick={() => p.addManyToQueue(shownTracks.map((t) => t.id))}><ListPlus /> Adicionar pasta à sequência</Button>
         <Button variant="secondary" onClick={() => p.playList(shownTracks.map((t) => t.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
       </div>}
       {shownTracks.length ? shownTracks.map((t) => <TrackRow key={t.id} track={t} list={shownTracks.map((item) => item.id)} />) : <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Esta pasta ainda está vazia. Importe as músicas desse artista para que elas apareçam aqui.</p>}
@@ -113,6 +114,7 @@ function FoldersPage() {
             </Button>
             <div className="mt-2 flex flex-wrap gap-2">
               <Button size="sm" onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir pasta</Button>
+              <Button size="sm" variant="outline" onClick={() => p.addManyToQueue(folder.tracks.map((track) => track.id))}><ListPlus /> Adicionar à sequência</Button>
               <Button size="sm" variant="secondary" onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
             </div>
           </article>)}
@@ -128,6 +130,7 @@ function FoldersPage() {
             </Button>
             <div className="mt-3 flex flex-wrap gap-2">
               <Button aria-label={`Reproduzir pasta ${f.name}`} onClick={() => p.playList(f.tracks.map((t) => t.id), undefined, "ordered")}><Play /> Ouvir</Button>
+              <Button variant="outline" onClick={() => p.addManyToQueue(f.tracks.map((t) => t.id))}><ListPlus /> Adicionar à sequência</Button>
               <Button variant="secondary" aria-label={`Aleatório na pasta ${f.name}`} onClick={() => p.playList(f.tracks.map((t) => t.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
             </div>
           </article>)}
