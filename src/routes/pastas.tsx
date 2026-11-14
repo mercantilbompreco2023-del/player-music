@@ -19,33 +19,27 @@ export const Route = createFileRoute("/pastas")({
   component: FoldersPage,
 });
 
-const ARTIST_FOLDERS = [
-  { name: "Marília Tavares", aliases: ["marilia tavares"] },
-  { name: "Mariana Fagundes", aliases: ["mariana fagundes", "marina fagundes"] },
-  { name: "Ana Castela", aliases: ["ana castela"] },
-  { name: "Grelo", aliases: ["grelo"] },
-  { name: "Theuzinho", aliases: ["theuzinho"] },
-  { name: "Mari Fernandez", aliases: ["mari fernandez", "mariana fernandes"] },
-  { name: "Wesley Safadão", aliases: ["wesley safadao"] },
-] as const;
-
-function normalizeArtist(value: string) {
-  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").trim();
-}
-
 function FoldersPage() {
   const p = usePlayer();
   const folders = savedFolders(p.tracks);
   const [selected, setSelected] = useState<string | null>(null);
-  const physicalFolder = folders.find((f) => f.name === selected);
-  const artistFolder = ARTIST_FOLDERS.find((f) => f.name === selected);
-  const shownTracks = physicalFolder?.tracks ?? (artistFolder
-    ? p.tracks.filter((t) => t.source !== "demo" && artistFolder.aliases.some((alias) => normalizeArtist(t.artist).includes(normalizeArtist(alias))))
-    : selected === "Mais artistas"
-      ? p.tracks.filter((t) => t.source !== "demo" && !ARTIST_FOLDERS.some((f) => f.aliases.some((alias) => normalizeArtist(t.artist).includes(normalizeArtist(alias)))))
-      : []);
+  const artistGroups = Array.from(
+    p.tracks.filter((track) => track.source !== "demo" && track.artist.trim())
+      .reduce((groups, track) => {
+        const name = track.artist.trim();
+        const key = name.toLocaleLowerCase("pt-BR");
+        const group = groups.get(key) ?? { name, tracks: [] as typeof p.tracks };
+        group.tracks.push(track);
+        groups.set(key, group);
+        return groups;
+      }, new Map<string, { name: string; tracks: typeof p.tracks }>())
+      .values(),
+  ).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+  const physicalFolder = folders.find((folder) => folder.name === selected);
+  const artistFolder = artistGroups.find((artist) => artist.name === selected);
+  const shownTracks = physicalFolder?.tracks ?? artistFolder?.tracks ?? [];
   return <div>
-    <PageHeader title="Ouvir por pasta" description="Pastas dos seus artistas e pastas importadas do aparelho." />
+    <PageHeader title="Ouvir por pasta" description="Pastas automáticas por cantor e pastas importadas do aparelho." />
     {!p.ready ? <p role="status">Carregando pastas…</p> : selected ? <section>
       <div className="mb-4 flex items-center gap-2">
         <Button variant="ghost" size="icon" aria-label="Voltar para pastas" onClick={() => setSelected(null)}><ArrowLeft /></Button>
@@ -58,24 +52,26 @@ function FoldersPage() {
       {shownTracks.length ? shownTracks.map((t) => <TrackRow key={t.id} track={t} list={shownTracks.map((item) => item.id)} />) : <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Esta pasta ainda está vazia. Importe as músicas desse artista para que elas apareçam aqui.</p>}
     </section> : <div className="space-y-6">
       <section>
-        <h2 className="mb-3 text-base font-semibold">Pastas dos artistas</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {ARTIST_FOLDERS.map((artist) => {
-            const count = p.tracks.filter((t) => t.source !== "demo" && artist.aliases.some((alias) => normalizeArtist(t.artist).includes(normalizeArtist(alias)))).length;
-            return <article key={artist.name} className="rounded-lg border bg-card p-4">
-              <Button variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected(artist.name)}>
-                <FolderOpen className="shrink-0 text-primary" />
-                <span className="min-w-0"><span className="block break-words text-base font-semibold">{artist.name}</span><span className="text-sm text-muted-foreground">{count} música(s)</span></span>
-              </Button>
-            </article>;
-          })}
-          <article className="rounded-lg border bg-card p-4">
-            <Button variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected("Mais artistas")}>
-              <FolderOpen className="shrink-0 text-primary" />
-              <span className="min-w-0"><span className="block text-base font-semibold">Mais artistas</span><span className="text-sm text-muted-foreground">Outros artistas da sua biblioteca</span></span>
-            </Button>
-          </article>
-        </div>
+        <h2 className="mb-3 text-base font-semibold">Pastas por cantor</h2>
+        <p className="mb-3 text-sm text-muted-foreground">Cada cantor tem sua própria pasta, criada automaticamente com as músicas da sua biblioteca.</p>
+        {artistGroups.length ? (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {artistGroups.map((artist) => (
+              <article key={artist.name} className="rounded-lg border bg-card p-4">
+                <Button variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected(artist.name)}>
+                  <FolderOpen className="shrink-0 text-primary" />
+                  <span className="min-w-0"><span className="block break-words text-base font-semibold">{artist.name}</span><span className="text-sm text-muted-foreground">{artist.tracks.length} música(s)</span></span>
+                </Button>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <Button size="sm" onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir</Button>
+                  <Button size="sm" variant="secondary" onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Importe músicas com o nome do cantor preenchido para criar as pastas automaticamente.</p>
+        )}
       </section>
       {folders.length > 0 && <section>
         <h2 className="mb-3 text-base font-semibold">Pastas importadas do aparelho</h2>
