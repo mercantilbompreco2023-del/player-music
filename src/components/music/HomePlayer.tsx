@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Cover } from "@/components/music/Cover";
-import { loadCustomFolderCoverForTrack } from "@/lib/music/folder-covers";
+import { loadArtistFolderCover, loadCustomFolderCoverForTrack, saveArtistFolderCover } from "@/lib/music/folder-covers";
 import { AudioLines, Camera, Heart, ListMusic, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, UserRound, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -23,7 +23,27 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
   const [aiBusy, setAiBusy] = useState(false);
   const [searchArtist, setSearchArtist] = useState("");
   const [folderPhoto, setFolderPhoto] = useState<string | null>(null);
-  useEffect(() => { let active = true; void loadCustomFolderCoverForTrack(fallbackSeed).then((url) => { if (active) setFolderPhoto(url); else if (url) URL.revokeObjectURL(url); }); return () => { active = false; }; }, [fallbackSeed]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  useEffect(() => {
+    let active = true;
+    void loadArtistFolderCover(artist).then(async (url) => {
+      const chosen = url ?? await loadCustomFolderCoverForTrack(fallbackSeed);
+      if (active) setFolderPhoto(chosen);
+      else if (chosen) URL.revokeObjectURL(chosen);
+    });
+    return () => { active = false; };
+  }, [artist, fallbackSeed]);
+  const uploadArtistPhoto = async (file?: File) => {
+    if (!file) return;
+    setUploadingPhoto(true);
+    try {
+      const ok = await saveArtistFolderCover(artist, file);
+      if (!ok) { toast.error("Não foi possível salvar a foto do cantor neste aparelho."); return; }
+      const next = await loadArtistFolderCover(artist);
+      setFolderPhoto((previous) => { if (previous) URL.revokeObjectURL(previous); return next; });
+      toast.success(`Foto de ${artist} salva. Ela aparecerá ao tocar as músicas desse cantor.`);
+    } finally { setUploadingPhoto(false); }
+  };
   useEffect(() => {
     try {
       const saved = localStorage.getItem(ARTIST_PHOTO_PREF);
@@ -86,9 +106,10 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
       {folderPhoto ? <img src={folderPhoto} alt={`Foto da pasta de ${artist}`} className="aspect-square w-full rounded-xl object-cover" /> : enabled && photo && loadedArtist === (searchArtist || artist) ? <img src={photo} alt={`Foto de ${artist}`} className="aspect-square w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" /> : <Cover seed={fallbackSeed} className="aspect-square w-full rounded-none" iconClass="size-1/3" />}
       <div className="absolute bottom-2 right-2 flex gap-1">
         <button type="button" onClick={findWithAi} disabled={aiBusy} aria-label="Localizar foto do cantor com IA" title="Localizar foto com IA" className="rounded-full border border-white/30 bg-black/70 p-2 text-white backdrop-blur disabled:opacity-50"><Sparkles className={`size-4 ${aiBusy ? "animate-pulse text-primary" : "text-fuchsia-300"}`} /></button>
-        <button type="button" onClick={toggle} aria-label={enabled ? "Desativar foto automática do cantor" : "Ativar foto automática do cantor"} aria-pressed={enabled} title={enabled ? "Foto automática ativada" : "Foto automática desativada"} className="rounded-full border border-white/30 bg-black/70 p-2 text-white backdrop-blur">
-          <Camera className={`size-4 ${enabled ? "text-primary" : "text-white"}`} />
-        </button>
+        <label aria-label="Adicionar ou trocar foto do cantor" title="Adicionar ou trocar foto do cantor" className={`cursor-pointer rounded-full border border-white/30 bg-black/70 p-2 text-white backdrop-blur ${uploadingPhoto ? "opacity-50" : ""}`}>
+          <Camera className="size-4 text-primary" />
+          <input type="file" accept="image/*" disabled={uploadingPhoto} className="sr-only" onChange={(event) => { void uploadArtistPhoto(event.target.files?.[0]); event.currentTarget.value = ""; }} />
+        </label>
       </div>
     </div>
   );
