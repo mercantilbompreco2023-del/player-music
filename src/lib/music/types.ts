@@ -4,12 +4,12 @@ export interface Track {
   id: string;
   title: string;
   artist: string;
-  album?: string;
-  duration?: number;
+  album?: string | undefined;
+  duration?: number | undefined;
   url: string;
   source: TrackSource;
   /** Licença exibida ao usuário (faixas de demonstração) */
-  license?: string;
+  license?: string | undefined;
 }
 
 export interface Playlist {

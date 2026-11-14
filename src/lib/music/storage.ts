@@ -39,7 +39,7 @@ export interface StoredFile {
   id: string;
   title: string;
   artist: string;
-  duration?: number;
+  duration?: number | undefined;
   blob: Blob;
   addedAt: number;
 }

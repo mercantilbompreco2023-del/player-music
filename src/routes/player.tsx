@@ -56,7 +56,7 @@ function PlayerPage() {
       </div>
 
       <div>
-        <Slider aria-label="Progresso" value={[p.currentTime]} max={p.duration || 1} step={0.5} onValueChange={([v]) => p.seek(v)} />
+        <Slider aria-label="Progresso" value={[p.currentTime]} max={p.duration || 1} step={0.5} onValueChange={([v]) => p.seek(v ?? 0)} />
         <div className="mt-2 flex justify-between text-xs tabular-nums text-muted-foreground">
           <span>{formatTime(p.currentTime)}</span>
           <span>{formatTime(p.duration || t.duration)}</span>
@@ -83,7 +83,7 @@ function PlayerPage() {
 
       <div className="flex items-center gap-3">
         <button onClick={() => p.setVolume(p.prefs.volume === 0 ? 0.8 : 0)} aria-label="Silenciar" className="text-muted-foreground"><VolIcon className="size-5" /></button>
-        <Slider aria-label="Volume" value={[p.prefs.volume]} max={1} step={0.01} onValueChange={([v]) => p.setVolume(v)} />
+        <Slider aria-label="Volume" value={[p.prefs.volume]} max={1} step={0.01} onValueChange={([v]) => p.setVolume(v ?? 0)} />
       </div>
       <p className="text-xs text-muted-foreground">No Android, o volume físico do aparelho também controla o som.</p>
 

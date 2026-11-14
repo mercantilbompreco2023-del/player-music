@@ -19,7 +19,9 @@ export function shuffleQueue(ids: string[], currentId: string | null, rand: () =
   const rest = ids.filter((id) => id !== currentId);
   for (let i = rest.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1));
-    [rest[i], rest[j]] = [rest[j], rest[i]];
+    const tmp = rest[i]!;
+    rest[i] = rest[j]!;
+    rest[j] = tmp;
   }
   return currentId && ids.includes(currentId) ? [currentId, ...rest] : rest;
 }
@@ -28,7 +30,7 @@ export function shuffleQueue(ids: string[], currentId: string | null, rand: () =
 export function parseFileName(name: string): { title: string; artist: string } {
   const base = name.replace(/\.[^.]+$/, "").replace(/_/g, " ").trim();
   const parts = base.split(" - ");
-  if (parts.length >= 2) return { artist: parts[0].trim(), title: parts.slice(1).join(" - ").trim() };
+  if (parts.length >= 2) return { artist: parts[0]!.trim(), title: parts.slice(1).join(" - ").trim() };
   return { title: base || "Sem título", artist: "Artista desconhecido" };
 }
 

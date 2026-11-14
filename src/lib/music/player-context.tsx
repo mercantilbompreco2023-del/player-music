@@ -172,8 +172,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const playList = useCallback(
     (ids: string[], startId?: string) => {
       if (!ids.length) return;
-      const start = startId ?? ids[0];
-      const q = prefs.shuffle ? shuffleQueue(ids, start) : ids;
+      const start = startId ?? ids[0]!;
+      const q = prefs.shuffle ? shuffleQueue(ids, start ?? null) : ids;
       wantPlay.current = true;
       setQueue(q);
       const i = q.indexOf(start);
