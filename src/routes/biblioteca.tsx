@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { FolderOpen } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/music/AppShell";
@@ -34,7 +35,7 @@ function BibliotecaPage() {
   };
   return (
     <div>
-      <PageHeader title="Biblioteca" action={<ImportButton variant="secondary" />} />
+      <PageHeader title="Biblioteca" action={<div className="flex gap-2"><Link to="/importar" className="inline-flex h-9 items-center gap-1 rounded-full bg-primary px-3 text-sm font-semibold text-primary-foreground"><FolderOpen className="size-4" /> Pasta</Link><ImportButton variant="secondary" /></div>} />
       <div role="tablist" className="mb-4 grid grid-cols-4 gap-1 rounded-full bg-muted p-1">
         {(["todas", "minhas", "favoritas", "demo"] as Tab[]).map((k) => (
           <button

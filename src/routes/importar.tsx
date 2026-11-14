@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/music/AppShell";
 import { ImportButton } from "@/components/music/ImportButton";
+import { FolderImport } from "@/components/music/FolderImport";
 import { TrackRow } from "@/components/music/TrackRow";
 import { usePlayer } from "@/lib/music/player-context";
 
@@ -22,7 +23,9 @@ function ImportarPage() {
   return (
     <div className="space-y-5">
       <PageHeader title="Importar músicas" />
+      <FolderImport />
       <section className="space-y-3 rounded-2xl bg-card p-4">
+        <h2 className="text-lg font-bold">Importar arquivos individuais</h2>
         <ImportButton />
         <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
           <li>Você pode escolher vários arquivos de uma vez.</li>
