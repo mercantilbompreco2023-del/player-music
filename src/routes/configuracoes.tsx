@@ -44,7 +44,7 @@ function ConfigPage() {
           Guarde suas músicas importadas na sua conta, sem manter uma cópia permanente na memória do celular. Na lista de músicas, abra o menu de três pontos e escolha “Salvar na nuvem e liberar espaço”. Depois do envio, o arquivo local é removido e a reprodução passa a usar a cópia privada online.
         </p>
         <p className="text-muted-foreground">
-          É necessário entrar na sua conta e ter internet para enviar e ouvir músicas salvas na nuvem. Cada arquivo pode ter até 100 MB; o espaço total disponível depende do plano e dos limites do armazenamento Supabase conectado ao projeto. A biblioteca na nuvem é privada e separada por conta.
+          É necessário entrar na sua conta e ter internet para enviar e ouvir músicas salvas na nuvem. Cada arquivo pode ter até 100 MB; o espaço total disponível depende do plano e dos limites do armazenamento Lovable Cloud conectado ao projeto. A biblioteca na nuvem é privada e separada por conta.
         </p>
         {user ? (
           <p className="font-medium text-primary">Conectado: {user.email ?? "sua conta Player Music"}</p>

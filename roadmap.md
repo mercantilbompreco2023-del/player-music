@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] Conferir commit ce2a6f6, opção de segundo plano e preferência salva, integração de mídia, prévia e entrega v24.
+- [x] Conferir commit ce2a6f6 incluído na versão posterior; opção de segundo plano salva, integração de mídia com testes simulados, prévia sem erros, 62 testes aprovados e entrega v24.
 - [x] Conferir commit 97ce987e incluído na versão posterior, pastas por cantor e físicas sem colisão de nomes, reprodução e prévia: 59 testes aprovados, build OK, entrega v23.
 - [x] Gerar APK do Player Music
 - [x] Versão Android nativa: serviço de mídia em primeiro plano, notificação de mídia, controles na tela bloqueada
