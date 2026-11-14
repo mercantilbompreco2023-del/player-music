@@ -61,6 +61,16 @@ export function saveFolderHints(hints: Record<string, FolderHint>): boolean {
   }
 }
 
+/** Solicita ao navegador que proteja os arquivos importados contra limpeza automática por falta de espaço. */
+export async function requestPersistentStorage(): Promise<boolean> {
+  try {
+    if (typeof navigator === "undefined" || !navigator.storage?.persist) return false;
+    return await navigator.storage.persist();
+  } catch {
+    return false;
+  }
+}
+
 // ---- Arquivos importados (IndexedDB) ----
 export interface StoredFile {
   id: string;
