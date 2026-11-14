@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { toast } from "sonner";
 import { DEMO_TRACKS } from "./catalog";
 import { moveItem, nextIndex, parseFileName, prevIndex, shuffleQueue } from "./queue";
+import { nativeMedia } from "./native-media";
 import { supabase } from "@/integrations/supabase/client";
 import { defaultPrefs, fileStore, loadPrefs, savePrefs, type Prefs } from "./storage";
 import type { Playlist, RepeatMode, Track } from "./types";
@@ -317,6 +318,27 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       }
     }
   }, [isPlaying, duration, Math.floor(currentTime)]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Serviço de mídia nativo (somente no APK Android)
+  const actionsRef = useRef({ toggle, next, prev, isPlaying });
+  actionsRef.current = { toggle, next, prev, isPlaying };
+  useEffect(() => {
+    if (!nativeMedia) return;
+    const h = nativeMedia.addListener("action", ({ action }) => {
+      const a = actionsRef.current;
+      if (action === "next") a.next();
+      else if (action === "previous") a.prev();
+      else if ((action === "play") !== a.isPlaying) a.toggle();
+    });
+    return () => { void h.then((x) => x.remove()); };
+  }, []);
+  useEffect(() => {
+    if (!nativeMedia) return;
+    if (!current) { void nativeMedia.stop().catch(() => {}); return; }
+    void nativeMedia
+      .update({ title: current.title, artist: current.artist, isPlaying, position: currentTime, duration })
+      .catch(() => {});
+  }, [current?.id, isPlaying, Math.floor(duration)]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const localRef = useRef<Track[]>([]);
   localRef.current = localTracks;
