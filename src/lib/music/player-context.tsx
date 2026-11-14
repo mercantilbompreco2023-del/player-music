@@ -78,7 +78,7 @@ async function fetchCloudTracks(userId: string): Promise<Track[]> {
     const name = files[i]?.name ?? entry.path.split("/").pop() ?? "Música";
     return [{
       id: typeof meta.fingerprint === "string" ? `cloud-${meta.fingerprint}` : `cloud-${entry.path}`,
-      title: typeof meta.title === "string" ? meta.title : name.replace(/\\.[^.]+$/, ""),
+      title: typeof meta.title === "string" ? meta.title : name.replace(/\.[^.]+$/, ""),
       artist: typeof meta.artist === "string" ? meta.artist : "Biblioteca na nuvem",
       duration: typeof meta.duration === "number" ? meta.duration : undefined,
       fingerprint: typeof meta.fingerprint === "string" ? meta.fingerprint : undefined,
@@ -394,7 +394,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         if (!r.ok) throw new Error("Não foi possível ler o arquivo importado.");
         return r.blob();
       });
-      const extension = (stored?.path ?? track.path ?? track.title).match(/\\.([a-z0-9]{2,5})$/i)?.[1]?.toLowerCase() ?? "audio";
+      const extension = (stored?.path ?? track.path ?? track.title).match(/\.([a-z0-9]{2,5})$/i)?.[1]?.toLowerCase() ?? "audio";
       const fingerprintKey = (track.fingerprint ?? id).replace(/[^a-z0-9_-]/gi, "").slice(0, 48);
       const storagePath = `${auth.user.id}/${fingerprintKey}.${extension}`;
       const { error: uploadError } = await supabase.storage.from("player-music").upload(storagePath, response, {
@@ -423,7 +423,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       const message = error instanceof Error ? error.message : "Falha ao salvar na nuvem.";
       toast.error(message);
     }
-  }, []);
+  }, [updatePrefs]);
 
   const importFiles = useCallback(
     async (files: FileList | File[]) => {
