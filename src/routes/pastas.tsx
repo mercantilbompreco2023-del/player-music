@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, FolderOpen, Play, Shuffle } from "lucide-react";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { Sparkles, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useSession } from "@/lib/auth";
+import { organizeArtistFolders } from "@/lib/music/artist-folders.functions";
+import { saveAiArtistFolders } from "@/lib/music/folders";
 import { PageHeader } from "@/components/music/AppShell";
 import { TrackRow } from "@/components/music/TrackRow";
 import { Button } from "@/components/ui/button";
@@ -21,6 +27,24 @@ export const Route = createFileRoute("/pastas")({
 
 function FoldersPage() {
   const p = usePlayer();
+  const { user } = useSession();
+  const organize = useServerFn(organizeArtistFolders);
+  const [organizing, setOrganizing] = useState(false);
+  const organizeWithAi = async () => {
+    const tracks = p.tracks.filter((track) => track.source !== "demo");
+    if (!tracks.length) { toast.message("Importe músicas primeiro."); return; }
+    if (tracks.length > 500) { toast.error("A organização por IA aceita até 500 músicas por vez."); return; }
+    setOrganizing(true);
+    try {
+      const result = await organize({ data: { tracks: tracks.map(({ id, title, artist, path }) => ({ id, title, artist, path })) } });
+      if (result.error) { toast.error(result.error); return; }
+      if (!result.assignments.length) { toast.message("A IA não encontrou artistas para organizar."); return; }
+      if (!saveAiArtistFolders(result.assignments)) { toast.error("Não foi possível salvar a organização neste aparelho."); return; }
+      toast.success(`${result.assignments.length} música(s) organizada(s) em pastas por cantor.`);
+      setSelected(null);
+    } catch { toast.error("Entre na sua conta e confira a conexão para usar a organização por IA."); }
+    finally { setOrganizing(false); }
+  };
   const folders = savedFolders(p.tracks);
   const [selected, setSelected] = useState<{ kind: "artist" | "physical"; name: string } | null>(null);
   const artistGroups = artistFolders(p.tracks);
@@ -41,7 +65,8 @@ function FoldersPage() {
       {shownTracks.length ? shownTracks.map((t) => <TrackRow key={t.id} track={t} list={shownTracks.map((item) => item.id)} />) : <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Esta pasta ainda está vazia. Importe as músicas desse artista para que elas apareçam aqui.</p>}
     </section> : <div className="space-y-6">
       <section>
-        <h2 className="mb-3 text-base font-semibold">Pastas por cantor</h2>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="text-base font-semibold">Pastas por cantor</h2><Button size="sm" onClick={organizeWithAi} disabled={organizing || !p.ready || !user}>{organizing ? <Loader2 className="animate-spin" /> : <Sparkles />} {organizing ? "Organizando…" : "Organizar com IA"}</Button></div>
+        {!user && <p className="mb-2 text-xs text-muted-foreground">Entre na sua conta para organizar com IA.</p>}
         <p className="mb-3 text-sm text-muted-foreground">Cada cantor tem sua própria pasta, criada automaticamente com as músicas da sua biblioteca.</p>
         {artistGroups.length ? (
           <div className="grid gap-3 sm:grid-cols-2">
