@@ -162,6 +162,12 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
           </div>
         </div>
       </div>
+      <div className="mt-4 flex h-12 items-end justify-center gap-1 overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-r from-fuchsia-950/20 via-primary/10 to-cyan-950/20 px-3 py-2" role="img" aria-label={p.isPlaying ? "Equalizador animado acompanhando a reprodução" : "Equalizador em repouso"}>
+        {Array.from({ length: 30 }, (_, index) => index).map((index) => {
+          const heights = [18, 30, 45, 24, 58, 36, 72, 48, 88, 54, 76, 42, 96, 60, 82, 38, 68, 48, 90, 56, 74, 34, 62, 42, 80, 28, 52, 36, 66, 22];
+          return <span key={index} className={cn("eq-bar w-1 rounded-full bg-gradient-to-t from-fuchsia-600 via-primary to-cyan-300 shadow-[0_0_9px_hsl(var(--primary)/0.7)]", !p.isPlaying && "animate-none opacity-40")} style={{ height: `${heights[index]}%`, animationDelay: `${index * 0.055}s`, animationDuration: `${0.55 + (index % 5) * 0.13}s` }} />;
+        })}
+      </div>
       {!!libraryTracks.length && <div className="mt-3 flex flex-wrap gap-2">
         <Button
           size="sm"
