@@ -33,4 +33,6 @@ use the editor.
 - All playback state lives in `src/lib/music/player-context.tsx` (single HTMLAudioElement + Media Session); pages only call its actions — keeps one audio source of truth.
 - Pure queue/search helpers live in `src/lib/music/queue.ts` with tests in `src/test/music-queue.test.ts`.
 - Track sources go through the `CatalogProvider` interface (`src/lib/music/catalog.ts`); only original CC0 demo tracks and user files are allowed, never commercial/DRM content.
-- Imported audio blobs persist in IndexedDB, prefs/favorites/playlists in localStorage — no backend yet; admin area stays disabled until real server-side auth exists.
+- Imported audio blobs persist in IndexedDB, prefs/favorites/playlists in localStorage (device-only, private by design).
+- Home cards live in `app_cards` and route only by `function_key` via `src/lib/cards.ts`, so renaming/reordering can never change a card's destination.
+- Admin authorization is enforced by RLS + `has_role` (roles in `user_roles`); audit rows are written only by DB triggers. UI hiding is cosmetic. First admin is granted via SQL by the project owner, never by code or fixed passwords.
