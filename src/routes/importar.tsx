@@ -4,6 +4,7 @@ import { FileMusic, FolderOpen, HardDrive, Layers3, Music2, Search, Zap } from "
 import { PageHeader } from "@/components/music/AppShell";
 import { ImportButton } from "@/components/music/ImportButton";
 import { FolderImport } from "@/components/music/FolderImport";
+import { DeviceScan } from "@/components/music/DeviceScan";
 import { TrackRow } from "@/components/music/TrackRow";
 import { usePlayer } from "@/lib/music/player-context";
 
@@ -64,6 +65,8 @@ function ImportarPage() {
           <FolderImport />
         </div>
       </section>
+
+      <DeviceScan />
 
       <section className="grid gap-3 rounded-2xl border bg-card/80 p-4 sm:grid-cols-2 xl:grid-cols-4">
         <Feature icon={<Search className="size-6 text-sky-400" />} title="Escaneia subpastas" text="Encontra músicas dentro das pastas selecionadas." />
