@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PageHeader } from "@/components/music/AppShell";
 import { TrackRow } from "@/components/music/TrackRow";
 import { Button } from "@/components/ui/button";
-import { savedFolders } from "@/lib/music/folders";
+import { artistFolders, savedFolders } from "@/lib/music/folders";
 import { usePlayer } from "@/lib/music/player-context";
 
 export const Route = createFileRoute("/pastas")({
@@ -22,28 +22,17 @@ export const Route = createFileRoute("/pastas")({
 function FoldersPage() {
   const p = usePlayer();
   const folders = savedFolders(p.tracks);
-  const [selected, setSelected] = useState<string | null>(null);
-  const artistGroups = Array.from(
-    p.tracks.filter((track) => track.source !== "demo" && track.artist.trim())
-      .reduce((groups, track) => {
-        const name = track.artist.trim();
-        const key = name.toLocaleLowerCase("pt-BR");
-        const group = groups.get(key) ?? { name, tracks: [] as typeof p.tracks };
-        group.tracks.push(track);
-        groups.set(key, group);
-        return groups;
-      }, new Map<string, { name: string; tracks: typeof p.tracks }>())
-      .values(),
-  ).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
-  const physicalFolder = folders.find((folder) => folder.name === selected);
-  const artistFolder = artistGroups.find((artist) => artist.name === selected);
-  const shownTracks = physicalFolder?.tracks ?? artistFolder?.tracks ?? [];
+  const [selected, setSelected] = useState<{ kind: "artist" | "physical"; name: string } | null>(null);
+  const artistGroups = artistFolders(p.tracks);
+  const selectedFolder = (selected?.kind === "physical" ? folders : artistGroups)
+    .find((folder) => folder.name === selected?.name);
+  const shownTracks = selectedFolder?.tracks ?? [];
   return <div>
     <PageHeader title="Ouvir por pasta" description="Pastas automáticas por cantor e pastas importadas do aparelho." />
     {!p.ready ? <p role="status">Carregando pastas…</p> : selected ? <section>
       <div className="mb-4 flex items-center gap-2">
         <Button variant="ghost" size="icon" aria-label="Voltar para pastas" onClick={() => setSelected(null)}><ArrowLeft /></Button>
-        <h2 className="min-w-0 break-words text-xl font-semibold">{selected}</h2>
+        <h2 className="min-w-0 break-words text-xl font-semibold">{selected.name}</h2>
       </div>
       {shownTracks.length > 0 && <div className="mb-4 flex flex-wrap gap-2">
         <Button onClick={() => p.playList(shownTracks.map((t) => t.id), undefined, "ordered")}><Play /> Reproduzir pasta</Button>
@@ -58,13 +47,13 @@ function FoldersPage() {
           <div className="grid gap-3 sm:grid-cols-2">
             {artistGroups.map((artist) => (
               <article key={artist.name} className="rounded-lg border bg-card p-4">
-                <Button variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected(artist.name)}>
+                <Button variant="ghost" aria-label={`Abrir cantor ${artist.name}`} className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "artist", name: artist.name })}>
                   <FolderOpen className="shrink-0 text-primary" />
                   <span className="min-w-0"><span className="block break-words text-base font-semibold">{artist.name}</span><span className="text-sm text-muted-foreground">{artist.tracks.length} música(s)</span></span>
                 </Button>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  <Button size="sm" onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir</Button>
-                  <Button size="sm" variant="secondary" onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
+                  <Button size="sm" aria-label={`Ouvir cantor ${artist.name}`} onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir</Button>
+                  <Button size="sm" variant="secondary" aria-label={`Aleatório do cantor ${artist.name}`} onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
                 </div>
               </article>
             ))}
@@ -77,7 +66,7 @@ function FoldersPage() {
         <h2 className="mb-3 text-base font-semibold">Pastas importadas do aparelho</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           {folders.map((f) => <article key={f.name} className="rounded-lg border bg-card p-4">
-            <Button variant="ghost" className="h-auto min-h-20 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected(f.name)}>
+            <Button variant="ghost" aria-label={`Abrir pasta ${f.name}`} className="h-auto min-h-20 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "physical", name: f.name })}>
               <FolderOpen className="shrink-0 text-primary" />
               <span className="min-w-0"><span className="block break-words text-lg font-semibold">{f.name}</span><span className="text-sm text-muted-foreground">{f.tracks.length} música(s)</span></span>
             </Button>

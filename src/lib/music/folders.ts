@@ -12,6 +12,20 @@ export interface MusicFolder<T extends FolderSource = Track> {
   tracks: T[];
 }
 
+/** Agrupa artistas da biblioteca sem alterar as pastas físicas dos arquivos. */
+export function artistFolders<T extends FolderSource & { artist: string }>(tracks: T[]): MusicFolder<T>[] {
+  const groups = new Map<string, MusicFolder<T>>();
+  for (const track of tracks) {
+    const name = track.artist.trim();
+    if (track.source === "demo" || !name) continue;
+    const key = name.toLocaleLowerCase("pt-BR");
+    const group = groups.get(key) ?? { name, tracks: [] };
+    group.tracks.push(track);
+    groups.set(key, group);
+  }
+  return Array.from(groups.values()).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+}
+
 /** Pastas são derivadas dos arquivos salvos, sem conceder novo acesso ao dispositivo. */
 export function savedFolders<T extends FolderSource>(tracks: T[]): MusicFolder<T>[] {
   const groups = new Map<string, T[]>();

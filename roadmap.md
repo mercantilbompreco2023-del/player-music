@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Conferir commit 97ce987e incluído na versão posterior, pastas por cantor e físicas sem colisão de nomes, reprodução e prévia: 59 testes aprovados, build OK, entrega v23.
 - [x] Gerar APK do Player Music
 - [x] Versão Android nativa: serviço de mídia em primeiro plano, notificação de mídia, controles na tela bloqueada
 - [x] Importar pasta completa no APK (seletor de pasta nativo)
