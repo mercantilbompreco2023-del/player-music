@@ -51,12 +51,20 @@ export interface RestoreResult {
 /** Monta o conteúdo do backup a partir do estado local (sem faixas de demonstração). */
 export function buildBackup(tracks: Track[], prefs: Prefs): BackupPayload {
   const mine = tracks.filter((t) => t.source !== "demo");
+  // A mesma música pode existir como importação local e cópia na nuvem: guarda uma vez, com a pasta.
+  const byKey = new Map<string, Track>();
+  for (const t of mine) {
+    const k = trackKey(t);
+    const prev = byKey.get(k);
+    const richer = !prev || ((!prev.folderName && !prev.path) && !!(t.folderName || t.path));
+    if (richer) byKey.set(k, t);
+  }
   const keyById = new Map(mine.map((t) => [t.id, trackKey(t)]));
   const keyOfId = (id: string) => keyById.get(id) ?? id;
   return {
     version: 1,
     savedAt: Date.now(),
-    tracks: mine.map((t) => ({
+    tracks: Array.from(byKey.values()).map((t) => ({
       title: t.title,
       artist: t.artist,
       duration: t.duration,

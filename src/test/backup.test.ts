@@ -61,6 +61,15 @@ describe("backup da lista na conta", () => {
     expect(mergeBackup(payload, [live], defaultPrefs).favorites).toEqual(["cloud-abc"]);
   });
 
+  it("não repete a mesma música quando ela existe local e na nuvem", () => {
+    const fingerprint = "abcdef0123456789abcdef0123456789abcdef0123456789";
+    const importada = track({ id: "local-x", fingerprint, folderName: "MinhaPasta", path: "MinhaPasta/forro.mp3" });
+    const copia = track({ id: `cloud-${fingerprint}`, fingerprint, source: "cloud", folderName: undefined, path: undefined });
+    const payload = buildBackup([importada, copia], defaultPrefs);
+    expect(payload.tracks).toHaveLength(1);
+    expect(payload.tracks[0]?.folderName).toBe("MinhaPasta");
+  });
+
   it("liga a faixa da conta ao áudio que voltou pela nuvem pelo nome do arquivo", () => {
     const fingerprint = "abcdef0123456789abcdef0123456789abcdef0123456789";
     const importada = track({ id: "local-x", fingerprint, folderName: "MeuForró", path: "MeuForró/faixa1.wav", title: "faixa1" });
