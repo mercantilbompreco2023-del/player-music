@@ -12,6 +12,7 @@ on:
       - "src/routes/index.tsx"
       - "src/routes/configuracoes.tsx"
       - "src/routes/pastas.tsx"
+      - "src/routes/biblioteca.tsx"
       - "package.json"
       - ".github/workflows/android-apk.yml"
 
