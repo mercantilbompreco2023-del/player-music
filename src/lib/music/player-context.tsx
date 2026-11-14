@@ -77,7 +77,7 @@ async function fetchCloudTracks(userId: string): Promise<Track[]> {
     const meta = (files[i]?.metadata ?? {}) as Record<string, unknown>;
     const name = files[i]?.name ?? entry.path.split("/").pop() ?? "Música";
     return [{
-      id: `cloud-${entry.path}`,
+      id: typeof meta.fingerprint === "string" ? `cloud-${meta.fingerprint}` : `cloud-${entry.path}`,
       title: typeof meta.title === "string" ? meta.title : name.replace(/\\.[^.]+$/, ""),
       artist: typeof meta.artist === "string" ? meta.artist : "Biblioteca na nuvem",
       duration: typeof meta.duration === "number" ? meta.duration : undefined,
