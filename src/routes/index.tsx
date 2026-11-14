@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, LogIn, Music } from "lucide-react";
+import { useState } from "react";
+import { AlertTriangle, ExternalLink, LogIn, Music } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cardsQuery } from "@/lib/cards-query";
 import { FUNCTIONS, ICONS, isFunctionKey, visibleCards, type FunctionKey } from "@/lib/cards";
@@ -39,6 +40,54 @@ function useCardStatus() {
   };
 }
 
+
+const ARTISTS = [
+  "Marília Tavares",
+  "Marina Fagundes",
+  "Ana Castela",
+  "Grelo",
+  "Theuzinho",
+  "Mari Fernandez",
+  "Wesley Safadão",
+  "Mais artistas",
+];
+
+function ArtistDiscovery() {
+  const [platform, setPlatform] = useState<"youtube" | "spotify">("youtube");
+  const searchUrl = (artist: string) => platform === "youtube"
+    ? `https://music.youtube.com/search?q=${encodeURIComponent(artist)}`
+    : `https://open.spotify.com/search/${encodeURIComponent(artist)}`;
+
+  return (
+    <section className="space-y-3" aria-labelledby="artistas-title">
+      <div>
+        <h2 id="artistas-title" className="text-xl font-bold">Cantores e músicas</h2>
+        <p className="text-sm text-muted-foreground">Escolha onde quer ouvir. A música abre no serviço oficial.</p>
+      </div>
+      <div className="grid grid-cols-2 gap-2 rounded-full bg-muted p-1">
+        <button type="button" aria-pressed={platform === "youtube"} onClick={() => setPlatform("youtube")}
+          className={`rounded-full py-2 text-sm font-semibold transition-colors ${platform === "youtube" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}>
+          YouTube Music
+        </button>
+        <button type="button" aria-pressed={platform === "spotify"} onClick={() => setPlatform("spotify")}
+          className={`rounded-full py-2 text-sm font-semibold transition-colors ${platform === "spotify" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}>
+          Spotify
+        </button>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {ARTISTS.map((artist) => (
+          <a key={artist} href={searchUrl(artist)} target="_blank" rel="noopener noreferrer"
+            className="group flex min-h-20 items-center justify-between gap-2 rounded-2xl border bg-card p-3 transition-colors hover:border-primary/60 hover:bg-accent/50">
+            <span className="text-sm font-semibold">{artist}</span>
+            <ExternalLink className="size-4 shrink-0 text-muted-foreground group-hover:text-primary" />
+          </a>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground">Para ouvir com a tela desligada, use o aplicativo oficial e o plano que oferece reprodução em segundo plano. A disponibilidade depende do serviço e da sua conta.</p>
+    </section>
+  );
+}
+
 function Index() {
   const { user } = useSession();
   const admin = useIsAdmin(user?.id);
@@ -67,7 +116,7 @@ function Index() {
         <h1 className="mt-3 text-3xl font-bold leading-tight">{greeting.data ?? "Sua música, do seu jeito."}</h1>
       </section>
 
-      {cards.data && cards.data.source !== "servidor" && (
+      <ArtistDiscovery />\n\n      {cards.data && cards.data.source !== "servidor" && (
         <p role="status" className="flex items-center gap-2 rounded-xl bg-muted p-3 text-xs">
           <AlertTriangle className="size-4 shrink-0" />
           Não foi possível carregar os cartões do servidor. Mostrando a {cards.data.source === "cache" ? "última versão salva" : "configuração padrão"}.
