@@ -87,10 +87,3 @@ export function PageHeader({ title, action, description }: { title: string; acti
     </header>
   );
 }
-function _unused({ action }: { action?: ReactNode }) {
-  return (
-    <header>
-      {action}
-    </header>
-  );
-}

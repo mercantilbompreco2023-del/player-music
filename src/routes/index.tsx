@@ -1,15 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Play, Search, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Cover } from "@/components/music/Cover";
-import { ImportButton } from "@/components/music/ImportButton";
-import { TrackRow } from "@/components/music/TrackRow";
+import { useQuery } from "@tanstack/react-query";
+import { AlertTriangle, LogIn, Music } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cardsQuery } from "@/lib/cards-query";
+import { FUNCTIONS, ICONS, isFunctionKey, visibleCards, type FunctionKey } from "@/lib/cards";
+import { useIsAdmin, useSession } from "@/lib/auth";
 import { usePlayer } from "@/lib/music/player-context";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Início — Player Music" },
+      { title: "Player Music — Início" },
       { name: "description", content: "Ouça seus próprios arquivos de áudio com playlists, favoritos e fila." },
       { property: "og:title", content: "Player Music" },
       { property: "og:description", content: "Ouça seus próprios arquivos de áudio com playlists, favoritos e fila." },
@@ -18,80 +20,92 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function Index() {
+function useCardStatus() {
   const p = usePlayer();
-  const recent = p.prefs.recent.map(p.byId).filter((t) => !!t);
-  const allIds = p.tracks.map((t) => t.id);
+  const local = p.tracks.filter((t) => t.source === "local").length;
+  return (k: FunctionKey): string => {
+    switch (k) {
+      case "descobrir": return `${p.prefs.recent.length} recentes`;
+      case "player": return p.current ? `${p.isPlaying ? "Tocando" : "Pausado"}: ${p.current.title}` : "Nada tocando";
+      case "buscar": return `${p.tracks.length} faixas para buscar`;
+      case "biblioteca": return `${p.tracks.length} faixas`;
+      case "importar": return local ? `${local} importadas` : "Nenhuma importada";
+      case "playlists": return `${p.prefs.playlists.length} playlists`;
+      case "favoritos": return `${p.prefs.favorites.length} favoritas`;
+      case "fila": return p.queue.length ? `${p.queue.length - p.index - 1} a seguir` : "Fila vazia";
+      case "configuracoes": return p.prefs.theme === "dark" ? "Tema escuro" : "Tema claro";
+      case "admin": return "Acesso de administrador";
+    }
+  };
+}
+
+function Index() {
+  const { user } = useSession();
+  const admin = useIsAdmin(user?.id);
+  const cards = useQuery(cardsQuery);
+  const greeting = useQuery({
+    queryKey: ["setting", "home_greeting"],
+    queryFn: async () => {
+      const { data } = await supabase.from("app_settings").select("value").eq("key", "home_greeting").maybeSingle();
+      return typeof data?.value === "string" ? data.value : "Sua música, do seu jeito.";
+    },
+  });
+  const status = useCardStatus();
+  const list = cards.data ? visibleCards(cards.data.cards, admin.data === true) : [];
+
   return (
-    <div className="space-y-8">
-      <section className="bg-hero -mx-4 -mt-6 px-4 pb-6 pt-6">
+    <div className="space-y-6">
+      <section className="bg-hero -mx-4 -mt-6 px-4 pb-4 pt-6">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">Player Music</p>
-          <Link to="/configuracoes" aria-label="Configurações" className="rounded-full p-2 text-muted-foreground hover:text-foreground">
-            <Settings className="size-5" />
-          </Link>
+          <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary"><Music className="size-4" /> Player Music</p>
+          {user ? (
+            <span className="max-w-40 truncate text-xs text-muted-foreground">{user.email}</span>
+          ) : (
+            <Link to="/auth" search={{ redirect: undefined }} className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground"><LogIn className="size-4" /> Entrar</Link>
+          )}
         </div>
-        <h1 className="mt-3 text-4xl font-bold leading-tight">Sua música,<br />do seu jeito.</h1>
-        <Link to="/buscar" className="mt-5 flex items-center gap-3 rounded-full border bg-card px-4 py-3 text-muted-foreground">
-          <Search className="size-5" /> Buscar por título ou artista
-        </Link>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <ImportButton />
-          <Button variant="secondary" className="rounded-full" onClick={() => p.playList(allIds)}>
-            <Play /> Tocar tudo
-          </Button>
-        </div>
+        <h1 className="mt-3 text-3xl font-bold leading-tight">{greeting.data ?? "Sua música, do seu jeito."}</h1>
       </section>
 
-      {recent.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-xl font-bold">Tocadas recentemente</h2>
-          <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
-            {recent.map((t) => (
-              <button key={t.id} onClick={() => p.playList(recent.map((r) => r.id), t.id)} className="w-32 shrink-0 text-left">
-                <Cover seed={t.id} className="aspect-square w-full rounded-xl" />
-                <p className="mt-2 truncate text-sm font-semibold">{t.title}</p>
-                <p className="truncate text-xs text-muted-foreground">{t.artist}</p>
-              </button>
-            ))}
-          </div>
-        </section>
+      {cards.data && cards.data.source !== "servidor" && (
+        <p role="status" className="flex items-center gap-2 rounded-xl bg-muted p-3 text-xs">
+          <AlertTriangle className="size-4 shrink-0" />
+          Não foi possível carregar os cartões do servidor. Mostrando a {cards.data.source === "cache" ? "última versão salva" : "configuração padrão"}.
+        </p>
       )}
 
-      <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-xl font-bold">Suas playlists</h2>
-          <Link to="/playlists" className="text-sm font-semibold text-primary">Ver todas</Link>
-        </div>
-        {p.prefs.playlists.length === 0 ? (
-          <Link to="/playlists" className="block rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-            Nenhuma playlist ainda. Toque para criar a primeira.
-          </Link>
-        ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {p.prefs.playlists.slice(0, 4).map((pl) => (
-              <Link key={pl.id} to="/playlists/$id" params={{ id: pl.id }} className="flex items-center gap-3 rounded-xl bg-card p-2">
-                <Cover seed={pl.id} className="size-12" />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{pl.name}</p>
-                  <p className="text-xs text-muted-foreground">{pl.trackIds.length} faixas</p>
-                </div>
+      {cards.isPending ? (
+        <div className="grid grid-cols-2 gap-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="h-36 rounded-2xl" />)}</div>
+      ) : list.length === 0 ? (
+        <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Nenhum cartão ativo. Um administrador pode ativá-los.</p>
+      ) : (
+        <nav aria-label="Funções do app" className="grid grid-cols-2 gap-3">
+          {list.map((c) => {
+            const key = c.function_key as FunctionKey;
+            if (!isFunctionKey(key)) return null;
+            const Icon = ICONS[c.icon] ?? ICONS[FUNCTIONS[key].icon]!;
+            return (
+              <Link
+                key={c.id}
+                to={FUNCTIONS[key].route}
+                search={key === "admin" ? undefined : undefined}
+                className="group flex min-h-36 flex-col justify-between rounded-2xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]"
+                aria-label={`${c.title}: ${c.description}. ${status(key)}`}
+              >
+                <span className="flex size-11 items-center justify-center rounded-xl bg-primary/15 text-primary"><Icon className="size-6" /></span>
+                <span>
+                  <span className="block font-display text-base font-bold leading-tight">{c.title}</span>
+                  <span className="mt-0.5 block text-xs text-muted-foreground">{c.description}</span>
+                  <span className="mt-2 block truncate text-xs font-semibold text-primary">{status(key)}</span>
+                </span>
               </Link>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-xl font-bold">Biblioteca</h2>
-          <Link to="/biblioteca" className="text-sm font-semibold text-primary">Abrir</Link>
-        </div>
-        {p.tracks.slice(0, 6).map((t) => <TrackRow key={t.id} track={t} list={allIds} />)}
-        <p className="mt-3 text-xs text-muted-foreground">
-          Faixas marcadas como DEMO são composições originais de demonstração, de domínio público (CC0). Não há catálogo online neste app.
-        </p>
-      </section>
+            );
+          })}
+        </nav>
+      )}
+      <p className="text-center text-xs text-muted-foreground">
+        App web (MVP) — não é um aplicativo instalado. <Link to="/privacidade" className="underline">Privacidade</Link>
+      </p>
     </div>
   );
 }
