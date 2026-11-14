@@ -1,3 +1,4 @@
+import type React from "react";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { DEMO_TRACKS } from "./catalog";
@@ -46,7 +47,9 @@ interface PlayerCtx {
   moveInQueue: (pos: number, dir: -1 | 1) => void;
 }
 
-const Ctx = createContext<PlayerCtx | null>(null);
+// Mantém o mesmo contexto entre recarregamentos de módulo (HMR), evitando "usePlayer fora do PlayerProvider".
+const g = globalThis as typeof globalThis & { __pmPlayerCtx?: React.Context<PlayerCtx | null> };
+const Ctx = g.__pmPlayerCtx ?? (g.__pmPlayerCtx = createContext<PlayerCtx | null>(null));
 
 export function usePlayer() {
   const c = useContext(Ctx);
@@ -77,12 +80,12 @@ async function fetchCloudTracks(userId: string): Promise<Track[]> {
     const meta = (files[i]?.metadata ?? {}) as Record<string, unknown>;
     const name = files[i]?.name ?? entry.path.split("/").pop() ?? "Música";
     return [{
-      id: typeof meta.fingerprint === "string" ? `cloud-${meta.fingerprint}` : `cloud-${entry.path}`,
-      title: typeof meta.title === "string" ? meta.title : name.replace(/\.[^.]+$/, ""),
-      artist: typeof meta.artist === "string" ? meta.artist : "Biblioteca na nuvem",
-      duration: typeof meta.duration === "number" ? meta.duration : undefined,
-      fingerprint: typeof meta.fingerprint === "string" ? meta.fingerprint : undefined,
-      path: typeof meta.originalPath === "string" ? meta.originalPath : undefined,
+      id: typeof meta["fingerprint"] === "string" ? `cloud-${meta["fingerprint"]}` : `cloud-${entry.path}`,
+      title: typeof meta["title"] === "string" ? meta["title"] : name.replace(/\.[^.]+$/, ""),
+      artist: typeof meta["artist"] === "string" ? meta["artist"] : "Biblioteca na nuvem",
+      duration: typeof meta["duration"] === "number" ? meta["duration"] : undefined,
+      fingerprint: typeof meta["fingerprint"] === "string" ? meta["fingerprint"] : undefined,
+      path: typeof meta["originalPath"] === "string" ? meta["originalPath"] : undefined,
       storagePath: entry.path,
       url: entry.signedUrl,
       source: "cloud" as const,
@@ -367,7 +370,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         try {
           await fileStore.put({ id, ...meta, duration, fingerprint: fp, path, blob: file, addedAt: Date.now() });
         } catch {
-          if (!opts.quiet) toast.warning(`"${meta.title}" ficará disponível só nesta sessão (sem espaço para salvar).`);
+          if (!opts.quiet) toast.warning(`"${meta["title"]}" ficará disponível só nesta sessão (sem espaço para salvar).`);
         }
         known.add(fp);
         report.imported++;
