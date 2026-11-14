@@ -32,12 +32,12 @@ export function HomePlayer() {
         <div className="min-w-0">
           <h2 className="truncate text-base font-bold sm:text-2xl">{t?.title ?? "Sua música aqui"}</h2>
           <p className="mt-1 truncate text-xs text-muted-foreground sm:text-base">{t?.artist ?? "Sua biblioteca pessoal"}</p>
-          <div className="mt-4"><Slider aria-label="Progresso da música" value={[p.currentTime]} max={p.duration || 1} step={0.5} disabled={!t} onValueChange={([v]) => p.seek(v ?? 0)} /><div className="mt-2 flex justify-between text-[10px] tabular-nums text-muted-foreground sm:text-xs"><span>{formatTime(p.currentTime)}</span><span>{formatTime(p.duration || t?.duration)}</span></div></div>
+          <div className="mt-4"><Slider aria-label="Progresso da música" value={[p.currentTime]} max={p.duration || 1} step={0.5} disabled={!hasCurrent} onValueChange={([v]) => p.seek(v ?? 0)} /><div className="mt-2 flex justify-between text-[10px] tabular-nums text-muted-foreground sm:text-xs"><span>{formatTime(p.currentTime)}</span><span>{formatTime(p.duration || t?.duration)}</span></div></div>
           <div className="mt-2 flex items-center justify-between gap-0.5 sm:mt-4">
             <Button variant="ghost" size="icon" onClick={p.toggleShuffle} aria-label="Aleatório" aria-pressed={p.prefs.shuffle} className={cn("size-8 sm:size-10", p.prefs.shuffle && "text-primary")}><Shuffle /></Button>
-            <Button variant="ghost" size="icon" disabled={!t} onClick={p.prev} aria-label="Anterior" className="size-8 sm:size-10"><SkipBack className="fill-current" /></Button>
+            <Button variant="ghost" size="icon" disabled={!hasCurrent} onClick={p.prev} aria-label="Anterior" className="size-8 sm:size-10"><SkipBack className="fill-current" /></Button>
             {t ? <Button size="icon" onClick={startLibrary} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className="size-11 shrink-0 rounded-full shadow-glow sm:size-14">{p.isPlaying ? <Pause className="fill-current" /> : <Play className="fill-current" />}</Button> : <Button asChild size="icon" className="size-11 shrink-0 rounded-full shadow-glow"><Link to="/biblioteca" aria-label="Escolher música"><Play /></Link></Button>}
-            <Button variant="ghost" size="icon" disabled={!t} onClick={p.next} aria-label="Próxima" className="size-8 sm:size-10"><SkipForward className="fill-current" /></Button>
+            <Button variant="ghost" size="icon" disabled={!hasCurrent} onClick={p.next} aria-label="Próxima" className="size-8 sm:size-10"><SkipForward className="fill-current" /></Button>
             <Button variant="ghost" size="icon" onClick={p.cycleRepeat} aria-label={`Repetir: ${p.prefs.repeat}`} className={cn("size-8 sm:size-10", p.prefs.repeat !== "off" && "text-primary")}>{p.prefs.repeat === "one" ? <Repeat1 /> : <Repeat />}</Button>
           </div>
         </div>
