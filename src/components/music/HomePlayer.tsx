@@ -13,7 +13,7 @@ import artwork from "@/assets/music-headphones.jpg";
 const ARTIST_PHOTO_PREF = "player-music-show-artist-photo";
 const artistPhotoCache = new Map<string, string | null>();
 
-function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: string }) {
+export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: string }) {
   const [enabled, setEnabled] = useState(true);
   const [photo, setPhoto] = useState<string | null>(null);
   const [loadedArtist, setLoadedArtist] = useState("");
@@ -71,7 +71,7 @@ function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: s
   );
 }
 
-export function HomePlayer() {
+export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "showcase" }) {
   const p = usePlayer();
   const [showArtistName, setShowArtistName] = useState(true);
   useEffect(() => {
@@ -91,7 +91,7 @@ export function HomePlayer() {
     else if (libraryTracks.length) p.playList(libraryTracks.map((track) => track.id), previewTrack?.id);
   };
   return (
-    <section aria-label="Tocando agora" className="neon-panel rounded-2xl border border-primary/60 p-3 sm:p-5">
+    <section aria-label="Tocando agora" className={cn("neon-panel rounded-2xl border border-primary/60 p-3 sm:p-5", variant === "showcase" && "rounded-[2rem] bg-gradient-to-br from-fuchsia-950/50 via-card to-background p-4 shadow-[0_0_32px_-8px_hsl(var(--primary)/0.65)] sm:p-6")}>
       <div className="mb-3 flex items-center justify-between gap-2">
         <span className="flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1.5 text-xs font-bold text-primary"><AudioLines className="size-4" /> {p.isPlaying ? "TOCANDO AGORA" : hasCurrent ? "REPRODUÇÃO PAUSADA" : previewTrack ? "MÚSICA DISPONÍVEL" : "SEU PLAYER"}</span>
         <div className="flex gap-1">
@@ -99,13 +99,13 @@ export function HomePlayer() {
           <Button asChild size="icon" variant="ghost"><Link to="/fila" aria-label="Abrir fila"><ListMusic /></Link></Button>
         </div>
       </div>
-      <div className="grid grid-cols-[112px_minmax(0,1fr)] items-center gap-3 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-6">
-        <div className="overflow-hidden rounded-xl border border-primary/40">{t ? <ArtistPhoto artist={t.artist} fallbackSeed={t.id} /> : <Link to="/importar" aria-label="Importar músicas"><img src={artwork} alt="Fones de ouvido" width={1024} height={1024} className="aspect-square w-full object-cover" /></Link>}</div>
+      <div className={cn("grid items-center gap-3 sm:gap-6", variant === "showcase" ? "grid-cols-[minmax(116px,0.9fr)_minmax(0,1.1fr)] sm:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.1fr)]" : "grid-cols-[112px_minmax(0,1fr)] sm:grid-cols-[220px_minmax(0,1fr)]")}>
+        <div className={cn("overflow-hidden border border-primary/40", variant === "showcase" ? "rounded-2xl shadow-[0_0_22px_-8px_hsl(var(--primary)/0.8)]" : "rounded-xl")}>{t ? <ArtistPhoto artist={t.artist} fallbackSeed={t.id} /> : <Link to="/importar" aria-label="Importar músicas"><img src={artwork} alt="Fones de ouvido" width={1024} height={1024} className="aspect-square w-full object-cover" /></Link>}</div>
         <div className="min-w-0">
-          <h2 className="truncate text-base font-bold sm:text-2xl">{t?.title ?? "Sua música aqui"}</h2>
+          <h2 className={cn("truncate font-bold", variant === "showcase" ? "text-lg sm:text-3xl" : "text-base sm:text-2xl")}>{t?.title ?? "Sua música aqui"}</h2>
           <div className="mt-1 flex items-center gap-1"><p className="min-w-0 flex-1 truncate text-xs text-muted-foreground sm:text-base">{showArtistName ? (t?.artist ?? "Sua biblioteca pessoal") : ""}</p><Button type="button" size="icon" variant="ghost" className="size-7 shrink-0" onClick={toggleArtistName} aria-label={showArtistName ? "Ocultar nome do cantor" : "Mostrar nome do cantor"} aria-pressed={showArtistName} title={showArtistName ? "Nome do cantor visível" : "Nome do cantor oculto"}><UserRound className={cn("size-4", showArtistName && "text-primary")} /></Button></div>
           <div className="mt-4"><Slider aria-label="Progresso da música" value={[p.currentTime]} max={p.duration || 1} step={0.5} disabled={!hasCurrent} onValueChange={([v]) => p.seek(v ?? 0)} /><div className="mt-2 flex justify-between text-[10px] tabular-nums text-muted-foreground sm:text-xs"><span>{formatTime(p.currentTime)}</span><span>{formatTime(p.duration || t?.duration)}</span></div></div>
-          <div className="mt-2 flex items-center justify-between gap-0.5 sm:mt-4">
+          <div className={cn("mt-2 flex items-center justify-between gap-0.5 sm:mt-4", variant === "showcase" && "mt-4 sm:mt-5")}>
             <Button variant="ghost" size="icon" onClick={p.toggleShuffle} aria-label="Aleatório" aria-pressed={p.prefs.shuffle} className={cn("size-8 sm:size-10", p.prefs.shuffle && "text-primary")}><Shuffle /></Button>
             <Button variant="ghost" size="icon" disabled={!hasCurrent} onClick={p.prev} aria-label="Anterior" className="size-8 sm:size-10"><SkipBack className="fill-current" /></Button>
             {t ? <Button size="icon" onClick={startLibrary} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className="size-11 shrink-0 rounded-full shadow-glow sm:size-14">{p.isPlaying ? <Pause className="fill-current" /> : <Play className="fill-current" />}</Button> : <Button asChild size="icon" className="size-11 shrink-0 rounded-full shadow-glow"><Link to="/biblioteca" aria-label="Escolher música"><Play /></Link></Button>}
