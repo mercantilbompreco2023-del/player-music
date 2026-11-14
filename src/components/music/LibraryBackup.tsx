@@ -31,7 +31,7 @@ export function LibraryBackup() {
     setBusy("salvar");
     try {
       const r = await save({ data: payload });
-      if (r.ok) { setSavedAt(new Date().toLocaleString("pt-BR")); toast.success(`Lista salva na conta: ${payload.tracks.length} música(s), ${savedFolders(payload.tracks as never[]).length} pasta(s).`); }
+      if (r.ok) { setSavedAt(new Date().toLocaleString("pt-BR")); toast.success(`Lista salva na conta: ${payload.tracks.length} música(s), ${savedFolders(payload.tracks).length} pasta(s).`); }
       else toast.error(r.error ?? "Não foi possível salvar.");
     } catch { toast.error("Não foi possível salvar sua lista agora."); }
     finally { setBusy(null); }
@@ -45,7 +45,7 @@ export function LibraryBackup() {
       if (!r.payload) { toast.message("Nenhuma lista salva na sua conta ainda."); setPreview(null); return; }
       const m = mergeBackup(r.payload, p.tracks, p.prefs);
       setPreview({
-        folders: savedFolders(r.payload.tracks as never[]).length,
+        folders: savedFolders(r.payload.tracks).length,
         tracks: r.payload.tracks.length,
         playlists: m.playlists.length,
         favorites: m.favorites.length,
