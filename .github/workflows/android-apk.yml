@@ -11,6 +11,7 @@ on:
       - "src/components/music/**"
       - "src/routes/index.tsx"
       - "src/routes/configuracoes.tsx"
+      - "src/routes/pastas.tsx"
       - "package.json"
       - ".github/workflows/android-apk.yml"
 
