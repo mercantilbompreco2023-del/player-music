@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import "@lovable.dev/cloud-auth-js/styles.css";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { useSession } from "@/lib/auth";
 
 function safePath(p: unknown): string {
   return typeof p === "string" && p.startsWith("/") && !p.startsWith("//") ? p : "/";
@@ -42,6 +43,12 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const { redirect } = Route.useSearch();
   const navigate = useNavigate();
+  const { session, loading: sessionLoading } = useSession();
+  useEffect(() => {
+    if (!sessionLoading && session) {
+      navigate({ to: safePath(redirect), replace: true });
+    }
+  }, [session, sessionLoading, redirect, navigate]);
   const [mode, setMode] = useState<"entrar" | "criar" | "esqueci">("entrar");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -83,6 +90,10 @@ function AuthPage() {
     if (r.error) { toast.error("Não foi possível entrar agora."); return; }
     if (r.redirected) { return; }
     navigate({ to: target });
+  }
+
+  if (sessionLoading || session) {
+    return <div className="mx-auto flex min-h-[55vh] max-w-sm items-center justify-center gap-3 text-sm text-muted-foreground"><Loader2 className="size-5 animate-spin" /> {session ? "Login ativo. Abrindo o aplicativo…" : "Verificando seu login…"}</div>;
   }
 
   return (
