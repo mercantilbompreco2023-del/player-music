@@ -1,10 +1,8 @@
 import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
-import { ArrowLeft, Cloud, Moon, Smartphone, SkipForward } from "lucide-react";
+import { ArrowLeft, Moon, Smartphone, SkipForward } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { usePlayer } from "@/lib/music/player-context";
-import { useSession } from "@/lib/auth";
-import { LibraryBackup } from "@/components/music/LibraryBackup";
 
 export const Route = createFileRoute("/configuracoes")({
   head: () => ({
@@ -22,7 +20,6 @@ export const Route = createFileRoute("/configuracoes")({
 
 function ConfigPage() {
   const p = usePlayer();
-  const { user } = useSession();
   const hydrated = useHydrated();
   const hasMediaSession = hydrated && "mediaSession" in navigator;
   return (
@@ -35,26 +32,14 @@ function ConfigPage() {
         <Switch id="tema" checked={p.prefs.theme === "dark"} onCheckedChange={(c) => p.setTheme(c ? "dark" : "light")} />
       </section>
 
-      <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
-        <div className="flex items-center gap-2">
-          <Cloud className="size-5 text-primary" />
-          <h2 className="text-lg font-bold">Salvar músicas na nuvem</h2>
-        </div>
+      <section className="space-y-2 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
+        <h2 className="text-lg font-bold">Biblioteca neste aparelho</h2>
         <p className="text-muted-foreground">
-          Guarde suas músicas importadas na sua conta, sem manter uma cópia permanente na memória do celular. Na lista de músicas, abra o menu de três pontos e escolha “Salvar na nuvem e liberar espaço”. Depois do envio, o arquivo local é removido e a reprodução passa a usar a cópia privada online.
+          Você pode importar e ouvir suas músicas, criar pastas por cantor, escolher capas, montar playlists e usar favoritos sem fazer login. As músicas e preferências ficam salvas neste aparelho. Para ouvir offline, mantenha os arquivos importados no armazenamento local.
         </p>
-        <p className="text-muted-foreground">
-          É necessário entrar na sua conta e ter internet para enviar e ouvir músicas salvas na nuvem. Cada arquivo pode ter até 100 MB; o espaço total disponível depende do plano e dos limites do armazenamento Lovable Cloud conectado ao projeto. A biblioteca na nuvem é privada e separada por conta.
-        </p>
-        {user ? (
-          <p className="font-medium text-primary">Conectado: {user.email ?? "sua conta Player Music"}</p>
-        ) : (
-          <Link to="/auth" search={{ redirect: "/configuracoes" }} className="inline-flex items-center rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground">Entrar para usar a nuvem</Link>
-        )}
       </section>
 
-      {user && (
-        <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
+      <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
           <div className="flex items-center gap-2">
             <Cloud className="size-5 text-primary" />
             <h2 className="text-lg font-bold">Lista de pastas e músicas na conta</h2>
@@ -117,7 +102,7 @@ function ConfigPage() {
           <Link to="/privacidade" className="font-semibold text-primary">Privacidade e permissões</Link>
         </div>
       </section>
-      <p className="text-center text-xs text-muted-foreground">Player Music · versão web MVP</p>
+      <p className="text-center text-xs text-muted-foreground">Player Music · aplicativo Android</p>
       <p className="pb-2 text-center text-xs font-semibold tracking-wide text-primary">Feito por Adevaldo Marques</p>
     </div>
   );
