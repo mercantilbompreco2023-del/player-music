@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Commit 7832741 confirmado no histórico (HEAD 37941864 posterior preservado); foto real, câmera persistida, capa alternativa e reprodução verificadas; 56 testes, build OK, entrega ZIP/CSV v21.
 - [x] Gerar APK do Player Music
 - [x] Versão Android nativa: serviço de mídia em primeiro plano, notificação de mídia, controles na tela bloqueada
 - [x] Importar pasta completa no APK (seletor de pasta nativo)
