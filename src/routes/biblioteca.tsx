@@ -85,13 +85,13 @@ function BibliotecaPage() {
         </section>
       )}
       {tab !== "pastas" && (
-      {!p.ready ? (
+      !p.ready ? (
         <p className="text-sm text-muted-foreground">Carregando…</p>
       ) : list.length === 0 ? (
         <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">{empty[tab]}</p>
       ) : (
         list.map((t) => <TrackRow key={t.id} track={t} list={list.map((x) => x.id)} />)
-      )}
+      )
       )}
     </div>
   );
