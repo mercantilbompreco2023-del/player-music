@@ -5,3 +5,6 @@
 - [x] Mostrar cartões de pastas salvas na Biblioteca e verificar após reabrir
 - [x] Entregar código atualizado e planilha de alterações
 - [x] Cartão Ouvir por pasta, reprodução aleatória, testes e entrega v9
+- [ ] Corrigir recusas de áudio com tipo genérico e leitura sem resposta na importação
+- [ ] Exportar lista de pastas e músicas em CSV e verificar arquivo baixado
+- [ ] Entregar projeto e planilha v10; identificar pendências no Android real
