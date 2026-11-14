@@ -10,6 +10,10 @@ export interface Track {
   source: TrackSource;
   /** Licença exibida ao usuário (faixas de demonstração) */
   license?: string | undefined;
+  /** Impressão digital do conteúdo, usada para evitar duplicatas */
+  fingerprint?: string | undefined;
+  /** Caminho de origem dentro da pasta importada */
+  path?: string | undefined;
 }
 
 export interface Playlist {
