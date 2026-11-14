@@ -494,7 +494,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     void nativeMedia
       .update({ title: current.title, artist: current.artist, isPlaying, position: currentTime, duration })
       .catch(() => {});
-  }, [backgroundPlayback, backgroundPreferenceReady, current?.id, isPlaying, Math.floor(duration)]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [backgroundPlayback, backgroundPreferenceReady, current?.id, isPlaying, Math.floor(currentTime), Math.floor(duration)]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => { if (nativeMedia) void nativeMedia.stop().catch(() => {}); }, []);
 
   const localRef = useRef<Track[]>([]);
