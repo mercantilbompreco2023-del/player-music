@@ -1,6 +1,5 @@
 import type { Playlist, Track } from "./types";
 import type { Prefs } from "./storage";
-import { isDemo } from "./types";
 
 /**
  * Chave canônica de uma música: a mesma usada no nome do arquivo guardado na nuvem
@@ -11,7 +10,7 @@ export function trackKey(t: { fingerprint?: string | undefined; id: string }): s
   const fp = t.fingerprint?.replace(/[^a-z0-9_-]/gi, "").slice(0, 48);
   if (fp) return fp;
   const m = t.id.match(/^cloud-(?:.*\/)?([a-z0-9_-]{16,48})\.[a-z0-9]{2,5}$/i);
-  return m ? m[1] : t.id;
+  return m?.[1] ?? t.id;
 }
 
 /** Faixa guardada na conta: só metadados, nunca URL de reprodução nem blob de áudio. */
@@ -51,7 +50,7 @@ export interface RestoreResult {
 
 /** Monta o conteúdo do backup a partir do estado local (sem faixas de demonstração). */
 export function buildBackup(tracks: Track[], prefs: Prefs): BackupPayload {
-  const mine = tracks.filter((t) => !isDemo(t));
+  const mine = tracks.filter((t) => t.source !== "demo");
   const keyById = new Map(mine.map((t) => [t.id, trackKey(t)]));
   const keyOfId = (id: string) => keyById.get(id) ?? id;
   return {
@@ -81,7 +80,7 @@ export function buildBackup(tracks: Track[], prefs: Prefs): BackupPayload {
  * Só entra na lista final a faixa que tem áudio aqui; o resto é informado ao usuário.
  */
 export function mergeBackup(payload: BackupPayload, tracks: Track[], prefs: Prefs): RestoreResult {
-  const mine = tracks.filter((t) => !isDemo(t));
+  const mine = tracks.filter((t) => t.source !== "demo");
   const byKey = new Map(mine.map((t) => [trackKey(t), t]));
   const resolve = (key: string) => byKey.get(key)?.id ?? null;
 
