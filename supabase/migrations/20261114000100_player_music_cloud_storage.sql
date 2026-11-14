@@ -26,3 +26,9 @@ drop policy if exists "Users can delete their own Player Music files" on storage
 create policy "Users can delete their own Player Music files"
 on storage.objects for delete to authenticated
 using (bucket_id = 'player-music' and (storage.foldername(name))[1] = auth.uid()::text);
+
+drop policy if exists "Users can update their own Player Music files" on storage.objects;
+create policy "Users can update their own Player Music files"
+on storage.objects for update to authenticated
+using (bucket_id = 'player-music' and (storage.foldername(name))[1] = auth.uid()::text)
+with check (bucket_id = 'player-music' and (storage.foldername(name))[1] = auth.uid()::text);
