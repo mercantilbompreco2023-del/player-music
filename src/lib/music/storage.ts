@@ -110,6 +110,7 @@ async function tx<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBReq
 
 export const fileStore = {
   all: () => tx<StoredFile[]>("readonly", (s) => s.getAll() as IDBRequest<StoredFile[]>),
+  get: (id: string) => tx<StoredFile | undefined>("readonly", (s) => s.get(id) as IDBRequest<StoredFile | undefined>),
   put: (f: StoredFile) => tx("readwrite", (s) => s.put(f)),
   remove: (id: string) => tx("readwrite", (s) => s.delete(id)),
 };
