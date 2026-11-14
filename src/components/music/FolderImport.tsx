@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useHydrated } from "@tanstack/react-router";
 import { usePlayer } from "@/lib/music/player-context";
+import { nativeFolder, readNativeFile } from "@/lib/music/native-folder";
 import {
-  describePickerError, ImportCancelled, pickDirectory, supportsDirectoryPicker, supportsWebkitDirectory, walkDirectory,
+  AUDIO_EXT, describePickerError, ImportCancelled, pickDirectory, supportsDirectoryPicker, supportsWebkitDirectory, walkDirectory,
   type ImportItem, type ImportProgress, type ImportReport, type SkippedItem,
 } from "@/lib/music/import";
 
@@ -68,6 +69,42 @@ export function FolderImport() {
     }
   }
 
+  /** APK Android: seletor de pasta do sistema, lendo um arquivo por vez. */
+  async function fromNative() {
+    let res;
+    try {
+      res = await nativeFolder!.pick();
+    } catch (e) {
+      const code = (e as { code?: string })?.code;
+      setSt(code === "CANCELLED" ? { s: "idle" } : { s: "erro", msg: "Não foi possível ler a pasta escolhida." });
+      return;
+    }
+    const c = new AbortController();
+    ctrl.current = c;
+    const total: ImportReport = { found: res.files.length, imported: 0, duplicates: 0, skipped: [], cancelled: false };
+    const audio = res.files.filter((f) => AUDIO_EXT.test(f.name) || f.type.startsWith("audio/"));
+    for (const f of res.files) if (!audio.includes(f)) total.skipped.push({ path: f.path, reason: "Formato não suportado" });
+    if (res.files.length === 0) { setSt({ s: "erro", msg: `A pasta “${res.name}” está vazia.` }); return; }
+    let processed = total.skipped.length;
+    for (const f of audio) {
+      if (c.signal.aborted) { total.cancelled = true; break; }
+      setSt({ s: "importando", p: { phase: "importando", found: total.found, processed, imported: total.imported, current: f.path } });
+      try {
+        const file = await readNativeFile(f);
+        const r = await importItems([{ file, path: f.path }], { signal: c.signal, quiet: true });
+        total.imported += r.imported;
+        total.duplicates += r.duplicates;
+        total.skipped.push(...r.skipped);
+        if (r.cancelled) { total.cancelled = true; break; }
+      } catch {
+        total.skipped.push({ path: f.path, reason: "Erro ao ler o arquivo" });
+      }
+      processed++;
+    }
+    setSt({ s: "fim", r: total, folder: res.name });
+    if (total.imported) void askPersistentStorage();
+  }
+
   async function fromInput(files: FileList) {
     const c = new AbortController();
     ctrl.current = c;
@@ -99,13 +136,13 @@ export function FolderImport() {
         <Button
           size="lg"
           className="h-12 w-full rounded-full text-base"
-          disabled={!hydrated || (!picker && !webkitDir)}
-          onClick={() => (picker ? void fromPicker() : inputRef.current?.click())}
+          disabled={!hydrated || (!nativeFolder && !picker && !webkitDir)}
+          onClick={() => (nativeFolder ? void fromNative() : picker ? void fromPicker() : inputRef.current?.click())}
         >
           <FolderOpen /> Importar pasta de músicas
         </Button>
       )}
-      {hydrated && !picker && (
+      {hydrated && !picker && !nativeFolder && (
         <p className="rounded-lg bg-muted p-3 text-xs">
           {webkitDir
             ? "Seu navegador usa o seletor de pasta simples: ele pode pedir para confirmar o envio dos arquivos da pasta (isso só os carrega neste app, não os envia para a internet). Em alguns Android ele não abre subpastas — se isso acontecer, use “Importar músicas” e selecione vários arquivos de uma vez."
