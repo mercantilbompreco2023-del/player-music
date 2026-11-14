@@ -4,6 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { usePlayer } from "@/lib/music/player-context";
 import { useSession } from "@/lib/auth";
+import { LibraryBackup } from "@/components/music/LibraryBackup";
 
 export const Route = createFileRoute("/configuracoes")({
   head: () => ({
@@ -49,6 +50,19 @@ function ConfigPage() {
           <Link to="/auth" search={{ redirect: "/configuracoes" }} className="inline-flex items-center rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground">Entrar para usar a nuvem</Link>
         )}
       </section>
+
+      {user && (
+        <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
+          <div className="flex items-center gap-2">
+            <Cloud className="size-5 text-primary" />
+            <h2 className="text-lg font-bold">Lista de pastas e músicas na conta</h2>
+          </div>
+          <p className="text-muted-foreground">
+            Salve a lista das suas pastas e músicas na sua conta. No celular novo, entre com a mesma conta e aplique a lista para não perder pastas, playlists e favoritos.
+          </p>
+          <LibraryBackup />
+        </section>
+      )}
 
       <section className="space-y-2 rounded-2xl bg-card p-4 text-sm">
         <h2 className="text-lg font-bold">Tocar em segundo plano</h2>
