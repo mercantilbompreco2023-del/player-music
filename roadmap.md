@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Lembrar música, fila e posição ao reabrir; opção salva, 73 testes aprovados e retomada confirmada no navegador; entrega v27. Publicação e teste Android físico pendentes.
 - [x] Gerar APK 1.12 com assinatura idêntica à v5; montagem Android e 69 testes aprovados; entrega APK v6 e projeto/relatório v26. Teste físico e publicação das últimas telas pendentes.
 - [x] Login fácil por link de e-mail implementado; conta conectada restaurada e teste da solicitação sem senha. Recebimento do link depende de acesso ao e-mail.
 - [x] Salvar áudio na conta sem apagar cópia local; foto/vídeo local e sequência explícita; navegador autenticado e 69 testes aprovados; entrega v25.

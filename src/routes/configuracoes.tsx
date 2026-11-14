@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
-import { ArrowLeft, Moon, Smartphone, SkipForward } from "lucide-react";
+import { ArrowLeft, Moon, Smartphone, SkipForward, History } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { usePlayer } from "@/lib/music/player-context";
@@ -41,6 +41,18 @@ function ConfigPage() {
         <p className="text-muted-foreground">
           Use o Player Music sem criar conta e sem fazer login. Importe suas músicas, organize por pastas e cantores, escolha capas, monte playlists e salve favoritos. Os arquivos e as preferências ficam neste aparelho; mantenha as músicas importadas localmente para ouvir sem internet.
         </p>
+      </section>
+
+      <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
+        <div className="flex items-center gap-2">
+          <History className="size-5 text-primary" />
+          <h2 className="text-lg font-bold">Continuar de onde parei</h2>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <Label htmlFor="resume-playback" className="text-base">Lembrar a música e o ponto de reprodução</Label>
+          <Switch id="resume-playback" checked={p.resumePlayback} onCheckedChange={p.setResumePlayback} />
+        </div>
+        <p className="text-muted-foreground">Ao reabrir, sua música volta ao ponto salvo. Se o aparelho bloquear o início automático, toque em reproduzir para continuar.</p>
       </section>
 
       <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">

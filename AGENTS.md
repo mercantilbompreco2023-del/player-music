@@ -30,6 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Project rules
+- Playback resume persists only queue IDs, position and playing state on the device; restore after library hydration and seek after metadata, using the shared audio element to avoid duplicate sound.
 - Track visuals are device-only IndexedDB blobs; videos remain muted and follow the shared audio clock to prevent competing sound sources.
 - Account audio uploads retain the local blob and stable track ID; merge remote listings by fingerprint/path to avoid duplicate library entries.
 - Keep the legacy `/index` address as a redirect to `/`, so older app links never show a missing page.
