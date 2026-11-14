@@ -18,6 +18,7 @@ export const Route = createFileRoute("/configuracoes")({
 
 function ConfigPage() {
   const p = usePlayer();
+  const { user } = useSession();
   const hydrated = useHydrated();
   const hasMediaSession = hydrated && "mediaSession" in navigator;
   return (
