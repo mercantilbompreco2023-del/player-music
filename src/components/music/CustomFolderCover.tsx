@@ -4,7 +4,7 @@ import { Cover } from "@/components/music/Cover";
 import { saveCustomFolderCover, loadCustomFolderCover, loadCustomFolderCoverForTrack } from "@/lib/music/folder-covers";
 import { toast } from "sonner";
 
-export function CustomFolderCover({ folderName, editable = false, trackId, fallbackSeed }: { folderName?: string; editable?: boolean; trackId?: string; fallbackSeed?: string }) {
+export function CustomFolderCover({ folderName, editable = false, trackId, fallbackSeed, className = "w-full" }: { folderName?: string; editable?: boolean; trackId?: string; fallbackSeed?: string; className?: string }) {
   const [src, setSrc] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
@@ -20,7 +20,7 @@ export function CustomFolderCover({ folderName, editable = false, trackId, fallb
     setSrc((previous) => { if (previous) URL.revokeObjectURL(previous); return next; });
     toast.success("Foto da pasta atualizada.");
   };
-  return <div className="relative overflow-hidden rounded-xl border border-primary/30 bg-muted">
+  return <div className={`relative overflow-hidden rounded-xl border border-primary/30 bg-muted ${className}`}>
     {src ? <img src={src} alt={folderName ? `Foto da pasta ${folderName}` : "Foto da pasta do cantor"} className="aspect-square w-full object-cover" /> : fallbackSeed ? <Cover seed={fallbackSeed} className="aspect-square w-full rounded-none" /> : <div className="flex aspect-square w-full items-center justify-center text-muted-foreground"><ImagePlus className="size-10" /></div>}
     {editable && folderName && <label className="absolute bottom-2 right-2 flex cursor-pointer items-center gap-1 rounded-full bg-black/75 px-3 py-2 text-xs font-semibold text-white">
       <ImagePlus className="size-4" /> {src ? "Trocar foto" : "Adicionar foto"}
