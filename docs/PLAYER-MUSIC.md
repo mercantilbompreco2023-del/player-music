@@ -17,6 +17,13 @@
 
 Não pedimos localização, microfone, câmera, contatos nem notificações.
 
+## 2b. Importar pasta de músicas
+- Em navegadores com seletor de pasta (Chrome/Edge no computador), o app pede acesso **só leitura** à pasta escolhida e lê também as subpastas dela.
+- Em navegadores sem esse seletor, o app usa o seletor de pasta simples, se existir. Caso contrário, é preciso selecionar vários arquivos de uma vez.
+- Duplicatas são detectadas pelo conteúdo (tamanho + SHA-256 do início e do fim do arquivo), mesmo que o arquivo tenha outro nome.
+- Os arquivos são copiados para o IndexedDB, então não é preciso pedir acesso de novo ao recarregar. O app também pede ao navegador armazenamento persistente.
+- Cancelar mantém as faixas já importadas inteiras e não adiciona as restantes.
+
 ## 3. Modelo de dados
 **No aparelho:** `pm:prefs:v1` (tema, volume, aleatório, repetir, favoritos, playlists, recentes) e o banco IndexedDB `player-music/files` (arquivos importados).
 

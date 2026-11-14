@@ -5,6 +5,7 @@ import { moveItem, nextIndex, parseFileName, prevIndex, shuffleQueue } from "./q
 import { supabase } from "@/integrations/supabase/client";
 import { defaultPrefs, fileStore, loadPrefs, savePrefs, type Prefs } from "./storage";
 import type { Playlist, RepeatMode, Track } from "./types";
+import { fingerprint, formatProblem, type ImportItem, type ImportProgress, type ImportReport } from "./import";
 
 interface PlayerCtx {
   ready: boolean;
@@ -28,7 +29,8 @@ interface PlayerCtx {
   addToQueue: (id: string) => void;
   removeFromQueue: (pos: number) => void;
   playAt: (pos: number) => void;
-  importFiles: (files: FileList | File[]) => Promise<void>;
+  importFiles: (files: FileList | File[]) => Promise<ImportReport>;
+  importItems: (items: ImportItem[], opts?: { signal?: AbortSignal; onProgress?: (p: ImportProgress) => void; quiet?: boolean }) => Promise<ImportReport>;
   removeTrack: (id: string) => Promise<void>;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
@@ -96,7 +98,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setLocalTracks(
           files
             .sort((a, b) => b.addedAt - a.addedAt)
-            .map((f) => ({ id: f.id, title: f.title, artist: f.artist, duration: f.duration, url: URL.createObjectURL(f.blob), source: "local" as const })),
+            .map((f) => ({ id: f.id, title: f.title, artist: f.artist, duration: f.duration, fingerprint: f.fingerprint, path: f.path, url: URL.createObjectURL(f.blob), source: "local" as const })),
         ),
       )
       .catch(() => toast.error("Não foi possível abrir o armazenamento local. Arquivos importados valem só nesta sessão."))
@@ -268,40 +270,82 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   }, [isPlaying, duration, Math.floor(currentTime)]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const importFiles = useCallback(async (files: FileList | File[]) => {
-    const list = Array.from(files);
-    const probe = document.createElement("audio");
-    const added: Track[] = [];
-    let rejected = 0;
-    for (const file of list) {
-      const looksAudio = file.type.startsWith("audio/") || /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|webm)$/i.test(file.name);
-      if (!looksAudio || (file.type && probe.canPlayType(file.type) === "")) {
-        rejected++;
-        continue;
+  const localRef = useRef<Track[]>([]);
+  localRef.current = localTracks;
+
+  /** Importa itens um a um. Cada faixa é salva de forma atômica: cancelar nunca deixa registros pela metade. */
+  const importItems = useCallback(
+    async (items: ImportItem[], opts: { signal?: AbortSignal; onProgress?: (p: ImportProgress) => void; quiet?: boolean } = {}): Promise<ImportReport> => {
+      const probe = document.createElement("audio");
+      const report: ImportReport = { found: items.length, imported: 0, duplicates: 0, skipped: [], cancelled: false };
+      // impressões digitais já existentes (faixas antigas sem impressão são calculadas agora)
+      const known = new Set<string>();
+      for (const t of localRef.current) {
+        if (t.fingerprint) known.add(t.fingerprint);
       }
-      const id = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const url = URL.createObjectURL(file);
-      const duration = await probeDuration(url);
-      if (duration === undefined) {
-        URL.revokeObjectURL(url);
-        rejected++;
-        continue;
+      if (localRef.current.some((t) => !t.fingerprint)) {
+        try {
+          const stored = await fileStore.all();
+          for (const f of stored) {
+            const fp = f.fingerprint ?? (await fingerprint(f.blob));
+            known.add(fp);
+            if (!f.fingerprint) await fileStore.put({ ...f, fingerprint: fp });
+          }
+        } catch { /* segue sem a checagem dos antigos */ }
       }
-      const meta = parseFileName(file.name);
-      const t: Track = { id, ...meta, duration, url, source: "local" };
-      added.push(t);
-      try {
-        await fileStore.put({ id, ...meta, duration, blob: file, addedAt: Date.now() });
-      } catch {
-        toast.warning(`"${meta.title}" ficará disponível só nesta sessão (sem espaço para salvar).`);
+      let processed = 0;
+      for (const { file, path } of items) {
+        if (opts.signal?.aborted) { report.cancelled = true; break; }
+        opts.onProgress?.({ phase: "importando", found: items.length, processed, imported: report.imported, current: path });
+        processed++;
+        const problem = formatProblem(file.name, file.type, (m) => probe.canPlayType(m));
+        if (problem) { report.skipped.push({ path, reason: problem }); continue; }
+        let fp: string;
+        try {
+          fp = await fingerprint(file);
+        } catch {
+          report.skipped.push({ path, reason: "Erro de leitura do arquivo" });
+          continue;
+        }
+        if (known.has(fp)) { report.duplicates++; report.skipped.push({ path, reason: "Já está na biblioteca (duplicado)" }); continue; }
+        const url = URL.createObjectURL(file);
+        const duration = await probeDuration(url);
+        if (duration === undefined) {
+          URL.revokeObjectURL(url);
+          report.skipped.push({ path, reason: "Arquivo corrompido ou codificação não suportada" });
+          continue;
+        }
+        if (opts.signal?.aborted) { URL.revokeObjectURL(url); report.cancelled = true; break; }
+        const id = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        const meta = parseFileName(file.name);
+        const t: Track = { id, ...meta, duration, url, source: "local", fingerprint: fp, path };
+        try {
+          await fileStore.put({ id, ...meta, duration, fingerprint: fp, path, blob: file, addedAt: Date.now() });
+        } catch {
+          if (!opts.quiet) toast.warning(`"${meta.title}" ficará disponível só nesta sessão (sem espaço para salvar).`);
+        }
+        known.add(fp);
+        report.imported++;
+        setLocalTracks((p) => [t, ...p]);
       }
-    }
-    if (added.length) {
-      setLocalTracks((p) => [...added, ...p]);
-      toast.success(`${added.length} faixa(s) importada(s).`);
-    }
-    if (rejected) toast.error(`${rejected} arquivo(s) ignorado(s): formato não suportado neste navegador.`);
-  }, []);
+      opts.onProgress?.({ phase: "concluido", found: items.length, processed, imported: report.imported });
+      return report;
+    },
+    [],
+  );
+
+  const importFiles = useCallback(
+    async (files: FileList | File[]) => {
+      const items = Array.from(files).map((file) => ({ file, path: (file as File & { webkitRelativePath?: string }).webkitRelativePath || file.name }));
+      const r = await importItems(items);
+      if (r.imported) toast.success(`${r.imported} faixa(s) importada(s).`);
+      if (r.duplicates) toast.info(`${r.duplicates} já estava(m) na biblioteca.`);
+      const other = r.skipped.length - r.duplicates;
+      if (other) toast.error(`${other} arquivo(s) ignorado(s): ${r.skipped.find((s) => !s.reason.includes("duplicado"))?.reason}.`);
+      return r;
+    },
+    [importItems],
+  );
 
   const removeTrack = useCallback(
     async (id: string) => {
@@ -360,7 +404,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       wantPlay.current = true;
       setIndex(pos);
     },
-    importFiles, removeTrack,
+    importFiles, importItems, removeTrack,
     toggleFavorite: (id) =>
       updatePrefs((p) => ({ ...p, favorites: p.favorites.includes(id) ? p.favorites.filter((f) => f !== id) : [id, ...p.favorites] })),
     isFavorite: (id) => prefs.favorites.includes(id),

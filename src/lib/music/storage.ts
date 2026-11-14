@@ -40,6 +40,8 @@ export interface StoredFile {
   title: string;
   artist: string;
   duration?: number | undefined;
+  fingerprint?: string | undefined;
+  path?: string | undefined;
   blob: Blob;
   addedAt: number;
 }
