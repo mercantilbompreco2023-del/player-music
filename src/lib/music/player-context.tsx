@@ -407,15 +407,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       if (signedError || !signed?.signedUrl) throw signedError ?? new Error("Não foi possível abrir a música salva.");
       try { await fileStore.remove(id); } catch { /* a cópia da nuvem já está segura */ }
       URL.revokeObjectURL(track.url);
-      const cloudTrack: Track = { ...track, source: "cloud", storagePath, url: signed.signedUrl };
+      const cloudId = track.fingerprint ? `cloud-${track.fingerprint}` : `cloud-${storagePath}`;
+      const cloudTrack: Track = { ...track, id: cloudId, source: "cloud", storagePath, url: signed.signedUrl };
       setLocalTracks((current) => current.map((t) => t.id === id ? cloudTrack : t));
-      // Mantém favoritos, playlists e fila vinculados à mesma faixa após migrar o arquivo.
-      setQueue((current) => current.map((trackId) => trackId === id ? cloudTrack.id : trackId));
+      // Migra as referências para que favoritos, playlists e fila continuem funcionando.
+      setQueue((current) => current.map((trackId) => trackId === id ? cloudId : trackId));
       updatePrefs((p) => ({
         ...p,
-        favorites: p.favorites,
-        recent: p.recent,
-        playlists: p.playlists,
+        favorites: p.favorites.map((trackId) => trackId === id ? cloudId : trackId),
+        recent: p.recent.map((trackId) => trackId === id ? cloudId : trackId),
+        playlists: p.playlists.map((playlist) => ({ ...playlist, trackIds: playlist.trackIds.map((trackId) => trackId === id ? cloudId : trackId) })),
       }));
       toast.success("Música salva na nuvem. A cópia local foi liberada.");
     } catch (error) {
