@@ -84,7 +84,10 @@ interface FileHandle {
 }
 
 export function supportsDirectoryPicker(): boolean {
-  return typeof window !== "undefined" && "showDirectoryPicker" in window;
+  if (typeof window === "undefined" || !("showDirectoryPicker" in window)) return false;
+  // O seletor File System Access ainda falha em vários navegadores Android,
+  // mesmo quando a função aparece no objeto window. Prefira o input webkitdirectory.
+  return !/Android/i.test(navigator.userAgent);
 }
 
 export function supportsWebkitDirectory(): boolean {
