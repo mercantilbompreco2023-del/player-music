@@ -138,8 +138,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [backgroundPlayback, setBackgroundPlaybackState] = useState(true);
+  const [backgroundPreferenceReady, setBackgroundPreferenceReady] = useState(false);
   useEffect(() => {
     try { setBackgroundPlaybackState(localStorage.getItem("player-music-background-playback") !== "false"); } catch { /* mantém ativado por padrão */ }
+    setBackgroundPreferenceReady(true);
   }, []);
   const setBackgroundPlayback = useCallback((enabled: boolean) => {
     setBackgroundPlaybackState(enabled);
@@ -391,22 +393,23 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const actionsRef = useRef({ toggle, next, prev, isPlaying });
   actionsRef.current = { toggle, next, prev, isPlaying };
   useEffect(() => {
-    if (!nativeMedia || !backgroundPlayback) return;
+    if (!nativeMedia || !backgroundPreferenceReady || !backgroundPlayback) return;
     const h = nativeMedia.addListener("action", ({ action }) => {
       const a = actionsRef.current;
       if (action === "next") a.next();
       else if (action === "previous") a.prev();
       else if ((action === "play") !== a.isPlaying) a.toggle();
     });
-    return () => { void h.then((x) => x.remove()); };
-  }, [backgroundPlayback]);
+    return () => { void h.then((x) => x.remove()).catch(() => {}); };
+  }, [backgroundPlayback, backgroundPreferenceReady]);
   useEffect(() => {
-    if (!nativeMedia) return;
+    if (!nativeMedia || !backgroundPreferenceReady) return;
     if (!backgroundPlayback || !current) { void nativeMedia.stop().catch(() => {}); return; }
     void nativeMedia
       .update({ title: current.title, artist: current.artist, isPlaying, position: currentTime, duration })
       .catch(() => {});
-  }, [backgroundPlayback, current?.id, isPlaying, Math.floor(duration)]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [backgroundPlayback, backgroundPreferenceReady, current?.id, isPlaying, Math.floor(duration)]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => { if (nativeMedia) void nativeMedia.stop().catch(() => {}); }, []);
 
   const localRef = useRef<Track[]>([]);
   localRef.current = localTracks;

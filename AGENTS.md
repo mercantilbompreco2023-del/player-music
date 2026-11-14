@@ -41,6 +41,7 @@ use the editor.
 - Folder/file imports go through `importItems` + `src/lib/music/import.ts`; duplicates are detected by content fingerprint (size + SHA-256 of head/tail), and each track is saved atomically so cancelling never leaves partial records.
 - Android APK wraps the published URL via Capacitor (`capacitor.config.ts`, `android-shell/`); SSR app has no static webDir.
 - Native Android playback: JS player mirrors state to `MediaPlayback` plugin (`src/lib/music/native-media.ts`) -> foreground `MediaPlaybackService`; audio itself still plays in the WebView.
+- Background playback preference is hydrated before native media registration; disabling or unmounting stops the service without replacing the shared audio player.
 - APK folder import uses native `FolderPicker` plugin (SAF tree, `src/lib/music/native-folder.ts`) because Android WebView ignores webkitdirectory; files are read one at a time to limit memory.
 - Saved folder cards derive from persisted track folder metadata through `src/lib/music/folders.ts`; legacy relative paths remain supported without requesting device access again.
 - Artist folders use the pure grouping helper in `src/lib/music/folders.ts`; selected folders include their kind so identical artist and physical folder names cannot mix track lists.
