@@ -80,9 +80,12 @@ public class MediaPlaybackService extends Service {
             .build();
         ServiceCompat.startForeground(this, 1, n, Build.VERSION.SDK_INT >= 29 ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK : 0);
 
-        if (playing && !wakeLock.isHeld()) wakeLock.acquire(6 * 60 * 60 * 1000L);
-        if (!playing && wakeLock.isHeld()) wakeLock.release();
-        if (!playing) ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH);
+        // Keep the foreground service and CPU awake while a playback session is
+        // active, including the short gap between tracks. Android may suspend the
+        // WebView after the ended/pause events when the screen is off; that prevents
+        // the JS queue from selecting and starting the next track.
+        // The service is released explicitly by MediaPlaybackPlugin.stop().
+        if (!wakeLock.isHeld()) wakeLock.acquire(6 * 60 * 60 * 1000L);
         return START_NOT_STICKY;
     }
 
