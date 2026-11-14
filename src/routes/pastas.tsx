@@ -95,7 +95,7 @@ function FoldersPage() {
         <div className="grid gap-3 sm:grid-cols-2">
           {manualFolders.map((folder) => <article key={folder.name} className="rounded-lg border bg-card p-4">
             <Button variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "custom", name: folder.name })}>
-              <CustomFolderCover folderName={folder.name} />
+              <CustomFolderCover folderName={folder.name} className="w-16 shrink-0" />
               <span className="min-w-0"><span className="block break-words text-base font-semibold">{folder.name}</span><span className="text-sm text-muted-foreground">{folder.tracks.length} música(s)</span></span>
             </Button>
             <div className="mt-2 flex flex-wrap gap-2">
