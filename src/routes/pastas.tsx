@@ -8,6 +8,7 @@ import { useSession } from "@/lib/auth";
 import { organizeArtistFolders } from "@/lib/music/artist-folders.functions";
 import { saveAiArtistFolders } from "@/lib/music/folders";
 import { PageHeader } from "@/components/music/AppShell";
+import { CustomFolderCover } from "@/components/music/CustomFolderCover";
 import { TrackRow } from "@/components/music/TrackRow";
 import { Button } from "@/components/ui/button";
 import { artistFolders, customFolders, savedFolders } from "@/lib/music/folders";
@@ -47,7 +48,7 @@ function FoldersPage() {
   };
   const folders = savedFolders(p.tracks);
   const manualFolders = customFolders(p.tracks);
-  const [selected, setSelected] = useState<{ kind: "artist" | "physical"; name: string } | null>(null);
+  const [selected, setSelected] = useState<{ kind: "artist" | "physical" | "custom"; name: string } | null>(null);
   const artistGroups = artistFolders(p.tracks);
   const selectedFolder = (selected?.kind === "physical" ? folders : selected?.kind === "custom" ? manualFolders : artistGroups)
     .find((folder) => folder.name === selected?.name);
@@ -55,10 +56,11 @@ function FoldersPage() {
   return <div>
     <PageHeader title="Ouvir por pasta" description="Pastas automáticas por cantor e pastas importadas do aparelho." />
     {!p.ready ? <p role="status">Carregando pastas…</p> : selected ? <section>
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-4 flex items-center gap-3">
         <Button variant="ghost" size="icon" aria-label="Voltar para pastas" onClick={() => setSelected(null)}><ArrowLeft /></Button>
         <h2 className="min-w-0 break-words text-xl font-semibold">{selected.name}</h2>
       </div>
+      {selected.kind === "custom" && <div className="mb-4 max-w-xs"><CustomFolderCover folderName={selected.name} editable /></div>}
       {shownTracks.length > 0 && <div className="mb-4 flex flex-wrap gap-2">
         <Button onClick={() => p.playList(shownTracks.map((t) => t.id), undefined, "ordered")}><Play /> Reproduzir pasta</Button>
         <Button variant="secondary" onClick={() => p.playList(shownTracks.map((t) => t.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
@@ -93,7 +95,7 @@ function FoldersPage() {
         <div className="grid gap-3 sm:grid-cols-2">
           {manualFolders.map((folder) => <article key={folder.name} className="rounded-lg border bg-card p-4">
             <Button variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "custom", name: folder.name })}>
-              <FolderOpen className="shrink-0 text-primary" />
+              <CustomFolderCover folderName={folder.name} />
               <span className="min-w-0"><span className="block break-words text-base font-semibold">{folder.name}</span><span className="text-sm text-muted-foreground">{folder.tracks.length} música(s)</span></span>
             </Button>
             <div className="mt-2 flex flex-wrap gap-2">
