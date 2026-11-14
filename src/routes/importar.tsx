@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2, FileMusic, FolderOpen, HardDrive, Layers3, Music2, Search, Zap } from "lucide-react";
+import type { ReactNode } from "react";
+import { FileMusic, FolderOpen, HardDrive, Layers3, Music2, Search, Zap } from "lucide-react";
 import { PageHeader } from "@/components/music/AppShell";
 import { ImportButton } from "@/components/music/ImportButton";
 import { FolderImport } from "@/components/music/FolderImport";
@@ -98,7 +99,7 @@ function ImportarPage() {
   );
 }
 
-function Feature({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
+function Feature({ icon, title, text }: { icon: ReactNode; title: string; text: string }) {
   return (
     <div className="flex items-start gap-3 rounded-xl p-2">
       <span className="mt-0.5">{icon}</span>
