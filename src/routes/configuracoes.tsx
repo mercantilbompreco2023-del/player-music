@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
-import { ArrowLeft, Moon, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Moon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { usePlayer } from "@/lib/music/player-context";
@@ -38,7 +38,7 @@ function ConfigPage() {
         </p>
         <p className="text-muted-foreground">
           Mas não há garantia: o Android ou o navegador podem pausar ou fechar a página para economizar bateria, principalmente com economia de
-          energia ativa ou após muito tempo em segundo plano. Reprodução garantida em segundo plano exige um app nativo.
+          energia ativa ou após muito tempo em segundo plano. Reprodução garantida em segundo plano exige um app Android nativo com serviço de mídia e notificação permanente — isso ainda não existe.
         </p>
       </section>
 
@@ -54,14 +54,14 @@ function ConfigPage() {
         </p>
       </section>
 
-      <section className="flex gap-3 rounded-2xl border border-dashed p-4 text-sm">
-        <ShieldAlert className="size-5 shrink-0 text-primary" />
-        <div>
-          <h2 className="font-bold">Área administrativa — configuração pendente</h2>
-          <p className="text-muted-foreground">
-            Ainda não há servidor com login e permissões configurado, então a área de administrador não está disponível. Ela só será liberada com
-            autenticação e autorização reais no servidor.
-          </p>
+      <section className="space-y-2 rounded-2xl bg-card p-4 text-sm">
+        <h2 className="text-lg font-bold">Conta e administração</h2>
+        <p className="text-muted-foreground">
+          A área de administração exige login e a permissão de administrador, conferida pelo servidor a cada ação.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <Link to="/auth" search={{ redirect: "/admin" }} className="font-semibold text-primary">Entrar / criar conta</Link>
+          <Link to="/privacidade" className="font-semibold text-primary">Privacidade e permissões</Link>
         </div>
       </section>
       <p className="text-center text-xs text-muted-foreground">Player Music · versão web MVP</p>
