@@ -30,7 +30,12 @@ Limite: economizadores de bateria muito agressivos de alguns fabricantes ainda p
 ## Pastas e permissões (atualização v10)
 A seleção solicita acesso persistente somente para leitura da pasta escolhida pelo usuário. Na abertura, o aplicativo verifica as permissões mantidas pelo Android. Se forem revogadas, solicita que a pessoa escolha a pasta novamente; não tenta conceder permissões automaticamente. As músicas importadas são cópias no armazenamento local e continuam disponíveis enquanto os dados do aplicativo não forem apagados.
 
-Esta alteração de permissões requer gerar e instalar um novo APK. O código foi preparado, mas o APK atualizado e a restauração em Android físico não foram verificados nesta entrega. O ambiente atual não tem Java nem Android SDK instalados, e não tem a chave usada para assinar o APK anterior. Use a mesma chave ao atualizar para preservar os dados; não desinstale o aplicativo para contornar uma assinatura incompatível.
+O APK v3 (versionCode 3, versionName 1.3) foi compilado como release com Java 21 e Android SDK 36 e assinado com uma nova chave autorizada pelo usuário. A verificação da assinatura passou; o certificado é diferente do APK v2. NÃO é uma atualização compatível com a instalação anterior. Não desinstale o aplicativo antigo antes de guardar os arquivos originais de áudio; a exportação CSV salva apenas a lista, não as músicas. A importação, exportação nativa e restauração de acesso ainda precisam de teste em aparelho Android físico.
+
+## Assinatura nova e ícone (v11)
+O pacote privado `player-music-assinatura_v1.zip` contém a chave e suas credenciais. Guarde em local seguro, separado do código; nunca publique ou inclua nos ZIPs do projeto. Todas as próximas versões desta assinatura precisam usar essa mesma chave. Para assinar uma compilação release no Android Studio, selecione essa chave e o alias informado no pacote privado. O APK agora usa o novo ícone de fones com símbolo de reprodução, também aplicado ao favicon e à marca no aplicativo web.
+
+No Android, a exportação usa `ACTION_CREATE_DOCUMENT` por meio do plugin `LibraryExport`, permitindo escolher onde salvar o CSV sem depender de downloads de URLs blob no WebView. A playlist por estilo precisa de internet e login; o APK continua abrindo o aplicativo publicado, não é uma versão totalmente offline. A publicação das mudanças foi solicitada nesta entrega.
 
 ## Exportação e playlists por estilo
 Na Biblioteca, “Exportar lista da biblioteca” gera um CSV de metadados; não transfere os áudios nem restaura automaticamente uma biblioteca em outro aparelho. Em Playlists, uma pessoa conectada pode enviar descrição, títulos e artistas para a IA, visualizar a seleção e salvá-la. Os arquivos de áudio e URLs privadas não são enviados.
