@@ -37,7 +37,7 @@ function Index() {
   const ownTracks = p.tracks.filter(t => t.source !== "demo");
   const artists = [...new Set(ownTracks.map(t => t.artist))];
   return (
-    <div className="space-y-6">
+    <div className="home-purple space-y-6">
       <header className="flex items-center justify-between gap-2">
         <Link to="/" className="flex min-w-0 items-center gap-2"><img src={playerIcon} alt="" width={48} height={48} className="size-11 rounded-lg" /><h1 className="text-xl font-bold sm:text-3xl">Player <span className="text-primary">Music</span></h1></Link>
         <div className="flex shrink-0 items-center gap-1">

@@ -122,5 +122,11 @@
   background: linear-gradient(140deg, color-mix(in oklab, var(--primary) 14%, var(--card)), var(--card) 70%);
   border-color: color-mix(in oklab, var(--primary) 32%, var(--border));
 }
+.home-purple {
+  --primary: oklch(0.55 0.23 310);
+  --ring: var(--primary);
+  --glow: var(--primary);
+}
+.dark .home-purple { --primary: oklch(0.7 0.25 310); }
 .section-heading { border-left: 4px solid var(--primary); padding-left: 10px; }
 @media (prefers-reduced-motion: reduce) { .eq-bar { animation: none; } }
