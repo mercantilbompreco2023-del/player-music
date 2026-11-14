@@ -69,8 +69,8 @@ function BibliotecaPage() {
       {selected.size > 0 && (
         <div className="flex flex-wrap gap-2 rounded-xl border border-primary/40 bg-card p-2">
           <Button size="sm" onClick={() => p.playList(selecionadas, selecionadas[0])}><Play /> Tocar</Button>
-          <Button size="sm" variant="secondary" onClick={() => { selecionadas.forEach((id) => p.addToQueue(id)); toast.success(`${selecionadas.length} adicionada(s) à fila.`); }}><ListPlus /> Adicionar à fila</Button>
-          <Button size="sm" variant="secondary" onClick={() => { const novas = selecionadas.filter((id) => !p.isFavorite(id)); novas.forEach((id) => p.toggleFavorite(id)); toast.success(novas.length ? `${novas.length} adicionada(s) aos favoritos.` : "Já estavam nos favoritos."); }}><Heart /> Favoritar</Button>
+          <Button size="sm" variant="secondary" onClick={() => { selecionadas.forEach((id) => p.addToQueue(id)); toast.success(`${selecionadas.length} adicionada(s) à fila.`); }}><ListPlus /> Adicionar selecionadas à fila</Button>
+          <Button size="sm" variant="secondary" onClick={() => { const novas = selecionadas.filter((id) => !p.isFavorite(id)); novas.forEach((id) => p.toggleFavorite(id)); toast.success(novas.length ? `${novas.length} adicionada(s) aos favoritos.` : "Já estavam nos favoritos."); }}><Heart /> Favoritar selecionadas</Button>
           <Button size="sm" variant="ghost" onClick={limpar}><X /> Limpar</Button>
         </div>
       )}
