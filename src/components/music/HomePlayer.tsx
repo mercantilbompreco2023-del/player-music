@@ -48,7 +48,7 @@ function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: s
       .then((data: { query?: { pages?: Record<string, { title?: string; thumbnail?: { source?: string } }> } }) => {
         const pages = Object.values(data.query?.pages ?? {});
         const normalized = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
-        const match = pages.find((page) => page.thumbnail?.source && page.title?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").includes(normalized.split(" ")[0]));
+        const match = pages.find((page) => page.thumbnail?.source && page.title?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").includes(normalized.split(" ")[0] ?? normalized));
         const url = match?.thumbnail?.source ?? null;
         artistPhotoCache.set(name.toLocaleLowerCase("pt-BR"), url);
         if (active) setPhoto(url);

@@ -43,6 +43,7 @@ use the editor.
 - Native Android playback: JS player mirrors state to `MediaPlayback` plugin (`src/lib/music/native-media.ts`) -> foreground `MediaPlaybackService`; audio itself still plays in the WebView.
 - APK folder import uses native `FolderPicker` plugin (SAF tree, `src/lib/music/native-folder.ts`) because Android WebView ignores webkitdirectory; files are read one at a time to limit memory.
 - Saved folder cards derive from persisted track folder metadata through `src/lib/music/folders.ts`; legacy relative paths remain supported without requesting device access again.
+- Artist folders use the pure grouping helper in `src/lib/music/folders.ts`; selected folders include their kind so identical artist and physical folder names cannot mix track lists.
 - Folder playback uses the shared player's explicit ordered/shuffle mode, so queue creation and shuffle preference change together without stale toggles.
 - Android folder grants use persisted read-only SAF permissions and local grant checks; imported audio remains an IndexedDB copy, independent of later grant revocation.
 - Library CSV exports contain metadata only and never expose playback URLs, tokens, or audio blobs.

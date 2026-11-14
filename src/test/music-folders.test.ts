@@ -1,10 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { savedFolders } from "@/lib/music/folders";
+import { artistFolders, savedFolders } from "@/lib/music/folders";
 import type { Track } from "@/lib/music/types";
 
 const track = (id: string, extra: Partial<Track>): Track => ({ id, title: id, artist: "Artista", source: "local", url: "blob:test", ...extra });
 
 describe("pastas salvas", () => {
+  it("cria pastas por artista com contagem, sem separar maiúsculas ou espaços", () => {
+    const folders = artistFolders([track("1", { artist: " Cantor A " }), track("2", { artist: "cantor a" }), track("3", { artist: "Cantor B", source: "cloud" })]);
+    expect(folders.map((f) => [f.name, f.tracks.length, f.tracks.map((t) => t.id)])).toEqual([["Cantor A", 2, ["1", "2"]], ["Cantor B", 1, ["3"]]]);
+  });
+  it("não cria artistas para demos ou nomes vazios", () => {
+    expect(artistFolders([track("1", { artist: " " }), track("2", { source: "demo" })])).toEqual([]);
+  });
+  it("mantém pasta física independente do artista com o mesmo nome", () => {
+    const tracks = [track("1", { artist: "Cantor A", folderName: "Outra" }), track("2", { artist: "Cantor B", folderName: "Cantor A" })];
+    expect(artistFolders(tracks).find((f) => f.name === "Cantor A")?.tracks.map((t) => t.id)).toEqual(["1"]);
+    expect(savedFolders(tracks).find((f) => f.name === "Cantor A")?.tracks.map((t) => t.id)).toEqual(["2"]);
+  });
   it("mantém a pasta escolhida e reúne suas subpastas", () => {
     const folders = savedFolders([track("1", { folderName: "Músicas", path: "Rock/a.mp3" }), track("2", { folderName: "Músicas", path: "b.mp3" })]);
     expect(folders.map((f) => [f.name, f.tracks.map((t) => t.id)])).toEqual([["Músicas", ["1", "2"]]]);
