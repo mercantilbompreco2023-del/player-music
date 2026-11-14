@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- All playback state lives in `src/lib/music/player-context.tsx` (single HTMLAudioElement + Media Session); pages only call its actions — keeps one audio source of truth.
+- Pure queue/search helpers live in `src/lib/music/queue.ts` with tests in `src/test/music-queue.test.ts`.
+- Track sources go through the `CatalogProvider` interface (`src/lib/music/catalog.ts`); only original CC0 demo tracks and user files are allowed, never commercial/DRM content.
+- Imported audio blobs persist in IndexedDB, prefs/favorites/playlists in localStorage — no backend yet; admin area stays disabled until real server-side auth exists.
