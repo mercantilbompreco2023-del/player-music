@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, CheckCircle2, FolderOpen, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -32,6 +32,11 @@ export function FolderImport() {
   const picker = hydrated && supportsDirectoryPicker();
   const webkitDir = hydrated && supportsWebkitDirectory();
   const busy = st.s === "lendo" || st.s === "importando";
+  const [revoked, setRevoked] = useState<string[]>([]);
+  useEffect(() => {
+    if (!nativeFolder) return;
+    void nativeFolder.restore().then(({ folders }) => setRevoked(folders.filter((f) => !f.granted).map((f) => f.name))).catch(() => {});
+  }, []);
 
   async function runImport(items: ImportItem[], pre: SkippedItem[], folder: string, c: AbortController) {
     if (items.length === 0 && pre.length === 0) {
@@ -72,12 +77,13 @@ export function FolderImport() {
   /** APK Android: seletor de pasta do sistema, lendo um arquivo por vez. */
   async function fromNative() {
     if (!nativeFolder) return;
+    setSt({ s: "lendo", found: 0 });
     let res;
     try {
       res = await nativeFolder.pick();
     } catch (e) {
       const code = (e as { code?: string })?.code;
-      setSt(code === "CANCELLED" ? { s: "idle" } : { s: "erro", msg: "Não foi possível ler a pasta escolhida." });
+      setSt(code === "CANCELLED" ? { s: "idle" } : { s: "erro", msg: code === "UNIMPLEMENTED" ? "Atualize o APK para usar o seletor de pastas do Android." : "Não foi possível ler a pasta escolhida. Escolha uma pasta com músicas e permita o acesso." });
       return;
     }
     const c = new AbortController();
@@ -118,6 +124,7 @@ export function FolderImport() {
   return (
     <section className="space-y-3 rounded-2xl border-2 border-primary/40 bg-card p-4" aria-labelledby="pasta-titulo">
       <h2 id="pasta-titulo" className="flex items-center gap-2 text-lg font-bold"><FolderOpen className="size-5 text-primary" /> Importar pasta de músicas</h2>
+      {revoked.length > 0 && <p role="alert" className="text-sm text-destructive">Acesso perdido: {revoked.join(", ")}. Escolha a pasta novamente para permitir acesso. As músicas já copiadas permanecem na biblioteca.</p>}
       <p className="text-sm text-muted-foreground">
         O app lê <b>somente a pasta que você escolher</b> (e as subpastas dela), apenas para leitura. Nenhuma outra pasta é acessada e nada é enviado para a internet.
         As músicas são copiadas para o armazenamento deste navegador, então continuam tocando depois de recarregar, sem pedir acesso de novo.

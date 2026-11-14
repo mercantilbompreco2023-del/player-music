@@ -42,3 +42,5 @@ use the editor.
 - APK folder import uses native `FolderPicker` plugin (SAF tree, `src/lib/music/native-folder.ts`) because Android WebView ignores webkitdirectory; files are read one at a time to limit memory.
 - Saved folder cards derive from persisted track folder metadata through `src/lib/music/folders.ts`; legacy relative paths remain supported without requesting device access again.
 - Folder playback uses the shared player's explicit ordered/shuffle mode, so queue creation and shuffle preference change together without stale toggles.
+- Android folder grants use persisted read-only SAF permissions and local grant checks; imported audio remains an IndexedDB copy, independent of later grant revocation.
+- Library CSV exports contain metadata only and never expose playback URLs, tokens, or audio blobs.
