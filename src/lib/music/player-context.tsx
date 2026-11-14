@@ -432,7 +432,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const removeTrack = useCallback(
     async (id: string) => {
       const t = map.get(id);
-      if (!t || t.source !== "local") return;
+      if (!t || (t.source !== "local" && t.source !== "cloud")) return;
       if (t.source === "cloud" && t.storagePath) {
         const { error } = await supabase.storage.from("player-music").remove([t.storagePath]);
         if (error) { toast.error("Não foi possível remover a música da nuvem."); return; }
