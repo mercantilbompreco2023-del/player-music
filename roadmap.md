@@ -9,5 +9,8 @@
 - [x] Exportar lista de pastas e músicas em CSV e verificar arquivo baixado
 - [x] Entregar projeto e planilha v10; identificar pendências no Android real
 - [x] Implementar persistência e verificação de permissões das pastas Android
-- [ ] Gerar APK atualizado e verificar restauração em Android físico (sem Java/Android SDK, chave anterior e aparelho neste ambiente)
+- [x] Gerar APK atualizado com a nova assinatura autorizada; certificado distinto do APK anterior confirmado
+- [ ] Verificar importação, exportação e restauração em Android físico (depende de aparelho)
+- [x] Entregar chave nova, APK, projeto e planilha atualizados
+- [x] Criar novo ícone do Player Music e incluir no Android e no aplicativo web
 - [x] Gerar playlist por descrição com AI Gateway usando somente faixas da biblioteca

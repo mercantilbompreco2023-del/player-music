@@ -1,9 +1,10 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff, Headphones } from "lucide-react";
+import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/music/player-context";
 import { Cover } from "./Cover";
+import playerMusicIcon from "@/assets/player-music-icon.jpg";
 
 const NAV = [
   { to: "/", label: "Início", icon: Home },
@@ -62,7 +63,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r p-5 lg:flex">
         <Link to="/" className="mb-10 flex items-center gap-3 px-2 pt-2">
-          <span className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-400 to-violet-600 text-white shadow-glow"><Headphones className="size-6" /></span>
+          <img src={playerMusicIcon} alt="" width={44} height={44} className="size-11 rounded-lg" />
           <span className="font-display text-xl font-bold tracking-tight">Player <span className="text-primary">Music</span></span>
         </Link>
         <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Sua música</p>
