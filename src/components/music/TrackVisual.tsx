@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ImagePlus, Image, Video, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { trackVisualStore, visualKind } from "@/lib/music/track-visual";
 import type { Track } from "@/lib/music/types";
 import { usePlayer } from "@/lib/music/player-context";
 import { toast } from "sonner";
-import { ArtistPhoto } from "./HomePlayer";
 
-export function TrackVisual({ track }: { track: Track }) {
+export function TrackVisual({ track, fallback }: { track: Track; fallback: ReactNode }) {
   const p = usePlayer();
   const key = track.fingerprint ?? track.id;
   const [visual, setVisual] = useState<{ url: string; kind: "image" | "video" } | null>(null);
@@ -48,7 +47,7 @@ export function TrackVisual({ track }: { track: Track }) {
   }
   return <div className="space-y-1">
     <div className="aspect-square overflow-hidden">
-      {show && visual ? visual.kind === "image" ? <img src={visual.url} alt={`Foto de ${track.title}`} className="size-full object-cover" onError={() => setShow(false)} /> : <video ref={video} src={visual.url} muted playsInline loop preload="metadata" aria-label={`Vídeo de ${track.title}`} className="size-full object-cover" onError={() => { setShow(false); toast.error("Este formato de vídeo não é compatível com o aparelho."); }} /> : <ArtistPhoto artist={track.artist} fallbackSeed={track.id} />}
+      {show && visual ? visual.kind === "image" ? <img src={visual.url} alt={`Foto de ${track.title}`} className="size-full object-cover" onError={() => setShow(false)} /> : <video ref={video} src={visual.url} muted playsInline loop preload="metadata" aria-label={`Vídeo de ${track.title}`} className="size-full object-cover" onError={() => { setShow(false); toast.error("Este formato de vídeo não é compatível com o aparelho."); }} /> : fallback}
     </div>
     <div className="flex justify-center gap-1">
       <Button size="icon" variant="ghost" className="size-8" disabled={busy} title="Escolher foto ou vídeo do celular" aria-label="Escolher foto ou vídeo do celular" onClick={() => input.current?.click()}><ImagePlus className="size-4" /></Button>
