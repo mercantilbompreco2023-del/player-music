@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
 import { ArrowLeft, Moon, ShieldAlert } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,8 @@ export const Route = createFileRoute("/configuracoes")({
 
 function ConfigPage() {
   const p = usePlayer();
-  const hasMediaSession = typeof navigator !== "undefined" && "mediaSession" in navigator;
+  const hydrated = useHydrated();
+  const hasMediaSession = hydrated && "mediaSession" in navigator;
   return (
     <div className="space-y-5">
       <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="size-4" /> Início</Link>
@@ -33,7 +34,7 @@ function ConfigPage() {
         <h2 className="text-lg font-bold">Tocar em segundo plano</h2>
         <p className="text-muted-foreground">
           Este é um app web (MVP), não um aplicativo instalado (APK). A música costuma continuar com a tela bloqueada, e os controles podem aparecer
-          na notificação/tela de bloqueio {hasMediaSession ? "(seu navegador suporta esses controles)" : "(seu navegador não suporta esses controles)"}.
+          na notificação/tela de bloqueio {hydrated && (hasMediaSession ? "(seu navegador suporta esses controles)" : "(seu navegador não suporta esses controles)")}.
         </p>
         <p className="text-muted-foreground">
           Mas não há garantia: o Android ou o navegador podem pausar ou fechar a página para economizar bateria, principalmente com economia de
