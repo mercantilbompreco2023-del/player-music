@@ -2,6 +2,11 @@ import { describe, expect, it } from "vitest";
 import { moveItem, matchesSearch, nextIndex, parseFileName, prevIndex, shuffleQueue } from "@/lib/music/queue";
 
 describe("fila de reprodução", () => {
+  it("aleatório de pasta embaralha todas as faixas sem fixar a primeira e sem incluir outras pastas", () => {
+    const ids = ["pasta-a1", "pasta-a2", "pasta-a3"];
+    expect(shuffleQueue(ids, null, () => 0)).toEqual(["pasta-a2", "pasta-a3", "pasta-a1"]);
+    expect(ids).toEqual(["pasta-a1", "pasta-a2", "pasta-a3"]);
+  });
   it("para no fim quando repetir está desligado", () => expect(nextIndex(3, 2, "off")).toBeNull());
   it("volta ao início com repetir tudo", () => expect(nextIndex(3, 2, "all")).toBe(0));
   it("avança normalmente", () => expect(nextIndex(3, 0, "off")).toBe(1));
