@@ -1,4 +1,5 @@
 import type { Track } from "./types";
+import { nativeExport } from "./native-export";
 
 export function libraryCsv(tracks: Track[]): string {
   const cell = (value: string | number) => {
@@ -13,6 +14,10 @@ export function libraryCsv(tracks: Track[]): string {
 }
 
 export async function exportLibrary(tracks: Track[]): Promise<void> {
+  if (nativeExport) {
+    await nativeExport.save({ csv: libraryCsv(tracks) });
+    return;
+  }
   const file = new File([libraryCsv(tracks)], "player-music-biblioteca.csv", { type: "text/csv;charset=utf-8" });
   if (navigator.canShare?.({ files: [file] }) && matchMedia("(pointer: coarse)").matches) {
     try { await navigator.share({ files: [file], title: "Lista da biblioteca" }); return; }
