@@ -144,6 +144,7 @@ function Index() {
       <p className="text-center text-xs text-muted-foreground">
         App web (MVP) — não é um aplicativo instalado. <Link to="/privacidade" className="underline">Privacidade</Link>
       </p>
+      <p className="pb-2 text-center text-xs font-semibold tracking-wide text-primary">Feito por Adevaldo Marques</p>
     </div>
   );
 }

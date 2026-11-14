@@ -85,6 +85,7 @@ function ConfigPage() {
         </div>
       </section>
       <p className="text-center text-xs text-muted-foreground">Player Music · versão web MVP</p>
+      <p className="pb-2 text-center text-xs font-semibold tracking-wide text-primary">Feito por Adevaldo Marques</p>
     </div>
   );
 }
