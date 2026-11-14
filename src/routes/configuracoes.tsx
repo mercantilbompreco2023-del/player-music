@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
-import { ArrowLeft, Cloud, Moon, Smartphone } from "lucide-react";
+import { ArrowLeft, Cloud, Moon, Smartphone, SkipForward } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { usePlayer } from "@/lib/music/player-context";
@@ -65,6 +65,18 @@ function ConfigPage() {
           <LibraryBackup />
         </section>
       )}
+
+      <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
+        <div className="flex items-center gap-2">
+          <SkipForward className="size-5 text-primary" />
+          <h2 className="text-lg font-bold">Próxima música automática</h2>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <Label htmlFor="auto-next" className="text-base">Passar para a próxima música ao terminar</Label>
+          <Switch id="auto-next" checked={p.autoNext} onCheckedChange={p.setAutoNext} />
+        </div>
+        <p className="text-muted-foreground">Quando ativado, o player continua pela próxima faixa da fila. Quando desativado, a reprodução para ao terminar a música atual.</p>
+      </section>
 
       <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
         <div className="flex items-center gap-2">
