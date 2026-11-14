@@ -1,7 +1,6 @@
 package app.lovable.playermusic;
 
 import android.content.ContentUris;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -9,6 +8,7 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -36,7 +36,7 @@ public class MediaScanPlugin extends Plugin {
     @PluginMethod
     public void scan(PluginCall call) {
         String alias = Build.VERSION.SDK_INT >= 33 ? "audio33" : "audioLegacy";
-        if (getPermissionState(alias) == PackageManager.PERMISSION_GRANTED) {
+        if (getPermissionState(alias) == PermissionState.GRANTED) {
             doScan(call);
             return;
         }
@@ -47,7 +47,7 @@ public class MediaScanPlugin extends Plugin {
     private void audioResult(PluginCall call) {
         if (call == null) return;
         String alias = Build.VERSION.SDK_INT >= 33 ? "audio33" : "audioLegacy";
-        if (getPermissionState(alias) != PackageManager.PERMISSION_GRANTED) {
+        if (getPermissionState(alias) != PermissionState.GRANTED) {
             call.reject("O Android não permitiu ler as músicas do aparelho. Autorize o acesso em Configurações > Aplicativos > Player Music.", "PERMISSION_DENIED");
             return;
         }
