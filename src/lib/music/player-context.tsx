@@ -31,6 +31,7 @@ interface PlayerCtx {
   playAt: (pos: number) => void;
   importFiles: (files: FileList | File[]) => Promise<ImportReport>;
   importItems: (items: ImportItem[], opts?: { signal?: AbortSignal; onProgress?: (p: ImportProgress) => void; quiet?: boolean }) => Promise<ImportReport>;
+  saveTrackToCloud: (id: string) => Promise<void>;
   removeTrack: (id: string) => Promise<void>;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
@@ -94,14 +95,37 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setPrefs(loadPrefs());
     fileStore
       .all()
-      .then((files) =>
-        setLocalTracks(
-          files
-            .sort((a, b) => b.addedAt - a.addedAt)
-            .map((f) => ({ id: f.id, title: f.title, artist: f.artist, duration: f.duration, fingerprint: f.fingerprint, path: f.path, url: URL.createObjectURL(f.blob), source: "local" as const })),
-        ),
-      )
-      .catch(() => toast.error("Não foi possível abrir o armazenamento local. Arquivos importados valem só nesta sessão."))
+      .then(async (files) => {
+        const local = files
+          .sort((a, b) => b.addedAt - a.addedAt)
+          .map((f) => ({ id: f.id, title: f.title, artist: f.artist, duration: f.duration, fingerprint: f.fingerprint, path: f.path, url: URL.createObjectURL(f.blob), source: "local" as const }));
+        setLocalTracks(local);
+        // A biblioteca na nuvem é privada e vinculada à conta autenticada.
+        const { data: auth } = await supabase.auth.getUser();
+        if (!auth.user) return;
+        const { data: objects, error } = await supabase.storage.from("player-music").list(auth.user.id, { limit: 1000, sortBy: { column: "name", order: "asc" } });
+        if (error || !objects?.length) return;
+        const paths = objects.filter((o) => o.name && !o.name.endsWith("/")).map((o) => `${auth.user.id}/${o.name}`);
+        if (!paths.length) return;
+        const { data: signed, error: signedError } = await supabase.storage.from("player-music").createSignedUrls(paths, 60 * 60 * 24);
+        if (signedError || !signed) return;
+        const cloud = signed.flatMap((entry, i) => {
+          if (!entry.signedUrl || !entry.path) return [];
+          const meta = (objects[i]?.metadata ?? {}) as Record<string, unknown>;
+          const name = objects[i]?.name ?? entry.path.split("/").pop() ?? "Música";
+          const title = typeof meta.title === "string" ? meta.title : name.replace(/\\.[^.]+$/, "");
+          const artist = typeof meta.artist === "string" ? meta.artist : "Biblioteca na nuvem";
+          return [{
+            id: `cloud-${entry.path}`, title, artist,
+            duration: typeof meta.duration === "number" ? meta.duration : undefined,
+            fingerprint: typeof meta.fingerprint === "string" ? meta.fingerprint : undefined,
+            path: typeof meta.originalPath === "string" ? meta.originalPath : undefined,
+            storagePath: entry.path, url: entry.signedUrl, source: "cloud" as const,
+          }];
+        });
+        setLocalTracks((current) => [...current.filter((t) => !cloud.some((ct) => ct.storagePath === t.storagePath)), ...cloud]);
+      })
+      .catch(() => toast.error("Não foi possível carregar a biblioteca. Confira sua conexão e o armazenamento na nuvem."))
       .finally(() => setReady(true));
   }, []);
 
@@ -334,6 +358,43 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const saveTrackToCloud = useCallback(async (id: string) => {
+    const track = localRef.current.find((t) => t.id === id);
+    if (!track || track.source !== "local") return;
+    const { data: auth, error: authError } = await supabase.auth.getUser();
+    if (authError || !auth.user) {
+      toast.error("Entre na sua conta para salvar músicas na nuvem.");
+      return;
+    }
+    toast.info("Enviando música para a nuvem…");
+    try {
+      const stored = (await fileStore.all()).find((f) => f.id === id);
+      const response = stored ? stored.blob : await fetch(track.url).then((r) => {
+        if (!r.ok) throw new Error("Não foi possível ler o arquivo importado.");
+        return r.blob();
+      });
+      const extension = (stored?.path ?? track.path ?? track.title).match(/\\.([a-z0-9]{2,5})$/i)?.[1]?.toLowerCase() ?? "audio";
+      const fingerprintKey = (track.fingerprint ?? id).replace(/[^a-z0-9_-]/gi, "").slice(0, 48);
+      const storagePath = `${auth.user.id}/${fingerprintKey}.${extension}`;
+      const { error: uploadError } = await supabase.storage.from("player-music").upload(storagePath, response, {
+        upsert: true,
+        contentType: response.type || "application/octet-stream",
+        metadata: { title: track.title, artist: track.artist, duration: track.duration, fingerprint: track.fingerprint, originalPath: track.path },
+      });
+      if (uploadError) throw uploadError;
+      const { data: signed, error: signedError } = await supabase.storage.from("player-music").createSignedUrl(storagePath, 60 * 60 * 24);
+      if (signedError || !signed?.signedUrl) throw signedError ?? new Error("Não foi possível abrir a música salva.");
+      try { await fileStore.remove(id); } catch { /* a cópia da nuvem já está segura */ }
+      URL.revokeObjectURL(track.url);
+      const cloudTrack: Track = { ...track, id: `cloud-${storagePath}`, source: "cloud", storagePath, url: signed.signedUrl };
+      setLocalTracks((current) => current.map((t) => t.id === id ? cloudTrack : t));
+      toast.success("Música salva na nuvem. A cópia local foi liberada.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Falha ao salvar na nuvem.";
+      toast.error(message);
+    }
+  }, []);
+
   const importFiles = useCallback(
     async (files: FileList | File[]) => {
       const items = Array.from(files).map((file) => ({ file, path: (file as File & { webkitRelativePath?: string }).webkitRelativePath || file.name }));
@@ -351,10 +412,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     async (id: string) => {
       const t = map.get(id);
       if (!t || t.source !== "local") return;
-      try {
-        await fileStore.remove(id);
-      } catch {
-        /* pode não estar salvo */
+      if (t.source === "cloud" && t.storagePath) {
+        const { error } = await supabase.storage.from("player-music").remove([t.storagePath]);
+        if (error) { toast.error("Não foi possível remover a música da nuvem."); return; }
+      } else {
+        try { await fileStore.remove(id); } catch { /* pode não estar salvo */ }
       }
       URL.revokeObjectURL(t.url);
       setLocalTracks((p) => p.filter((x) => x.id !== id));
@@ -404,7 +466,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       wantPlay.current = true;
       setIndex(pos);
     },
-    importFiles, importItems, removeTrack,
+    importFiles, importItems, saveTrackToCloud, removeTrack,
     toggleFavorite: (id) =>
       updatePrefs((p) => ({ ...p, favorites: p.favorites.includes(id) ? p.favorites.filter((f) => f !== id) : [id, ...p.favorites] })),
     isFavorite: (id) => prefs.favorites.includes(id),
