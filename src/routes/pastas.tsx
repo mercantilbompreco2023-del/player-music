@@ -72,6 +72,7 @@ function FoldersPage() {
         <h2 className="min-w-0 break-words text-xl font-semibold">{selected.name}</h2>
       </div>
       {selected.kind === "custom" && <div className="mb-4 max-w-xs"><CustomFolderCover folderName={selected.name} editable /></div>}
+      {selected.kind === "artist" && <div className="mb-4 max-w-xs"><CustomFolderCover artistName={selected.name} editable /></div>}
       {shownTracks.length > 0 && <div className="mb-4 flex flex-wrap gap-2">
         <Button onClick={() => p.playList(shownTracks.map((t) => t.id), undefined, "ordered")}><Play /> Ouvir pasta</Button>
         <Button variant="secondary" onClick={() => p.playList(shownTracks.map((t) => t.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
