@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ChevronDown, Heart, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, Volume1, Volume2, VolumeX, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Cover } from "@/components/music/Cover";
+import { CustomFolderCover } from "@/components/music/CustomFolderCover";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/music/player-context";
 import { formatTime } from "@/lib/music/queue";
@@ -44,7 +45,7 @@ function PlayerPage() {
         <span className="size-10" />
       </div>
 
-      <div className="rounded-[2rem] border border-primary/70 bg-[linear-gradient(135deg,oklch(0.2_0.055_292),oklch(0.105_0.025_285)_58%,oklch(0.17_0.06_310))] p-4 shadow-[0_0_35px_-8px_oklch(0.62_0.24_292_/_0.65)] ring-1 ring-primary/20 sm:p-6"><Cover seed={t.id} className="mx-auto aspect-square w-full max-w-sm rounded-2xl border border-primary/50 shadow-[0_0_28px_-8px_oklch(0.65_0.25_292_/_0.7)]" iconClass="size-1/4" /></div>
+      <div className="rounded-[2rem] border border-primary/70 bg-[linear-gradient(135deg,oklch(0.2_0.055_292),oklch(0.105_0.025_285)_58%,oklch(0.17_0.06_310))] p-4 shadow-[0_0_35px_-8px_oklch(0.62_0.24_292_/_0.65)] ring-1 ring-primary/20 sm:p-6"><CustomFolderCover trackId={t.id} fallbackSeed={t.id} /></div>
 
       <div className="flex items-center gap-3 rounded-2xl border border-primary/25 bg-card/70 p-3 shadow-glow">
         <div className="min-w-0 flex-1">
