@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Cover } from "@/components/music/Cover";
-import { AudioLines, Camera, Heart, ListMusic, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward } from "lucide-react";
+import { AudioLines, Camera, Heart, ListMusic, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { usePlayer } from "@/lib/music/player-context";
@@ -73,6 +73,15 @@ function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: s
 
 export function HomePlayer() {
   const p = usePlayer();
+  const [showArtistName, setShowArtistName] = useState(true);
+  useEffect(() => {
+    try { setShowArtistName(localStorage.getItem("player-music-show-artist-name") !== "false"); } catch { /* usa padrão */ }
+  }, []);
+  const toggleArtistName = () => setShowArtistName((current) => {
+    const next = !current;
+    try { localStorage.setItem("player-music-show-artist-name", String(next)); } catch { /* preferência opcional */ }
+    return next;
+  });
   const libraryTracks = p.tracks.filter((track) => track.source === "local" || track.source === "cloud");
   const previewTrack = libraryTracks[0] ?? null;
   const t = p.current ?? previewTrack;
@@ -94,7 +103,7 @@ export function HomePlayer() {
         <div className="overflow-hidden rounded-xl border border-primary/40">{t ? <ArtistPhoto artist={t.artist} fallbackSeed={t.id} /> : <Link to="/importar" aria-label="Importar músicas"><img src={artwork} alt="Fones de ouvido" width={1024} height={1024} className="aspect-square w-full object-cover" /></Link>}</div>
         <div className="min-w-0">
           <h2 className="truncate text-base font-bold sm:text-2xl">{t?.title ?? "Sua música aqui"}</h2>
-          <p className="mt-1 truncate text-xs text-muted-foreground sm:text-base">{t?.artist ?? "Sua biblioteca pessoal"}</p>
+          <div className="mt-1 flex items-center gap-1"><p className="min-w-0 flex-1 truncate text-xs text-muted-foreground sm:text-base">{showArtistName ? (t?.artist ?? "Sua biblioteca pessoal") : ""}</p><Button type="button" size="icon" variant="ghost" className="size-7 shrink-0" onClick={toggleArtistName} aria-label={showArtistName ? "Ocultar nome do cantor" : "Mostrar nome do cantor"} aria-pressed={showArtistName} title={showArtistName ? "Nome do cantor visível" : "Nome do cantor oculto"}><UserRound className={cn("size-4", showArtistName && "text-primary")} /></Button></div>
           <div className="mt-4"><Slider aria-label="Progresso da música" value={[p.currentTime]} max={p.duration || 1} step={0.5} disabled={!hasCurrent} onValueChange={([v]) => p.seek(v ?? 0)} /><div className="mt-2 flex justify-between text-[10px] tabular-nums text-muted-foreground sm:text-xs"><span>{formatTime(p.currentTime)}</span><span>{formatTime(p.duration || t?.duration)}</span></div></div>
           <div className="mt-2 flex items-center justify-between gap-0.5 sm:mt-4">
             <Button variant="ghost" size="icon" onClick={p.toggleShuffle} aria-label="Aleatório" aria-pressed={p.prefs.shuffle} className={cn("size-8 sm:size-10", p.prefs.shuffle && "text-primary")}><Shuffle /></Button>
