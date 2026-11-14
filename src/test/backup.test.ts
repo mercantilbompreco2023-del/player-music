@@ -40,7 +40,7 @@ describe("backup da lista na conta", () => {
   it("avisa quando a faixa não tem áudio neste aparelho", () => {
     const payload = buildBackup([track({})], defaultPrefs);
     const r = mergeBackup(payload, [], defaultPrefs);
-    expect(r.missing).toEqual(["MinhaPasta/Forró de sábado"]);
+    expect(r.missing).toEqual(["Forró de sábado"]);
     expect(r.folderInfo).toEqual([]);
   });
 
