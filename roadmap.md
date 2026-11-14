@@ -9,5 +9,7 @@
 - [x] Exportar lista de pastas e músicas em CSV e verificar arquivo baixado
 - [x] Entregar projeto e planilha v10; identificar pendências no Android real
 - [x] Implementar persistência e verificação de permissões das pastas Android
-- [ ] Gerar APK atualizado e verificar restauração em Android físico (sem Java/Android SDK, chave anterior e aparelho neste ambiente)
+- [ ] Gerar APK atualizado com a nova assinatura autorizada; a assinatura anterior não está disponível
+- [ ] Verificar importação, exportação e restauração em Android físico (depende de aparelho)
+- [ ] Entregar chave nova, APK, projeto e planilha atualizados
 - [x] Gerar playlist por descrição com AI Gateway usando somente faixas da biblioteca
