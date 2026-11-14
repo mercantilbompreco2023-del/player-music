@@ -1,4 +1,4 @@
-import { Cloud, CloudUpload, Heart, ListPlus, MoreVertical, Plus, Trash2, X } from "lucide-react";
+import { Check, Cloud, CloudUpload, Heart, ListPlus, MoreVertical, Plus, Trash2, X } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
   DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger,
@@ -10,12 +10,24 @@ import { formatTime } from "@/lib/music/queue";
 import type { Track } from "@/lib/music/types";
 import { Cover } from "./Cover";
 
-export function TrackRow({ track, list, playlistId }: { track: Track; list: string[]; playlistId?: string }) {
+export function TrackRow({ track, list, playlistId, selectable, selected, onToggleSelect }: { track: Track; list: string[]; playlistId?: string; selectable?: boolean; selected?: boolean; onToggleSelect?: () => void }) {
   const p = usePlayer();
   const active = p.current?.id === track.id;
   const fav = p.isFavorite(track.id);
   return (
     <div className={cn("group flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-accent/60", active && "bg-accent/70")}>
+      {selectable && (
+        <button
+          type="button"
+          role="checkbox"
+          aria-checked={!!selected}
+          aria-label={`Selecionar ${track.title}`}
+          onClick={onToggleSelect}
+          className={cn("flex size-6 shrink-0 items-center justify-center rounded-md border-2", selected ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground/50")}
+        >
+          {selected && <Check className="size-4" />}
+        </button>
+      )}
       <button className="flex min-w-0 flex-1 items-center gap-3 text-left" onClick={() => p.playList(list, track.id)} aria-label={`Tocar ${track.title}`}>
         <div className="relative">
           <Cover seed={track.id} className="size-12" />
