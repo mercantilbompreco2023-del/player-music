@@ -76,10 +76,10 @@ function ConfigPage() {
           <Switch id="background-playback" checked={p.backgroundPlayback} onCheckedChange={p.setBackgroundPlayback} />
         </div>
         <p className="text-muted-foreground">
-          Quando ativado no APK Android, o Player Music usa um serviço de mídia em primeiro plano, mantém os controles na notificação e na tela bloqueada e permite continuar ouvindo com a tela apagada. Os botões de tocar, pausar, próxima e anterior também controlam o player.
+          Quando ativado em um APK Android com suporte de mídia, o Player Music usa o serviço já instalado para manter a notificação, os controles na tela bloqueada e o aparelho ativo durante a reprodução. Ao desativar, esse serviço é encerrado; a música aberta no player não é pausada automaticamente.
         </p>
         <p className="text-muted-foreground">
-          No navegador, a continuidade depende do suporte do Android e do próprio navegador {hydrated && (hasMediaSession ? "(controles de mídia disponíveis neste navegador)" : "(este navegador não informa suporte aos controles de mídia)")}. Economia de bateria e restrições do aparelho ainda podem interromper a reprodução.
+          No navegador, esta opção não instala um serviço Android nem garante áudio com a tela apagada. A continuidade depende do sistema e do navegador {hydrated && (hasMediaSession ? "(controles de mídia disponíveis neste navegador)" : "(este navegador não informa suporte aos controles de mídia)")}. Mesmo no APK, economia de bateria, suspensão do app ou restrições do aparelho podem interromper o áudio, que continua sendo reproduzido pela página dentro do aplicativo.
         </p>
       </section>
 
