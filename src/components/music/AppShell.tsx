@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff, Volume2 } from "lucide-react";
+import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff, Volume2, Settings2, Image, AudioLines } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/music/player-context";
@@ -13,35 +13,64 @@ const NAV = [
   { to: "/playlists", label: "Playlists", icon: ListMusic },
 ] as const;
 
+type NowPlayingPrefs = { style: "compact" | "highlighted"; showCover: boolean; showArtist: boolean; showProgress: boolean };
+const NOW_PLAYING_DEFAULTS: NowPlayingPrefs = { style: "highlighted", showCover: true, showArtist: true, showProgress: true };
+const NOW_PLAYING_KEY = "player-music-now-playing-panel";
+
 function MiniPlayer() {
   const p = usePlayer();
+  const [customize, setCustomize] = useState(false);
+  const [prefs, setPrefs] = useState<NowPlayingPrefs>(NOW_PLAYING_DEFAULTS);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(NOW_PLAYING_KEY);
+      if (saved) setPrefs({ ...NOW_PLAYING_DEFAULTS, ...JSON.parse(saved) });
+    } catch { /* usa os padrões */ }
+  }, []);
+  const updatePrefs = (patch: Partial<NowPlayingPrefs>) => {
+    setPrefs((current) => {
+      const next = { ...current, ...patch };
+      try { localStorage.setItem(NOW_PLAYING_KEY, JSON.stringify(next)); } catch { /* preferência opcional */ }
+      return next;
+    });
+  };
   if (!p.current) return null;
-  const pct = p.duration ? (p.currentTime / p.duration) * 100 : 0;
+  const pct = p.duration ? Math.min(100, (p.currentTime / p.duration) * 100) : 0;
+  const highlighted = prefs.style === "highlighted";
   return (
-    <div className="glass mx-2 mb-2 overflow-hidden rounded-2xl border shadow-glow lg:mx-6 lg:mb-3">
-      <div className="flex items-center gap-3 p-2.5 lg:px-4 lg:py-3">
+    <div className={cn("mx-2 mb-2 overflow-hidden rounded-2xl border shadow-glow transition-all lg:mx-6 lg:mb-3", highlighted ? "border-primary/60 bg-card ring-1 ring-primary/20" : "glass")}>
+      <div className={cn("flex items-center gap-3", highlighted ? "p-3 lg:px-4 lg:py-3" : "p-2 lg:px-3 lg:py-2")}>
         <Link to="/player" className="flex min-w-0 flex-1 items-center gap-3" aria-label="Abrir player">
-          <Cover seed={p.current.id} className="size-11 lg:size-12" />
+          {prefs.showCover && <Cover seed={p.current.id} className={cn("shrink-0", highlighted ? "size-12 lg:size-14" : "size-9")} />}
           <div className="min-w-0 flex-1">
             <p className="mb-0.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
               {p.isPlaying ? <><span className="size-1.5 animate-pulse rounded-full bg-primary" /> Tocando agora</> : "Reprodução pausada"}
             </p>
-            <p className="truncate text-sm font-semibold">{p.current.title}</p>
-            <p className="truncate text-xs text-muted-foreground">{p.current.artist}</p>
+            <p className={cn("truncate font-bold", highlighted ? "text-sm lg:text-base" : "text-xs")}>{p.current.title}</p>
+            {prefs.showArtist && <p className="truncate text-xs text-muted-foreground">{p.current.artist}</p>}
           </div>
         </Link>
-        <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+        <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className={cn("flex shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground", highlighted ? "size-11" : "size-9")}>
           {p.isPlaying ? <Pause className="size-5 fill-current" /> : <Play className="size-5 fill-current" />}
         </button>
-        <button onClick={p.next} aria-label="Próxima" className="p-2 text-foreground"><SkipForward className="size-5" /></button>
-        <Link to="/player" aria-label="Abrir painel de reprodução" className="hidden rounded-full border p-2 text-primary sm:flex"><Volume2 className="size-4" /></Link>
-        <div className="hidden min-w-32 flex-1 lg:block">
-          <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
-          </div>
-        </div>
+        <button onClick={p.next} aria-label="Próxima" className="shrink-0 rounded-full p-2 text-foreground hover:bg-muted"><SkipForward className="size-5" /></button>
+        <button onClick={() => setCustomize((v) => !v)} aria-label="Personalizar painel de música" aria-expanded={customize} className={cn("shrink-0 rounded-full border p-2", customize ? "border-primary bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary")}><Settings2 className="size-4" /></button>
+        <Link to="/player" aria-label="Abrir painel completo de reprodução" className="hidden rounded-full border p-2 text-primary sm:flex"><Volume2 className="size-4" /></Link>
       </div>
-      <div className="h-0.5 bg-muted lg:hidden"><div className="h-full bg-primary" style={{ width: `${pct}%` }} /></div>
+      {prefs.showProgress && <div className={cn("bg-muted", highlighted ? "h-1.5" : "h-0.5")}><div className="h-full bg-primary transition-[width]" style={{ width: `${pct}%` }} /></div>}
+      {customize && <div className="grid gap-3 border-t bg-background/95 p-3 sm:grid-cols-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="w-full text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Destaque do painel</span>
+          <button onClick={() => updatePrefs({ style: "highlighted" })} aria-pressed={highlighted} className={cn("rounded-full border px-3 py-1.5 text-xs font-semibold", highlighted ? "border-primary bg-primary/10 text-primary" : "border-border")}>Destacado</button>
+          <button onClick={() => updatePrefs({ style: "compact" })} aria-pressed={!highlighted} className={cn("rounded-full border px-3 py-1.5 text-xs font-semibold", !highlighted ? "border-primary bg-primary/10 text-primary" : "border-border")}>Compacto</button>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="w-full text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Mostrar no painel</span>
+          <button onClick={() => updatePrefs({ showCover: !prefs.showCover })} aria-pressed={prefs.showCover} className={cn("inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs", prefs.showCover && "border-primary text-primary")}><Image className="size-3.5" /> Capa</button>
+          <button onClick={() => updatePrefs({ showArtist: !prefs.showArtist })} aria-pressed={prefs.showArtist} className={cn("inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs", prefs.showArtist && "border-primary text-primary")}><AudioLines className="size-3.5" /> Artista</button>
+          <button onClick={() => updatePrefs({ showProgress: !prefs.showProgress })} aria-pressed={prefs.showProgress} className={cn("rounded-full border px-3 py-1.5 text-xs", prefs.showProgress && "border-primary text-primary")}>Progresso</button>
+        </div>
+      </div>}
     </div>
   );
 }
