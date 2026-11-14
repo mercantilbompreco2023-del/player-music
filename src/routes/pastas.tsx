@@ -68,12 +68,12 @@ function FoldersPage() {
     <PageHeader title="Ouvir por pasta" description="Pastas automáticas por cantor e pastas importadas do aparelho." />
     {!p.ready ? <p role="status">Carregando pastas…</p> : selected ? <section>
       <div className="mb-4 flex items-center gap-3">
-        <Button variant="ghost" size="icon" aria-label="Voltar para pastas" onClick={() => setSelected(null)}><ArrowLeft /></Button>
+        <Button variant="outline" size="sm" aria-label="Voltar para todas as pastas" onClick={() => setSelected(null)}><ArrowLeft /> Todas as pastas</Button>
         <h2 className="min-w-0 break-words text-xl font-semibold">{selected.name}</h2>
       </div>
       {selected.kind === "custom" && <div className="mb-4 max-w-xs"><CustomFolderCover folderName={selected.name} editable /></div>}
       {shownTracks.length > 0 && <div className="mb-4 flex flex-wrap gap-2">
-        <Button onClick={() => p.playList(shownTracks.map((t) => t.id), undefined, "ordered")}><Play /> Reproduzir pasta</Button>
+        <Button onClick={() => p.playList(shownTracks.map((t) => t.id), undefined, "ordered")}><Play /> Ouvir pasta</Button>
         <Button variant="secondary" onClick={() => p.playList(shownTracks.map((t) => t.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
       </div>}
       {shownTracks.length ? shownTracks.map((t) => <TrackRow key={t.id} track={t} list={shownTracks.map((item) => item.id)} />) : <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Esta pasta ainda está vazia. Importe as músicas desse artista para que elas apareçam aqui.</p>}
@@ -91,7 +91,7 @@ function FoldersPage() {
                   <span className="min-w-0"><span className="block break-words text-base font-semibold">{artist.name}</span><span className="text-sm text-muted-foreground">{artist.tracks.length} música(s)</span></span>
                 </Button>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  <Button size="sm" aria-label={`Ouvir cantor ${artist.name}`} onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir</Button>
+                  <Button size="sm" aria-label={`Ouvir cantor ${artist.name}`} onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir pasta</Button>
                   <Button size="sm" variant="secondary" aria-label={`Aleatório do cantor ${artist.name}`} onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
                 </div>
               </article>
@@ -110,7 +110,7 @@ function FoldersPage() {
               <span className="min-w-0"><span className="block break-words text-base font-semibold">{folder.name}</span><span className="text-sm text-muted-foreground">{folder.tracks.length} música(s)</span></span>
             </Button>
             <div className="mt-2 flex flex-wrap gap-2">
-              <Button size="sm" onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir tudo</Button>
+              <Button size="sm" onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir pasta</Button>
               <Button size="sm" variant="secondary" onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
             </div>
           </article>)}
