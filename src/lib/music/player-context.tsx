@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { defaultPrefs, fileStore, loadFolderHints, loadPrefs, requestPersistentStorage, saveFolderHints, savePrefs, type Prefs } from "./storage";
 import { trackKey } from "./backup";
 import { mergeSavedTracks } from "./saved-tracks";
+import { availablePlayback, clearPlaybackMemory, loadPlaybackMemory, savePlaybackMemory } from "./playback-memory";
 import type { Playlist, RepeatMode, Track } from "./types";
 import { audioMime, fingerprint, formatProblem, type ImportItem, type ImportProgress, type ImportReport } from "./import";
 
@@ -27,6 +28,8 @@ interface PlayerCtx {
   setBackgroundPlayback: (enabled: boolean) => void;
   autoNext: boolean;
   setAutoNext: (enabled: boolean) => void;
+  resumePlayback: boolean;
+  setResumePlayback: (enabled: boolean) => void;
   playList: (ids: string[], startId?: string, mode?: "ordered" | "shuffle") => void;
   toggle: () => void;
   next: () => void;
@@ -141,6 +144,17 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [resumePlayback, setResumePlaybackState] = useState(true);
+  const resumeEnabled = useRef(true);
+  const playbackRestored = useRef(false);
+  const sourceId = useRef<string | null>(null);
+  const pendingResume = useRef<{ trackId: string; position: number; wasPlaying: boolean } | null>(null);
+  const setResumePlayback = useCallback((enabled: boolean) => {
+    resumeEnabled.current = enabled;
+    setResumePlaybackState(enabled);
+    try { localStorage.setItem("player-music-resume-playback", String(enabled)); } catch { /* opcional */ }
+    if (!enabled) { clearPlaybackMemory(); pendingResume.current = null; }
+  }, []);
   const [backgroundPlayback, setBackgroundPlaybackState] = useState(true);
   const [autoNext, setAutoNextState] = useState(true);
   useEffect(() => { try { setAutoNextState(localStorage.getItem("player-music-auto-next") !== "false"); } catch { /* padrão */ } }, []);
@@ -178,6 +192,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   // Carregar preferências e arquivos
   useEffect(() => {
+    try { resumeEnabled.current = localStorage.getItem("player-music-resume-playback") !== "false"; } catch { /* padrão */ }
+    setResumePlaybackState(resumeEnabled.current);
     setPrefs(loadPrefs());
     const localPromise = fileStore.all()
       .then((files) => files
@@ -194,6 +210,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       .then(([local, cloud]) => setLocalTracks(mergeSavedTracks(withFolderHints(local), withFolderHints(cloud))))
       .finally(() => setReady(true));
   }, []);
+
+  useEffect(() => {
+    if (!ready || playbackRestored.current) return;
+    playbackRestored.current = true;
+    if (!resumeEnabled.current) return;
+    const saved = loadPlaybackMemory();
+    const restored = saved && availablePlayback(saved, tracks.map((track) => track.id));
+    if (!restored) return;
+    pendingResume.current = restored;
+    setQueue(restored.queue);
+    setIndex(restored.queue.indexOf(restored.trackId));
+  }, [ready, tracks]);
 
   // Atualiza a biblioteca quando o usuário entra ou sai da conta.
   useEffect(() => {
@@ -246,10 +274,36 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const a = new Audio();
     a.preload = "auto";
     audioRef.current = a;
-    a.ontimeupdate = () => setCurrentTime(a.currentTime);
+    let lastSaved = -1;
+    const remember = () => {
+      const { queue: q, index: i } = stateRef.current;
+      const trackId = q[i];
+      if (!playbackRestored.current || !resumeEnabled.current || !trackId || sourceId.current !== trackId || pendingResume.current) return;
+      savePlaybackMemory({ queue: q, trackId, position: Math.max(0, a.currentTime), wasPlaying: !a.paused && !a.ended });
+    };
+    a.ontimeupdate = () => {
+      setCurrentTime(a.currentTime);
+      if (Math.floor(a.currentTime) !== lastSaved) { lastSaved = Math.floor(a.currentTime); remember(); }
+    };
+    a.onseeked = remember;
+    a.onloadedmetadata = () => {
+      const pending = pendingResume.current;
+      if (!pending || pending.trackId !== sourceId.current) return;
+      const position = Number.isFinite(a.duration) ? Math.min(pending.position, Math.max(0, a.duration - 0.01)) : pending.position;
+      a.currentTime = position;
+      setCurrentTime(position);
+      pendingResume.current = null;
+      if (pending.wasPlaying) {
+        wantPlay.current = true;
+        void a.play().catch(() => { wantPlay.current = false; setIsPlaying(false); });
+      }
+    };
     a.ondurationchange = () => setDuration(isFinite(a.duration) ? a.duration : 0);
-    a.onplay = () => setIsPlaying(true);
-    a.onpause = () => setIsPlaying(false);
+    a.onplay = () => { setIsPlaying(true); remember(); };
+    a.onpause = () => { setIsPlaying(false); remember(); };
+    const onVisibility = () => { if (document.visibilityState === "hidden") remember(); };
+    window.addEventListener("pagehide", remember);
+    document.addEventListener("visibilitychange", onVisibility);
     a.onended = () => {
       const { queue: q, index: i, repeat, autoNext: shouldAutoNext } = stateRef.current;
       if (repeat === "one") {
@@ -271,6 +325,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       else setIsPlaying(false);
     };
     return () => {
+      remember();
+      window.removeEventListener("pagehide", remember);
+      document.removeEventListener("visibilitychange", onVisibility);
+      a.onpause = null;
       a.pause();
       a.src = "";
     };
@@ -286,6 +344,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const a = audioRef.current;
     if (!a) return;
     if (!current) {
+      sourceId.current = null;
       a.pause();
       a.removeAttribute("src");
       setCurrentTime(0);
@@ -293,6 +352,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       return;
     }
     if (a.src !== new URL(current.url, location.href).href) {
+      sourceId.current = current.id;
+      if (pendingResume.current && pendingResume.current.trackId !== current.id) pendingResume.current = null;
       a.src = current.url;
       setCurrentTime(0);
     }
