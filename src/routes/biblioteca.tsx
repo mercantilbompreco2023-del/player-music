@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ChevronRight, FolderOpen, Play, Shuffle } from "lucide-react";
+import { ArrowLeft, ChevronRight, Download, FolderOpen, Play, Shuffle } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/music/AppShell";
@@ -8,6 +8,8 @@ import { TrackRow } from "@/components/music/TrackRow";
 import { usePlayer } from "@/lib/music/player-context";
 import { savedFolders } from "@/lib/music/folders";
 import { Button } from "@/components/ui/button";
+import { exportLibrary } from "@/lib/music/export";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/biblioteca")({
   head: () => ({
@@ -44,6 +46,10 @@ function BibliotecaPage() {
   return (
     <div>
       <PageHeader title="Minhas músicas" description="Suas músicas ficam reunidas aqui. Salve na nuvem para acessar em outros aparelhos." action={<div className="flex gap-2"><Link to="/importar" className="inline-flex h-9 items-center gap-1 rounded-full bg-primary px-3 text-sm font-semibold text-primary-foreground"><FolderOpen className="size-4" /> Pasta</Link><ImportButton variant="secondary" /></div>} />
+      <div className="mb-5 space-y-2">
+        <Button variant="outline" disabled={!p.ready || !p.tracks.some((t) => t.source !== "demo")} onClick={() => { void exportLibrary(p.tracks).catch(() => toast.error("Não foi possível exportar a lista.")); }}><Download /> Exportar lista da biblioteca</Button>
+        <p className="text-xs text-muted-foreground">A cópia contém a lista de pastas e músicas, não os arquivos de áudio.</p>
+      </div>
       {p.ready && (
         <section aria-label="Pastas salvas" className="mb-6">
           <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold"><FolderOpen className="size-5 text-primary" /> Pastas salvas</h2>

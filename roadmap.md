@@ -5,3 +5,9 @@
 - [x] Mostrar cartões de pastas salvas na Biblioteca e verificar após reabrir
 - [x] Entregar código atualizado e planilha de alterações
 - [x] Cartão Ouvir por pasta, reprodução aleatória, testes e entrega v9
+- [x] Corrigir recusas de áudio com tipo genérico e leitura sem resposta na importação
+- [x] Exportar lista de pastas e músicas em CSV e verificar arquivo baixado
+- [x] Entregar projeto e planilha v10; identificar pendências no Android real
+- [x] Implementar persistência e verificação de permissões das pastas Android
+- [ ] Gerar APK atualizado e verificar restauração em Android físico (sem Java/Android SDK, chave anterior e aparelho neste ambiente)
+- [x] Gerar playlist por descrição com AI Gateway usando somente faixas da biblioteca

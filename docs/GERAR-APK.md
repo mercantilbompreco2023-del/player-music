@@ -9,7 +9,7 @@ Precisa de internet na primeira abertura. A música pode parar com a tela deslig
 ## Passo a passo
 1. Extraia o ZIP do projeto e abra um terminal dentro da pasta.
 2. `npm install`
-3. `npx cap add android` (só na primeira vez)
+3. A pasta `android/` já está incluída; não execute `cap add android` novamente.
 4. `npx cap sync android`
 5. `npx cap open android` (abre o Android Studio)
 6. No Android Studio: **Build → Build Bundle(s) / APK(s) → Build APK(s)**.
@@ -26,3 +26,11 @@ O APK tem um serviço de mídia Android (`android/app/src/main/java/.../MediaPla
 - mantém o processo e a CPU ativos enquanto toca.
 Permissões: `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `POST_NOTIFICATIONS` (pedida ao tocar a primeira música, Android 13+), `WAKE_LOCK`.
 Limite: economizadores de bateria muito agressivos de alguns fabricantes ainda podem fechar apps; nesse caso, marque o Player Music como "sem restrição" nas configurações de bateria.
+
+## Pastas e permissões (atualização v10)
+A seleção solicita acesso persistente somente para leitura da pasta escolhida pelo usuário. Na abertura, o aplicativo verifica as permissões mantidas pelo Android. Se forem revogadas, solicita que a pessoa escolha a pasta novamente; não tenta conceder permissões automaticamente. As músicas importadas são cópias no armazenamento local e continuam disponíveis enquanto os dados do aplicativo não forem apagados.
+
+Esta alteração de permissões requer gerar e instalar um novo APK. O código foi preparado, mas o APK atualizado e a restauração em Android físico não foram verificados nesta entrega. O ambiente atual não tem Java nem Android SDK instalados, e não tem a chave usada para assinar o APK anterior. Use a mesma chave ao atualizar para preservar os dados; não desinstale o aplicativo para contornar uma assinatura incompatível.
+
+## Exportação e playlists por estilo
+Na Biblioteca, “Exportar lista da biblioteca” gera um CSV de metadados; não transfere os áudios nem restaura automaticamente uma biblioteca em outro aparelho. Em Playlists, uma pessoa conectada pode enviar descrição, títulos e artistas para a IA, visualizar a seleção e salvá-la. Os arquivos de áudio e URLs privadas não são enviados.

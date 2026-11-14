@@ -2,6 +2,7 @@ package app.lovable.playermusic;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.UriPermission;
 import android.net.Uri;
 import android.util.Base64;
 import androidx.activity.result.ActivityResult;
@@ -24,6 +25,8 @@ public class FolderPickerPlugin extends Plugin {
     public void pick(PluginCall call) {
         Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        i.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        i.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
         startActivityForResult(call, i, "picked");
     }
 
@@ -35,18 +38,53 @@ public class FolderPickerPlugin extends Plugin {
             return;
         }
         Uri tree = result.getData().getData();
+        try {
+            int flags = result.getData().getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
+            getContext().getContentResolver().takePersistableUriPermission(tree, flags);
+            getContext().getSharedPreferences("music-folders", 0).edit().putString(tree.toString(), "").apply();
+        } catch (SecurityException e) {
+            call.reject("O Android não permitiu manter o acesso. Escolha novamente a pasta.", "PERMISSION_DENIED");
+            return;
+        }
         new Thread(() -> {
             try {
                 DocumentFile root = DocumentFile.fromTreeUri(getContext(), tree);
                 JSArray files = new JSArray();
                 walk(root, "", files);
                 JSObject o = new JSObject();
-                o.put("name", root != null && root.getName() != null ? root.getName() : "pasta");
+                String folderName = root != null && root.getName() != null ? root.getName() : "pasta";
+                o.put("name", folderName);
+                getContext().getSharedPreferences("music-folders", 0).edit().putString(tree.toString(), folderName).apply();
                 o.put("files", files);
                 call.resolve(o);
             } catch (Exception e) {
                 call.reject("Não foi possível ler a pasta.");
             }
+        }).start();
+    }
+
+    @PluginMethod
+    public void restore(PluginCall call) {
+        new Thread(() -> {
+            JSArray folders = new JSArray();
+            for (java.util.Map.Entry<String, ?> entry : getContext().getSharedPreferences("music-folders", 0).getAll().entrySet()) {
+                Uri uri = Uri.parse(entry.getKey());
+                boolean granted = false;
+                for (UriPermission permission : getContext().getContentResolver().getPersistedUriPermissions()) {
+                    if (permission.getUri().equals(uri) && permission.isReadPermission()) { granted = true; break; }
+                }
+                try {
+                    DocumentFile folder = DocumentFile.fromTreeUri(getContext(), uri);
+                    granted = granted && folder != null && folder.canRead();
+                } catch (Exception e) { granted = false; }
+                JSObject row = new JSObject();
+                row.put("name", entry.getValue().toString());
+                row.put("granted", granted);
+                folders.put(row);
+            }
+            JSObject result = new JSObject();
+            result.put("folders", folders);
+            call.resolve(result);
         }).start();
     }
 

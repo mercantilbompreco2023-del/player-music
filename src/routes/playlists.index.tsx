@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Cover } from "@/components/music/Cover";
 import { PageHeader } from "@/components/music/AppShell";
 import { usePlayer } from "@/lib/music/player-context";
+import { AiPlaylist } from "@/components/music/AiPlaylist";
 
 export const Route = createFileRoute("/playlists/")({
   head: () => ({
@@ -14,6 +15,8 @@ export const Route = createFileRoute("/playlists/")({
       { name: "description", content: "Crie e organize suas playlists." },
       { property: "og:title", content: "Playlists — Player Music" },
       { property: "og:description", content: "Crie e organize suas playlists." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PlaylistsPage,
@@ -25,6 +28,7 @@ function PlaylistsPage() {
   return (
     <div>
       <PageHeader title="Playlists" />
+      <AiPlaylist />
       <form
         className="mb-6 flex gap-2"
         onSubmit={(e) => {

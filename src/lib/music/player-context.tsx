@@ -4,10 +4,11 @@ import { toast } from "sonner";
 import { DEMO_TRACKS } from "./catalog";
 import { moveItem, nextIndex, parseFileName, prevIndex, shuffleQueue } from "./queue";
 import { nativeMedia } from "./native-media";
+import { nativeFolder } from "./native-folder";
 import { supabase } from "@/integrations/supabase/client";
 import { defaultPrefs, fileStore, loadPrefs, savePrefs, type Prefs } from "./storage";
 import type { Playlist, RepeatMode, Track } from "./types";
-import { fingerprint, formatProblem, type ImportItem, type ImportProgress, type ImportReport } from "./import";
+import { audioMime, fingerprint, formatProblem, type ImportItem, type ImportProgress, type ImportReport } from "./import";
 
 interface PlayerCtx {
   ready: boolean;
@@ -58,12 +59,28 @@ export function usePlayer() {
   return c;
 }
 
-function probeDuration(url: string): Promise<number | undefined> {
+function probeDuration(url: string, signal?: AbortSignal): Promise<number | undefined> {
   return new Promise((resolve) => {
     const a = new Audio();
+    let settled = false;
+    const finish = (duration?: number) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", cancel);
+      a.onloadedmetadata = null;
+      a.onerror = null;
+      a.removeAttribute("src");
+      a.load();
+      resolve(duration);
+    };
+    const cancel = () => finish();
+    const timer = setTimeout(cancel, 15000);
+    signal?.addEventListener("abort", cancel, { once: true });
+    if (signal?.aborted) { finish(); return; }
     a.preload = "metadata";
-    a.onloadedmetadata = () => resolve(isFinite(a.duration) ? a.duration : undefined);
-    a.onerror = () => resolve(undefined);
+    a.onloadedmetadata = () => finish(isFinite(a.duration) ? a.duration : undefined);
+    a.onerror = () => finish();
     a.src = url;
   });
 }
@@ -104,6 +121,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  useEffect(() => {
+    if (!nativeFolder) return;
+    void nativeFolder.restore().then(({ folders }) => {
+      if (folders.some((folder) => !folder.granted)) toast.warning("O acesso a uma pasta foi perdido. As cópias salvas continuam disponíveis; para importar novamente, escolha a pasta em Importar músicas.");
+    }).catch(() => {});
+  }, []);
 
   const [demosOn, setDemosOn] = useState(true);
   useEffect(() => {
@@ -381,8 +404,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
           continue;
         }
         if (known.has(fp)) { report.duplicates++; report.skipped.push({ path, reason: "Já está na biblioteca (duplicado)" }); continue; }
-        const url = URL.createObjectURL(file);
-        const duration = await probeDuration(url);
+        const audioFile = new File([file], file.name, { type: audioMime(file.name, file.type) });
+        const url = URL.createObjectURL(audioFile);
+        const duration = await probeDuration(url, opts.signal);
+        if (opts.signal?.aborted) { URL.revokeObjectURL(url); report.cancelled = true; break; }
         if (duration === undefined) {
           URL.revokeObjectURL(url);
           report.skipped.push({ path, reason: "Arquivo corrompido ou codificação não suportada" });
@@ -393,9 +418,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         const meta = parseFileName(file.name);
         const t: Track = { id, ...meta, duration, url, source: "local", fingerprint: fp, path, folderName };
         try {
-          await fileStore.put({ id, ...meta, duration, fingerprint: fp, path, folderName, blob: file, addedAt: Date.now() });
+          await fileStore.put({ id, ...meta, duration, fingerprint: fp, path, folderName, blob: audioFile, addedAt: Date.now() });
         } catch {
-          if (!opts.quiet) toast.warning(`"${meta["title"]}" ficará disponível só nesta sessão (sem espaço para salvar).`);
+          URL.revokeObjectURL(url);
+          report.skipped.push({ path, reason: "Não foi possível salvar no aparelho. Verifique o espaço disponível." });
+          continue;
         }
         known.add(fp);
         report.imported++;
