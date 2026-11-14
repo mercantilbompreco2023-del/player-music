@@ -26,6 +26,7 @@ import { Route as PlaylistsRouteImport } from './routes/playlists'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as IndexHtmlRouteImport } from './routes/index.html'
 import { Route as PlaylistsIndexRouteImport } from './routes/playlists.index'
 import { Route as PlaylistsIdRouteImport } from './routes/playlists.$id'
 
@@ -113,6 +114,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const IndexHtmlRoute = IndexHtmlRouteImport.update({
+  id: '/html',
+  path: '/html',
+  getParentRoute: () => Char91indexChar93Route,
+} as any)
 const PlaylistsIndexRoute = PlaylistsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -134,13 +140,14 @@ export interface FileRoutesByFullPath {
   '/favoritos': typeof FavoritosRoute
   '/fila': typeof FilaRoute
   '/importar': typeof ImportarRoute
-  '/index': typeof Char91indexChar93Route
+  '/index': typeof Char91indexChar93RouteWithChildren
   '/pastas': typeof PastasRoute
   '/player': typeof PlayerRoute
   '/playlists': typeof PlaylistsRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/index/html': typeof IndexHtmlRoute
   '/playlists/$id': typeof PlaylistsIdRoute
   '/playlists/': typeof PlaylistsIndexRoute
 }
@@ -154,12 +161,13 @@ export interface FileRoutesByTo {
   '/favoritos': typeof FavoritosRoute
   '/fila': typeof FilaRoute
   '/importar': typeof ImportarRoute
-  '/index': typeof Char91indexChar93Route
+  '/index': typeof Char91indexChar93RouteWithChildren
   '/pastas': typeof PastasRoute
   '/player': typeof PlayerRoute
   '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/index/html': typeof IndexHtmlRoute
   '/playlists/$id': typeof PlaylistsIdRoute
   '/playlists': typeof PlaylistsIndexRoute
 }
@@ -175,13 +183,14 @@ export interface FileRoutesById {
   '/favoritos': typeof FavoritosRoute
   '/fila': typeof FilaRoute
   '/importar': typeof ImportarRoute
-  '/index': typeof Char91indexChar93Route
+  '/index': typeof Char91indexChar93RouteWithChildren
   '/pastas': typeof PastasRoute
   '/player': typeof PlayerRoute
   '/playlists': typeof PlaylistsRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/index/html': typeof IndexHtmlRoute
   '/playlists/$id': typeof PlaylistsIdRoute
   '/playlists/': typeof PlaylistsIndexRoute
 }
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/reset-password'
     | '/admin'
+    | '/index/html'
     | '/playlists/$id'
     | '/playlists/'
   fileRoutesByTo: FileRoutesByTo
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/reset-password'
     | '/admin'
+    | '/index/html'
     | '/playlists/$id'
     | '/playlists'
   id:
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/reset-password'
     | '/_authenticated/admin'
+    | '/index/html'
     | '/playlists/$id'
     | '/playlists/'
   fileRoutesById: FileRoutesById
@@ -259,7 +271,7 @@ export interface RootRouteChildren {
   FavoritosRoute: typeof FavoritosRoute
   FilaRoute: typeof FilaRoute
   ImportarRoute: typeof ImportarRoute
-  Char91indexChar93Route: typeof Char91indexChar93Route
+  Char91indexChar93Route: typeof Char91indexChar93RouteWithChildren
   PastasRoute: typeof PastasRoute
   PlayerRoute: typeof PlayerRoute
   PlaylistsRoute: typeof PlaylistsRouteWithChildren
@@ -388,6 +400,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/index/html': {
+      id: '/index/html'
+      path: '/html'
+      fullPath: '/index/html'
+      preLoaderRoute: typeof IndexHtmlRouteImport
+      parentRoute: typeof Char91indexChar93Route
+    }
     '/playlists/': {
       id: '/playlists/'
       path: '/'
@@ -416,6 +435,17 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface Char91indexChar93RouteChildren {
+  IndexHtmlRoute: typeof IndexHtmlRoute
+}
+
+const Char91indexChar93RouteChildren: Char91indexChar93RouteChildren = {
+  IndexHtmlRoute: IndexHtmlRoute,
+}
+
+const Char91indexChar93RouteWithChildren =
+  Char91indexChar93Route._addFileChildren(Char91indexChar93RouteChildren)
+
 interface PlaylistsRouteChildren {
   PlaylistsIdRoute: typeof PlaylistsIdRoute
   PlaylistsIndexRoute: typeof PlaylistsIndexRoute
@@ -441,7 +471,7 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritosRoute: FavoritosRoute,
   FilaRoute: FilaRoute,
   ImportarRoute: ImportarRoute,
-  Char91indexChar93Route: Char91indexChar93Route,
+  Char91indexChar93Route: Char91indexChar93RouteWithChildren,
   PastasRoute: PastasRoute,
   PlayerRoute: PlayerRoute,
   PlaylistsRoute: PlaylistsRouteWithChildren,
