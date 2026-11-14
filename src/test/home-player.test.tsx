@@ -16,6 +16,7 @@ const player = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/music/player-context", () => ({ usePlayer: () => player }));
 vi.mock("@/components/music/Cover", () => ({ Cover: () => null }));
+vi.mock("@/components/ui/slider", () => ({ Slider: () => null }));
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
@@ -27,14 +28,14 @@ afterEach(cleanup);
 it("não inicia áudio automaticamente e toca os arquivos da biblioteca em sequência mesmo após aleatório", () => {
   render(<HomePlayer />);
   expect(player.playList).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByRole("button", { name: "Tocar", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: /^Tocar$/ }));
   expect(player.playList).toHaveBeenCalledExactlyOnceWith(["local-a", "local-b"], "local-a", "ordered");
 });
 
 it("preserva a faixa atual sem recriar sua fila", () => {
   player.current = { id: "local-b", title: "Segunda", artist: "Autor" };
   render(<HomePlayer />);
-  fireEvent.click(screen.getByRole("button", { name: "Tocar", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: /^Tocar$/ }));
   expect(player.toggle).toHaveBeenCalledExactlyOnceWith();
   expect(player.playList).not.toHaveBeenCalled();
 });
