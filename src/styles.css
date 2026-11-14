@@ -45,7 +45,7 @@
   --card-foreground: oklch(0.2 0.02 260);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0.02 260);
-  --primary: oklch(0.62 0.22 255);
+  --primary: oklch(0.55 0.24 310);
   --primary-foreground: oklch(0.99 0.01 255);
   --secondary: oklch(0.92 0.015 255);
   --secondary-foreground: oklch(0.25 0.02 260);
@@ -70,7 +70,7 @@
   --card-foreground: oklch(0.97 0.008 285);
   --popover: oklch(0.19 0.04 285);
   --popover-foreground: oklch(0.97 0.008 285);
-  --primary: oklch(0.7 0.22 292);
+  --primary: oklch(0.68 0.29 310);
   --primary-foreground: oklch(0.99 0.005 285);
   --secondary: oklch(0.23 0.045 285);
   --secondary-foreground: oklch(0.95 0.01 285);
@@ -82,9 +82,9 @@
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(1 0 0 / 11%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.7 0.22 292);
+  --ring: oklch(0.68 0.29 310);
   --surface: oklch(0.14 0.035 285 / 0.94);
-  --glow: oklch(0.68 0.22 292);
+  --glow: oklch(0.68 0.29 310);
   --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.42 0.19 292 / 0.55), transparent 65%);
 }
 
@@ -96,7 +96,7 @@
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
   }
-  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: 0; }
 }
 
 @utility bg-hero { background-image: var(--gradient-hero); }
@@ -113,3 +113,14 @@
 
 @keyframes eq { 0%,100% { transform: scaleY(0.3) } 50% { transform: scaleY(1) } }
 @utility eq-bar { animation: eq 0.9s ease-in-out infinite; transform-origin: bottom; }
+
+@utility neon-panel {
+  background: linear-gradient(120deg, color-mix(in oklab, var(--primary) 12%, var(--background)), var(--background) 55%, color-mix(in oklab, var(--primary) 10%, var(--background)));
+  box-shadow: 0 0 18px -8px var(--primary);
+}
+@utility neon-tile {
+  background: linear-gradient(140deg, color-mix(in oklab, var(--primary) 14%, var(--card)), var(--card) 70%);
+  border-color: color-mix(in oklab, var(--primary) 32%, var(--border));
+}
+.section-heading { border-left: 4px solid var(--primary); padding-left: 10px; }
+@media (prefers-reduced-motion: reduce) { .eq-bar { animation: none; } }

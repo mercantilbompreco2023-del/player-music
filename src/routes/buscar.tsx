@@ -14,6 +14,8 @@ export const Route = createFileRoute("/buscar")({
       { name: "description", content: "Encontre faixas da sua biblioteca por título ou artista." },
       { property: "og:title", content: "Buscar — Player Music" },
       { property: "og:description", content: "Encontre faixas da sua biblioteca por título ou artista." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: BuscarPage,

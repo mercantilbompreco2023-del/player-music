@@ -32,6 +32,8 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Entre na sua conta do Player Music." },
       { property: "og:title", content: "Entrar — Player Music" },
       { property: "og:description", content: "Entre na sua conta do Player Music." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,

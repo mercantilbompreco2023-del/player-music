@@ -13,6 +13,8 @@ export const Route = createFileRoute("/descobrir")({
       { name: "description", content: "Músicas tocadas recentemente e faixas de demonstração livres." },
       { property: "og:title", content: "Descobrir — Player Music" },
       { property: "og:description", content: "Músicas tocadas recentemente e faixas de demonstração livres." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: DescobrirPage,

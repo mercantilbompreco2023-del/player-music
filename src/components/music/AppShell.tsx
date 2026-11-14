@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff, Volume2, Settings2, Image, AudioLines } from "lucide-react";
+import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff, Volume2, Settings2, Image, AudioLines, FolderOpen, Heart } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/music/player-context";
@@ -11,6 +11,14 @@ const NAV = [
   { to: "/buscar", label: "Buscar", icon: Search },
   { to: "/biblioteca", label: "Biblioteca", icon: Library },
   { to: "/playlists", label: "Playlists", icon: ListMusic },
+] as const;
+
+const MOBILE_NAV = [
+  { to: "/", label: "Início", icon: Home },
+  { to: "/biblioteca", label: "Músicas", icon: Library },
+  { to: "/playlists", label: "Playlists", icon: ListMusic },
+  { to: "/pastas", label: "Pastas", icon: FolderOpen },
+  { to: "/favoritos", label: "Favoritos", icon: Heart },
 ] as const;
 
 type NowPlayingPrefs = { style: "compact" | "highlighted"; showCover: boolean; showArtist: boolean; showProgress: boolean };
@@ -133,11 +141,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-2xl pb-safe lg:hidden">
         {!onPlayer && <MiniPlayer />}
-        <nav className="glass grid grid-cols-4 border-t">
-          {NAV.map(({ to, label, icon: Icon }) => {
+        <nav className="glass mx-2 mb-2 grid grid-cols-5 rounded-2xl border border-primary/30">
+          {MOBILE_NAV.map(({ to, label, icon: Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
             return (
-              <Link key={to} to={to} className={cn("flex flex-col items-center gap-1 py-2.5 text-xs font-medium", active ? "text-primary" : "text-muted-foreground")}>
+              <Link key={to} to={to} className={cn("flex min-w-0 flex-col items-center gap-1 py-2.5 text-[10px] font-medium", active ? "text-primary" : "text-muted-foreground")}>
                 <Icon className="size-5" />
                 {label}
               </Link>
