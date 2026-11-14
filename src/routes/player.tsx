@@ -35,16 +35,16 @@ function PlayerPage() {
   const upcoming = p.queue.map((id, pos) => ({ pos, track: p.byId(id) })).filter((x) => x.pos > p.index && x.track);
 
   return (
-    <div className="space-y-6">
+    <div className="relative mx-auto max-w-3xl space-y-6 pb-8">
       <div className="flex items-center justify-between">
         <button onClick={() => router.history.back()} aria-label="Voltar" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Tocando agora</p>
+        <p className="rounded-full border border-primary/50 bg-primary/15 px-4 py-2 text-xs font-extrabold uppercase tracking-widest text-primary shadow-glow">♫ Tocando agora</p>
         <span className="size-10" />
       </div>
 
-      <Cover seed={t.id} className="mx-auto aspect-square w-full max-w-sm rounded-3xl shadow-glow" iconClass="size-1/4" />
+      <div className="rounded-[2rem] border border-primary/70 bg-[linear-gradient(135deg,oklch(0.2_0.055_292),oklch(0.105_0.025_285)_58%,oklch(0.17_0.06_310))] p-4 shadow-[0_0_35px_-8px_oklch(0.62_0.24_292_/_0.65)] ring-1 ring-primary/20 sm:p-6"><Cover seed={t.id} className="mx-auto aspect-square w-full max-w-sm rounded-2xl border border-primary/50 shadow-[0_0_28px_-8px_oklch(0.65_0.25_292_/_0.7)]" iconClass="size-1/4" /></div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 rounded-2xl border border-primary/25 bg-card/70 p-3 shadow-glow">
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-2xl font-bold">{t.title}</h1>
           <p className="truncate text-muted-foreground">{t.artist}</p>
@@ -68,7 +68,7 @@ function PlayerPage() {
           <Shuffle className="size-6" />
         </button>
         <button onClick={p.prev} aria-label="Anterior" className="p-2"><SkipBack className="size-8 fill-current" /></button>
-        <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className="flex size-18 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-glow">
+        <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className="flex size-18 items-center justify-center rounded-full border border-fuchsia-300/50 bg-gradient-to-br from-fuchsia-500 to-violet-700 text-white shadow-[0_0_28px_oklch(0.65_0.24_292_/_0.75)]">
           {p.isPlaying ? <Pause className="size-8 fill-current" /> : <Play className="ml-1 size-8 fill-current" />}
         </button>
         <button onClick={p.next} aria-label="Próxima" className="p-2"><SkipForward className="size-8 fill-current" /></button>
@@ -93,7 +93,7 @@ function PlayerPage() {
           <p className="text-sm text-muted-foreground">{p.prefs.repeat === "all" ? "A fila recomeça do início." : "Fim da fila."}</p>
         ) : (
           upcoming.map(({ pos, track }) => (
-            <div key={`${pos}-${track!.id}`} className="flex items-center gap-3 rounded-xl px-2 py-1.5 hover:bg-accent/60">
+            <div key={`${pos}-${track!.id}`} className="flex items-center gap-3 rounded-xl border-b border-primary/15 px-2 py-2 hover:bg-primary/10">
               <button className="flex min-w-0 flex-1 items-center gap-3 text-left" onClick={() => p.playAt(pos)}>
                 <Cover seed={track!.id} className="size-10" />
                 <div className="min-w-0">
