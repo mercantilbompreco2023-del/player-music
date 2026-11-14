@@ -12,4 +12,5 @@
 - [ ] Gerar APK atualizado com a nova assinatura autorizada; a assinatura anterior não está disponível
 - [ ] Verificar importação, exportação e restauração em Android físico (depende de aparelho)
 - [ ] Entregar chave nova, APK, projeto e planilha atualizados
+- [ ] Criar novo ícone do Player Music e incluir no Android e no aplicativo web
 - [x] Gerar playlist por descrição com AI Gateway usando somente faixas da biblioteca
