@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/music/AppShell";
 import { ImportButton } from "@/components/music/ImportButton";
 import { TrackRow } from "@/components/music/TrackRow";
 import { usePlayer } from "@/lib/music/player-context";
-import { savedFolders } from "@/lib/music/folders";
+import { addTracksToCustomFolder, createCustomFolder, customFolders, savedFolders } from "@/lib/music/folders";
 import { allSelected, toggleAll, toggleOne } from "@/lib/music/selection";
 import { Button } from "@/components/ui/button";
 import { exportAudioTracks, exportLibrary } from "@/lib/music/export";
@@ -33,8 +33,11 @@ function BibliotecaPage() {
   const [tab, setTab] = useState<Tab>("minhas");
   const [folderName, setFolderName] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [newFolderName, setNewFolderName] = useState("");
+  const [showFolderCreator, setShowFolderCreator] = useState(false);
   const folders = savedFolders(p.tracks);
-  const folder = folders.find((item) => item.name === folderName);
+  const manualFolders = customFolders(p.tracks);
+  const folder = [...folders, ...manualFolders].find((item) => item.name === folderName);
   const list = p.tracks.filter((t) =>
     tab === "minhas" ? t.source === "local" || t.source === "cloud" : tab === "demo" ? t.source === "demo" : tab === "favoritas" ? p.isFavorite(t.id) : true,
   );
@@ -84,12 +87,28 @@ function BibliotecaPage() {
         <Button disabled={!p.ready || !p.tracks.some((t) => t.source !== "demo")} onClick={() => { void exportAudioTracks(p.tracks).then((count) => count ? toast.success(`${count} arquivo(s) de música exportado(s).`) : toast.message("Exportação cancelada.")).catch((error) => toast.error(error instanceof Error ? error.message : "Não foi possível exportar as músicas.")); }}><Download /> Exportar músicas</Button>
         <Button variant="outline" disabled={!p.ready || !p.tracks.some((t) => t.source !== "demo")} onClick={() => { void exportLibrary(p.tracks).catch(() => toast.error("Não foi possível exportar a lista.")); }}><Download /> Exportar lista (CSV)</Button>
       </div>
+      {showFolderCreator && selected.size > 0 && (
+        <section className="mb-5 rounded-xl border border-primary/40 bg-card p-3">
+          <h3 className="mb-2 font-semibold">Criar pasta com {selected.size} música(s)</h3>
+          <form className="flex flex-wrap gap-2" onSubmit={(event) => {
+            event.preventDefault();
+            const ok = createCustomFolder(newFolderName, [...selected]);
+            if (!ok) { toast.error("Digite um nome novo para a pasta."); return; }
+            toast.success("Pasta criada com as músicas selecionadas.");
+            setNewFolderName(""); setShowFolderCreator(false); limpar();
+          }}>
+            <input value={newFolderName} onChange={(event) => setNewFolderName(event.target.value)} placeholder="Nome do cantor ou da pasta" aria-label="Nome da nova pasta" className="min-w-0 flex-1 rounded-lg border bg-background px-3 py-2 text-sm" maxLength={60} />
+            <Button type="submit" disabled={!newFolderName.trim()}>Salvar pasta</Button>
+            <Button type="button" variant="ghost" onClick={() => setShowFolderCreator(false)}>Cancelar</Button>
+          </form>
+        </section>
+      )}
       {p.ready && (
         <section aria-label="Pastas salvas" className="mb-6">
           <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold"><FolderOpen className="size-5 text-primary" /> Pastas salvas</h2>
-          {folders.length ? (
+          {[...manualFolders, ...folders].length ? (
             <div className="grid gap-3 sm:grid-cols-2">
-              {folders.map((item) => (
+              {[...manualFolders, ...folders].map((item) => (
                 <Button key={item.name} variant="outline" className="h-auto min-h-24 w-full justify-start gap-3 whitespace-normal rounded-lg p-4 text-left" onClick={() => { setFolderName(item.name); setTab("pastas"); limpar(); }}>
                   <FolderOpen className="size-8 shrink-0 text-primary" />
                   <span className="min-w-0 flex-1"><span className="block break-words text-base font-semibold">{item.name}</span><span className="block text-xs text-muted-foreground">{item.tracks.length} música(s)</span></span>
@@ -97,7 +116,7 @@ function BibliotecaPage() {
                 </Button>
               ))}
             </div>
-          ) : <Button variant="outline" asChild className="h-20 w-full justify-start whitespace-normal"><Link to="/importar"><FolderOpen /> Importar pasta de músicas</Link></Button>}
+          ) : <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Selecione músicas na biblioteca e toque em “Criar pasta com selecionadas” para montar uma pasta por cantor.</p>}
         </section>
       )}
       <div role="tablist" className="mb-4 grid grid-cols-4 gap-1 rounded-full bg-muted p-1">
