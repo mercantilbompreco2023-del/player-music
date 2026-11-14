@@ -47,3 +47,4 @@ use the editor.
 - Android CSV export uses ACTION_CREATE_DOCUMENT through LibraryExport; browser download links are not reliable in WebView.
 - Android signing keys stay outside the repository and source archives; verify APK certificates before claiming update compatibility.
 - AI playlist selection runs in an authenticated server function with validated metadata only; verify IDs against the provided library and require explicit saving of the preview.
+- Account library backup (`public.library_backups`, `src/lib/music/backup*.ts`) stores metadata only — never playback URLs or audio blobs; restored folders are re-attached through localStorage folder hints so they survive reloads, and audio itself still comes from cloud copies or a fresh import.

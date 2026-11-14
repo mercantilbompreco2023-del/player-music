@@ -18,4 +18,4 @@
 - [x] Login válido: entrar com e-mail/senha funciona; cadastro exige e-mail real com confirmação
 - [x] Acesso de administrador concedido ao login do proprietário
 - [x] Importação de pasta confirmada no navegador; "Selecionar todas" e ações em lote na Biblioteca
-- [ ] Lista de pastas e músicas salva na conta: restaurar em outro celular sem perder nada
+- [x] Lista de pastas e músicas salva na conta: restaurar em outro celular sem perder nada
