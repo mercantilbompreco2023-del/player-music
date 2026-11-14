@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] Verificar commit 37941864 já sincronizado, preservar commit posterior e testar mostrar/ocultar nome com persistência; conferir build e entregar v22.
+- [x] Commit 37941864 confirmado no histórico, HEAD posterior 97ce987 preservado; nome oculto/visível persistem, título e reprodução preservados. 55 testes, build OK; entrega v22.
 - [x] Gerar APK do Player Music
 - [x] Versão Android nativa: serviço de mídia em primeiro plano, notificação de mídia, controles na tela bloqueada
 - [x] Importar pasta completa no APK (seletor de pasta nativo)
