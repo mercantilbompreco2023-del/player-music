@@ -119,19 +119,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // Carregar preferências e arquivos
   useEffect(() => {
     setPrefs(loadPrefs());
-    fileStore
-      .all()
-      .then(async (files) => {
-        const local = files
-          .sort((a, b) => b.addedAt - a.addedAt)
-          .map((f) => ({ id: f.id, title: f.title, artist: f.artist, duration: f.duration, fingerprint: f.fingerprint, path: f.path, url: URL.createObjectURL(f.blob), source: "local" as const }));
-        setLocalTracks(local);
-        const { data: auth } = await supabase.auth.getUser();
-        if (!auth.user) return;
-        const cloud = await fetchCloudTracks(auth.user.id);
-        setLocalTracks((current) => [...current.filter((t) => t.source !== "cloud"), ...cloud]);
-      })
-      .catch(() => toast.error("Não foi possível carregar a biblioteca. Confira sua conexão e o armazenamento na nuvem."))
+    const localPromise = fileStore.all()
+      .then((files) => files
+        .sort((a, b) => b.addedAt - a.addedAt)
+        .map((f) => ({ id: f.id, title: f.title, artist: f.artist, duration: f.duration, fingerprint: f.fingerprint, path: f.path, url: URL.createObjectURL(f.blob), source: "local" as const })))
+      .catch(() => {
+        toast.error("Não foi possível abrir os arquivos salvos neste aparelho.");
+        return [] as Track[];
+      });
+    const cloudPromise = supabase.auth.getUser()
+      .then(({ data }) => data.user ? fetchCloudTracks(data.user.id) : [])
+      .catch(() => [] as Track[]);
+    Promise.all([localPromise, cloudPromise])
+      .then(([local, cloud]) => setLocalTracks([...local, ...cloud]))
       .finally(() => setReady(true));
   }, []);
 
