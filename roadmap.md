@@ -22,3 +22,5 @@
 - [x] Atualização automática: o APK abre o app publicado, então as novidades chegam sozinhas ao abrir
 - [x] Tela inicial no estilo da referência roxa: player, atalhos, artistas, playlists e navegação; verificar e entregar ZIP/CSV.
 - [x] Conferir commit ca35ef1a22ba32dee413662599ca479ccfc9b68f, validar expansão e reprodução das playlists, preservar azul/preto e entregar ZIP/CSV v18.
+- [ ] Verificar e corrigir o erro informado na página inicial antes da publicação.
+- [ ] Publicar tela inicial com destaque roxo, player e atalhos, preservando as demais funções.
