@@ -30,6 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Project rules
+- Keep the legacy `/index` address as a redirect to `/`, so older app links never show a missing page.
 - Home playback controls use HomePlayer and the shared player context; artwork is illustrative, while artists and playlists derive only from the user's library.
 - All playback state lives in `src/lib/music/player-context.tsx` (single HTMLAudioElement + Media Session); pages only call its actions — keeps one audio source of truth.
 - Pure queue/search helpers live in `src/lib/music/queue.ts` with tests in `src/test/music-queue.test.ts`.

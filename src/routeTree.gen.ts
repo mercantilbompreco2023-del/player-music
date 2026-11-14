@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as Char91indexChar93RouteImport } from './routes/[index]'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -28,6 +29,11 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as PlaylistsIndexRouteImport } from './routes/playlists.index'
 import { Route as PlaylistsIdRouteImport } from './routes/playlists.$id'
 
+const Char91indexChar93Route = Char91indexChar93RouteImport.update({
+  id: '/index',
+  path: '/index',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/favoritos': typeof FavoritosRoute
   '/fila': typeof FilaRoute
   '/importar': typeof ImportarRoute
+  '/index': typeof Char91indexChar93Route
   '/pastas': typeof PastasRoute
   '/player': typeof PlayerRoute
   '/playlists': typeof PlaylistsRouteWithChildren
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/favoritos': typeof FavoritosRoute
   '/fila': typeof FilaRoute
   '/importar': typeof ImportarRoute
+  '/index': typeof Char91indexChar93Route
   '/pastas': typeof PastasRoute
   '/player': typeof PlayerRoute
   '/privacidade': typeof PrivacidadeRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/favoritos': typeof FavoritosRoute
   '/fila': typeof FilaRoute
   '/importar': typeof ImportarRoute
+  '/index': typeof Char91indexChar93Route
   '/pastas': typeof PastasRoute
   '/player': typeof PlayerRoute
   '/playlists': typeof PlaylistsRouteWithChildren
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/favoritos'
     | '/fila'
     | '/importar'
+    | '/index'
     | '/pastas'
     | '/player'
     | '/playlists'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/favoritos'
     | '/fila'
     | '/importar'
+    | '/index'
     | '/pastas'
     | '/player'
     | '/privacidade'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/favoritos'
     | '/fila'
     | '/importar'
+    | '/index'
     | '/pastas'
     | '/player'
     | '/playlists'
@@ -247,6 +259,7 @@ export interface RootRouteChildren {
   FavoritosRoute: typeof FavoritosRoute
   FilaRoute: typeof FilaRoute
   ImportarRoute: typeof ImportarRoute
+  Char91indexChar93Route: typeof Char91indexChar93Route
   PastasRoute: typeof PastasRoute
   PlayerRoute: typeof PlayerRoute
   PlaylistsRoute: typeof PlaylistsRouteWithChildren
@@ -256,6 +269,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/index': {
+      id: '/index'
+      path: '/index'
+      fullPath: '/index'
+      preLoaderRoute: typeof Char91indexChar93RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -421,6 +441,7 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritosRoute: FavoritosRoute,
   FilaRoute: FilaRoute,
   ImportarRoute: ImportarRoute,
+  Char91indexChar93Route: Char91indexChar93Route,
   PastasRoute: PastasRoute,
   PlayerRoute: PlayerRoute,
   PlaylistsRoute: PlaylistsRouteWithChildren,
