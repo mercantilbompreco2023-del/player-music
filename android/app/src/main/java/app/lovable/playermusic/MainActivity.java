@@ -9,6 +9,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(MediaPlaybackPlugin.class);
         registerPlugin(FolderPickerPlugin.class);
         registerPlugin(LibraryExportPlugin.class);
+        registerPlugin(MediaScanPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
