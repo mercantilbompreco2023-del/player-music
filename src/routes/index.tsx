@@ -81,7 +81,7 @@ function Index() {
         <h1 className="mt-3 text-3xl font-bold leading-tight">{greeting.data ?? "Sua música, do seu jeito."}</h1>
       </section>
 
-      <ArtistDiscovery />\n\n      {cards.data && cards.data.source !== "servidor" && (
+      {cards.data && cards.data.source !== "servidor" && (
         <p role="status" className="flex items-center gap-2 rounded-xl bg-muted p-3 text-xs">
           <AlertTriangle className="size-4 shrink-0" />
           Não foi possível carregar os cartões do servidor. Mostrando a {cards.data.source === "cache" ? "última versão salva" : "configuração padrão"}.
