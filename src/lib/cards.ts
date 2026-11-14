@@ -10,7 +10,7 @@ export const FUNCTIONS = {
   descobrir: { route: "/descobrir", title: "Descobrir", description: "Recentes e faixas de demonstração", icon: "compass" },
   player: { route: "/player", title: "Player", description: "O que está tocando agora", icon: "disc" },
   buscar: { route: "/buscar", title: "Buscar músicas", description: "Encontre por título ou artista", icon: "search" },
-  biblioteca: { route: "/biblioteca", title: "Minha biblioteca", description: "Todas as suas faixas", icon: "library" },
+  biblioteca: { route: "/biblioteca", title: "Minhas músicas", description: "Suas músicas importadas e salvas", icon: "library" },
   importar: { route: "/importar", title: "Importar músicas", description: "Adicione áudios do seu aparelho", icon: "upload" },
   playlists: { route: "/playlists", title: "Playlists", description: "Crie e organize listas", icon: "list-music" },
   favoritos: { route: "/favoritos", title: "Favoritos", description: "Suas faixas marcadas com coração", icon: "heart" },
