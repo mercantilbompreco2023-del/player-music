@@ -40,6 +40,16 @@ export function formatProblem(name: string, type: string, canPlay: (mime: string
   return null;
 }
 
+function readBuffer(b: Blob): Promise<ArrayBuffer> {
+  if (typeof b.arrayBuffer === "function") return b.arrayBuffer();
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result as ArrayBuffer);
+    r.onerror = () => reject(r.error);
+    r.readAsArrayBuffer(b);
+  });
+}
+
 /**
  * Impressão digital do conteúdo: tamanho + SHA-256 do início e do fim do arquivo.
  * Detecta o mesmo arquivo mesmo com outro nome ou em outra subpasta.
@@ -48,7 +58,7 @@ export async function fingerprint(blob: Blob): Promise<string> {
   const CHUNK = 256 * 1024;
   const head = blob.slice(0, CHUNK);
   const tail = blob.size > CHUNK ? blob.slice(Math.max(CHUNK, blob.size - CHUNK)) : new Blob();
-  const buf = await new Blob([head, tail]).arrayBuffer();
+  const buf = await readBuffer(new Blob([head, tail]));
   if (typeof crypto !== "undefined" && crypto.subtle) {
     const hash = await crypto.subtle.digest("SHA-256", buf);
     const hex = Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, "0")).join("");
