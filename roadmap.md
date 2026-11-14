@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Verificar commit 37941864 já sincronizado, preservar commit posterior e testar mostrar/ocultar nome com persistência; conferir build e entregar v22.
 - [x] Gerar APK do Player Music
 - [x] Versão Android nativa: serviço de mídia em primeiro plano, notificação de mídia, controles na tela bloqueada
 - [x] Importar pasta completa no APK (seletor de pasta nativo)
