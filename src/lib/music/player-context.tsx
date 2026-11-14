@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { DEMO_TRACKS } from "./catalog";
 import { moveItem, nextIndex, parseFileName, prevIndex, shuffleQueue } from "./queue";
 import { nativeMedia } from "./native-media";
+import { nativeFolder } from "./native-folder";
 import { supabase } from "@/integrations/supabase/client";
 import { defaultPrefs, fileStore, loadPrefs, savePrefs, type Prefs } from "./storage";
 import type { Playlist, RepeatMode, Track } from "./types";
@@ -120,6 +121,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  useEffect(() => {
+    if (!nativeFolder) return;
+    void nativeFolder.restore().then(({ folders }) => {
+      if (folders.some((folder) => !folder.granted)) toast.warning("O acesso a uma pasta foi perdido. As cópias salvas continuam disponíveis; para importar novamente, escolha a pasta em Importar músicas.");
+    }).catch(() => {});
+  }, []);
 
   const [demosOn, setDemosOn] = useState(true);
   useEffect(() => {
