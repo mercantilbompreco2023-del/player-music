@@ -65,7 +65,7 @@ export function TrackRow({ track, list, playlistId }: { track: Track; list: stri
           {playlistId && (
             <DropdownMenuItem onClick={() => p.removeFromPlaylist(playlistId, track.id)}><X /> Remover da playlist</DropdownMenuItem>
           )}
-          {track.source === "local" && (
+          {(track.source === "local" || track.source === "cloud") && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive" onClick={() => { if (window.confirm(track.source === "cloud" ? `Remover “${track.title}” da sua biblioteca na nuvem?` : `Remover “${track.title}” do app? O arquivo original no seu aparelho não é apagado.`)) void p.removeTrack(track.id); }}><Trash2 /> Remover do app</DropdownMenuItem>
