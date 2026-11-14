@@ -469,10 +469,20 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         const meta = parseFileName(file.name);
         const t: Track = { id, ...meta, duration, url, source: "local", fingerprint: fp, path, folderName };
         try {
-          await fileStore.put({ id, ...meta, duration, fingerprint: fp, path, folderName, blob: audioFile, addedAt: Date.now() });
+          // Solicita armazenamento persistente antes de gravar para reduzir a limpeza
+          // automática do WebView Android pelo sistema.
+          await requestPersistentStorage();
+          const storedFile = { id, ...meta, duration, fingerprint: fp, path, folderName, blob: audioFile, addedAt: Date.now() };
+          await fileStore.put(storedFile);
+          // Confirma a gravação lendo o registro de volta antes de contar como importado.
+          const verified = await fileStore.get(id);
+          if (!verified?.blob || verified.blob.size !== audioFile.size) {
+            await fileStore.remove(id).catch(() => {});
+            throw new Error("A gravação não foi confirmada");
+          }
         } catch {
           URL.revokeObjectURL(url);
-          report.skipped.push({ path, reason: "Não foi possível salvar no aparelho. Verifique o espaço disponível." });
+          report.skipped.push({ path, reason: "O Android não confirmou que a música foi salva. Verifique o espaço livre e tente novamente." });
           continue;
         }
         known.add(fp);
