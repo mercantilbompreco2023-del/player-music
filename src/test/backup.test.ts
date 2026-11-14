@@ -60,4 +60,15 @@ describe("backup da lista na conta", () => {
     const live = track({ id: "cloud-abc", source: "cloud", url: "https://x/y" });
     expect(mergeBackup(payload, [live], defaultPrefs).favorites).toEqual(["cloud-abc"]);
   });
+
+  it("liga a faixa da conta ao áudio que voltou pela nuvem pelo nome do arquivo", () => {
+    const fingerprint = "abcdef0123456789abcdef0123456789abcdef0123456789";
+    const importada = track({ id: "local-x", fingerprint, folderName: "MeuForró", path: "MeuForró/faixa1.wav", title: "faixa1" });
+    const payload = buildBackup([importada], defaultPrefs);
+    // Aparelho novo: o áudio voltou pela nuvem sem metadados, só com o nome do arquivo.
+    const voltou = track({ id: `cloud-${payload.tracks[0]?.fingerprint}.wav`, title: "faixa1", source: "cloud", url: "https://x/y.wav", fingerprint: undefined, folderName: undefined, path: undefined });
+    const r = mergeBackup(payload, [voltou], defaultPrefs);
+    expect(r.missing).toEqual([]);
+    expect(r.folderInfo).toEqual([{ id: voltou.id, folderName: "MeuForró", path: "MeuForró/faixa1.wav" }]);
+  });
 });
