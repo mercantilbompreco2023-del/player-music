@@ -65,7 +65,8 @@ function Index() {
     },
   });
   const status = useCardStatus();
-  const list = cards.data ? visibleCards(cards.data.cards, admin.data === true).filter((card) => card.function_key === "biblioteca") : [];
+  const HOME_FUNCTIONS = new Set(["biblioteca", "importar", "playlists", "favoritos", "player", "fila", "configuracoes"]);
+  const list = cards.data ? visibleCards(cards.data.cards, admin.data === true).filter((card) => HOME_FUNCTIONS.has(card.function_key)) : [];
 
   return (
     <div className="space-y-6">
