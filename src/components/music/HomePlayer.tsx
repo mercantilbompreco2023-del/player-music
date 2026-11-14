@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Cover } from "@/components/music/Cover";
-import { AudioLines, Camera, Heart, ListMusic, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, UserRound } from "lucide-react";
+import { AudioLines, Camera, Heart, ListMusic, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, UserRound, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { usePlayer } from "@/lib/music/player-context";
 import { formatTime } from "@/lib/music/queue";
 import { cn } from "@/lib/utils";
+import { identifyArtistForPhoto } from "@/lib/music/artist-photo.functions";
+import { toast } from "sonner";
 import artwork from "@/assets/music-headphones.jpg";
 
 
@@ -17,6 +19,8 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
   const [enabled, setEnabled] = useState(true);
   const [photo, setPhoto] = useState<string | null>(null);
   const [loadedArtist, setLoadedArtist] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+  const [searchArtist, setSearchArtist] = useState("");
   useEffect(() => {
     try {
       const saved = localStorage.getItem(ARTIST_PHOTO_PREF);
@@ -25,7 +29,7 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
   }, []);
   useEffect(() => {
     let active = true;
-    const name = artist.trim();
+    const name = (searchArtist || artist).trim();
     if (!enabled || !name) { setPhoto(null); return () => { active = false; }; }
     setLoadedArtist(name);
     const cached = artistPhotoCache.get(name.toLocaleLowerCase("pt-BR"));
@@ -55,8 +59,8 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
       })
       .catch(() => { artistPhotoCache.set(name.toLocaleLowerCase("pt-BR"), null); if (active) setPhoto(null); });
     return () => { active = false; };
-  }, [artist, enabled]);
-  const toggle = () => setEnabled((current) => {
+  }, [artist, enabled, searchArtist]);
+  const findWithAi = async () => {\n    if (!artist.trim()) return;\n    setAiBusy(true);\n    try {\n      const result = await identifyArtistForPhoto({ data: { artist } });\n      if (result.error) toast.error(result.error);\n      setSearchArtist(result.canonicalName);\n      setEnabled(true);\n      try { localStorage.setItem(ARTIST_PHOTO_PREF, "true"); } catch { /* preferência opcional */ }\n      toast.success("Artista identificado. Procurando foto…");\n    } catch { toast.error("Entre na sua conta para usar a busca de fotos com IA."); }\n    finally { setAiBusy(false); }\n  };\n  const toggle = () => setEnabled((current) => {
     const next = !current;
     try { localStorage.setItem(ARTIST_PHOTO_PREF, String(next)); } catch { /* preferência opcional */ }
     return next;
