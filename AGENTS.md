@@ -37,3 +37,4 @@ use the editor.
 - Home cards live in `app_cards` and route only by `function_key` via `src/lib/cards.ts`, so renaming/reordering can never change a card's destination.
 - Admin authorization is enforced by RLS + `has_role` (roles in `user_roles`); audit rows are written only by DB triggers. UI hiding is cosmetic. First admin is granted via SQL by the project owner, never by code or fixed passwords.
 - Folder/file imports go through `importItems` + `src/lib/music/import.ts`; duplicates are detected by content fingerprint (size + SHA-256 of head/tail), and each track is saved atomically so cancelling never leaves partial records.
+- Android APK wraps the published URL via Capacitor (`capacitor.config.ts`, `android-shell/`); SSR app has no static webDir.
