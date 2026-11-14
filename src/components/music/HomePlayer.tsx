@@ -60,17 +60,33 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
       .catch(() => { artistPhotoCache.set(name.toLocaleLowerCase("pt-BR"), null); if (active) setPhoto(null); });
     return () => { active = false; };
   }, [artist, enabled, searchArtist]);
-  const findWithAi = async () => {\n    if (!artist.trim()) return;\n    setAiBusy(true);\n    try {\n      const result = await identifyArtistForPhoto({ data: { artist } });\n      if (result.error) toast.error(result.error);\n      setSearchArtist(result.canonicalName);\n      setEnabled(true);\n      try { localStorage.setItem(ARTIST_PHOTO_PREF, "true"); } catch { /* preferência opcional */ }\n      toast.success("Artista identificado. Procurando foto…");\n    } catch { toast.error("Entre na sua conta para usar a busca de fotos com IA."); }\n    finally { setAiBusy(false); }\n  };\n  const toggle = () => setEnabled((current) => {
+  const findWithAi = async () => {
+    if (!artist.trim()) return;
+    setAiBusy(true);
+    try {
+      const result = await identifyArtistForPhoto({ data: { artist } });
+      if (result.error) toast.error(result.error);
+      setSearchArtist(result.canonicalName);
+      setEnabled(true);
+      try { localStorage.setItem(ARTIST_PHOTO_PREF, "true"); } catch { /* preferência opcional */ }
+      toast.success("Artista identificado. Procurando foto…");
+    } catch { toast.error("Entre na sua conta para usar a busca de fotos com IA."); }
+    finally { setAiBusy(false); }
+  };
+  const toggle = () => setEnabled((current) => {
     const next = !current;
     try { localStorage.setItem(ARTIST_PHOTO_PREF, String(next)); } catch { /* preferência opcional */ }
     return next;
   });
   return (
     <div className="relative">
-      {enabled && photo && loadedArtist === artist ? <img src={photo} alt={`Foto de ${artist}`} className="aspect-square w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" /> : <Cover seed={fallbackSeed} className="aspect-square w-full rounded-none" iconClass="size-1/3" />}
-      <button type="button" onClick={toggle} aria-label={enabled ? "Desativar foto automática do cantor" : "Ativar foto automática do cantor"} aria-pressed={enabled} title={enabled ? "Foto automática ativada" : "Foto automática desativada"} className="absolute bottom-2 right-2 rounded-full border border-white/30 bg-black/70 p-2 text-white backdrop-blur">
-        <Camera className={`size-4 ${enabled ? "text-primary" : "text-white"}`} />
-      </button>
+      {enabled && photo && loadedArtist === (searchArtist || artist) ? <img src={photo} alt={`Foto de ${artist}`} className="aspect-square w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" /> : <Cover seed={fallbackSeed} className="aspect-square w-full rounded-none" iconClass="size-1/3" />}
+      <div className="absolute bottom-2 right-2 flex gap-1">
+        <button type="button" onClick={findWithAi} disabled={aiBusy} aria-label="Localizar foto do cantor com IA" title="Localizar foto com IA" className="rounded-full border border-white/30 bg-black/70 p-2 text-white backdrop-blur disabled:opacity-50"><Sparkles className={`size-4 ${aiBusy ? "animate-pulse text-primary" : "text-fuchsia-300"}`} /></button>
+        <button type="button" onClick={toggle} aria-label={enabled ? "Desativar foto automática do cantor" : "Ativar foto automática do cantor"} aria-pressed={enabled} title={enabled ? "Foto automática ativada" : "Foto automática desativada"} className="rounded-full border border-white/30 bg-black/70 p-2 text-white backdrop-blur">
+          <Camera className={`size-4 ${enabled ? "text-primary" : "text-white"}`} />
+        </button>
+      </div>
     </div>
   );
 }
