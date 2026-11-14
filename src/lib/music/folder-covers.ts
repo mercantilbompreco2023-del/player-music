@@ -1,3 +1,5 @@
+import { readCustomFolders } from "./folders";
+
 const COVER_DB = "player-music-folder-covers";
 const COVER_STORE = "covers";
 

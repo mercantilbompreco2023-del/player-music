@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Salvar áudio no aparelho e na conta sem apagar a cópia local; foto/vídeo local e sequência explícita; testes e entrega v25.
 - [x] Conferir commit ce2a6f6 incluído na versão posterior; opção de segundo plano salva, integração de mídia com testes simulados, prévia sem erros, 62 testes aprovados e entrega v24.
 - [x] Conferir commit 97ce987e incluído na versão posterior, pastas por cantor e físicas sem colisão de nomes, reprodução e prévia: 59 testes aprovados, build OK, entrega v23.
 - [x] Gerar APK do Player Music
