@@ -38,6 +38,7 @@ describe("importação de pasta", () => {
   it("recusa arquivo que não é áudio", () => expect(formatProblem("capa.jpg", "image/jpeg", can)).toBe("Não é um arquivo de áudio"));
   it("recusa formato que o navegador não toca", () => expect(formatProblem("x.wma", "audio/x-ms-wma", can)).toMatch(/não suportado/));
   it("aceita mp3", () => expect(formatProblem("a.mp3", "audio/mpeg", can)).toBeNull());
+  it("aceita mp3 quando Android informa tipo genérico", () => expect(formatProblem("a.mp3", "application/octet-stream", can)).toBeNull());
   it("mesmo conteúdo com nomes diferentes gera a mesma impressão", async () => {
     const a = new File([new Uint8Array([1, 2, 3, 4])], "a.mp3");
     const b = new File([new Uint8Array([1, 2, 3, 4])], "outra/b.mp3");

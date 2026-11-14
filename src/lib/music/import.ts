@@ -34,10 +34,17 @@ export function isAudioCandidate(name: string, type: string): boolean {
   return type.startsWith("audio/") || AUDIO_EXT.test(name);
 }
 
+export function audioMime(name: string, type: string): string {
+  const ext = name.split(".").pop()?.toLowerCase() ?? "";
+  const known: Record<string, string> = { mp3: "audio/mpeg", wav: "audio/wav", m4a: "audio/mp4", aac: "audio/aac", ogg: "audio/ogg", oga: "audio/ogg", opus: "audio/ogg", flac: "audio/flac", webm: "audio/webm" };
+  return known[ext] ?? type;
+}
+
 /** Motivo de recusa por formato, ou null se o navegador pode tentar tocar. */
 export function formatProblem(name: string, type: string, canPlay: (mime: string) => string): string | null {
   if (!isAudioCandidate(name, type)) return "Não é um arquivo de áudio";
-  if (type && canPlay(type) === "") return `Formato não suportado por este navegador (${type})`;
+  const mime = audioMime(name, type);
+  if (mime && canPlay(mime) === "") return `Formato não suportado por este navegador (${mime})`;
   return null;
 }
 
