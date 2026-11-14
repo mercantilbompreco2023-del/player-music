@@ -34,6 +34,33 @@ export function savePrefs(p: Prefs): boolean {
   }
 }
 
+// ---- Pastas conhecidas de cada música (sobrevive a recarregamentos e à lista da nuvem) ----
+const HINTS_KEY = "pm:folder-hints:v1";
+
+export interface FolderHint {
+  folderName?: string | undefined;
+  path?: string | undefined;
+}
+
+export function loadFolderHints(): Record<string, FolderHint> {
+  try {
+    const raw = localStorage.getItem(HINTS_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed && typeof parsed === "object" ? (parsed as Record<string, FolderHint>) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function saveFolderHints(hints: Record<string, FolderHint>): boolean {
+  try {
+    localStorage.setItem(HINTS_KEY, JSON.stringify(hints));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // ---- Arquivos importados (IndexedDB) ----
 export interface StoredFile {
   id: string;
