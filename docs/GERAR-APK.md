@@ -1,5 +1,8 @@
 # Como gerar o APK do Player Music
 
+## Atualização 1.12
+O instalador mantém o endereço publicado e a chave da versão v5 para preservar a origem dos dados. Inclui os serviços Android existentes de mídia, importação de pastas e exportação. A compatibilidade é conferida pelo certificado; a instalação e os controles com a tela apagada ainda precisam de teste no aparelho. Não desinstale a versão anterior para atualizar.
+
 O APK abre o app publicado (https://player-music-app.lovable.app) dentro de um aplicativo Android.
 Precisa de internet na primeira abertura. A música pode parar com a tela desligada (veja docs/PLAYER-MUSIC.md, item 7).
 

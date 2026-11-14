@@ -1,10 +1,11 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
-// O APK carrega a interface empacotada localmente, sem redirecionar para um site.
+// Preserve a origem publicada para manter os dados das instalações existentes.
 const config: CapacitorConfig = {
   appId: "app.lovable.playermusic",
   appName: "Player Music",
-  webDir: ".output/public",
+  webDir: "android-shell",
+  server: { url: "https://player-music-app.lovable.app", cleartext: false },
   android: { backgroundColor: "#1c1d24" },
 };
 
