@@ -265,8 +265,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const added: Track[] = [];
     let rejected = 0;
     for (const file of list) {
-      const typeOk = file.type ? probe.canPlayType(file.type) !== "" : /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|webm)$/i.test(file.name);
-      if (!file.type.startsWith("audio/") && file.type !== "" && !file.type.includes("ogg") ? true : !typeOk) {
+      const looksAudio = file.type.startsWith("audio/") || /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|webm)$/i.test(file.name);
+      if (!looksAudio || (file.type && probe.canPlayType(file.type) === "")) {
         rejected++;
         continue;
       }
