@@ -9,6 +9,7 @@ import { usePlayer } from "@/lib/music/player-context";
 import { formatTime } from "@/lib/music/queue";
 import type { Track } from "@/lib/music/types";
 import { Cover } from "./Cover";
+import { CustomFolderCover } from "./CustomFolderCover";
 
 export function TrackRow({ track, list, playlistId, selectable, selected, onToggleSelect }: { track: Track; list: string[]; playlistId?: string; selectable?: boolean; selected?: boolean; onToggleSelect?: () => void }) {
   const p = usePlayer();
@@ -30,7 +31,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
       )}
       <button className="flex min-w-0 flex-1 items-center gap-3 text-left" onClick={() => p.playList(list, track.id)} aria-label={`Tocar ${track.title}`}>
         <div className="relative">
-          <Cover seed={track.id} className="size-12" />
+          <CustomFolderCover folderName={track.folderName || track.path?.replace(/\\/g, "/").split("/")[0]} trackId={track.id} fallbackSeed={track.id} className="size-12" />
           {active && p.isPlaying && (
             <div className="absolute inset-0 flex items-end justify-center gap-0.5 rounded-lg bg-background/50 pb-2">
               {[0, 1, 2].map((i) => (
