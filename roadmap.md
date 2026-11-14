@@ -14,3 +14,8 @@
 - [x] Entregar chave nova, APK, projeto e planilha atualizados
 - [x] Criar novo ícone do Player Music e incluir no Android e no aplicativo web
 - [x] Gerar playlist por descrição com AI Gateway usando somente faixas da biblioteca
+- [x] Ocultar selo do Lovable e assinar "Feito por Adevaldo Marques" no app e no site publicado
+- [x] Login válido: entrar com e-mail/senha funciona; cadastro exige e-mail real com confirmação
+- [x] Acesso de administrador concedido ao login do proprietário
+- [x] Importação de pasta confirmada no navegador; "Selecionar todas" e ações em lote na Biblioteca
+- [x] Lista de pastas e músicas salva na conta: restaurar em outro celular sem perder nada

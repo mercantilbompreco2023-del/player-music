@@ -13,6 +13,17 @@ function safePath(p: unknown): string {
   return typeof p === "string" && p.startsWith("/") && !p.startsWith("//") ? p : "/";
 }
 
+// Traduz as falhas mais comuns de login para pt-BR; qualquer outra mostra o texto do servidor.
+function authMessage(err: { message?: string } | null | undefined, fallback: string): string {
+  const m = (err?.message ?? "").toLowerCase();
+  if (m.includes("invalid login credentials")) return "E-mail ou senha incorretos.";
+  if (m.includes("email not confirmed")) return "Confirme seu e-mail primeiro: abra o link que enviamos para você.";
+  if (m.includes("not allowed")) return err?.message ?? "Este e-mail não é aceito. Use um e-mail real.";
+  if (m.includes("rate limit") || m.includes("over_email")) return "Muitas tentativas seguidas. Aguarde um pouco e tente de novo.";
+  if (m.includes("already registered") || m.includes("already exists")) return "Este e-mail já tem conta. Entre com a senha ou recupere a senha.";
+  return err?.message?.trim() || fallback;
+}
+
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>) => ({ redirect: typeof s["redirect"] === "string" ? (s["redirect"] as string) : undefined }),
   head: () => ({
@@ -45,16 +56,16 @@ function AuthPage() {
     try {
       if (mode === "entrar") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw new Error("E-mail ou senha incorretos, ou e-mail ainda não confirmado.");
+        if (error) throw new Error(authMessage(error, "Não foi possível entrar agora. Tente de novo."));
         toast.success("Você entrou.");
         navigate({ to: target });
       } else if (mode === "criar") {
         const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + target } });
-        if (error) throw new Error("Não foi possível criar a conta. Verifique os dados e tente de novo.");
+        if (error) throw new Error(authMessage(error, "Não foi possível criar a conta. Verifique os dados e tente de novo."));
         setMsg("Conta criada! Abra o link que enviamos para o seu e-mail para confirmar.");
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
-        if (error) throw new Error("Não foi possível enviar agora. Tente mais tarde.");
+        if (error) throw new Error(authMessage(error, "Não foi possível enviar agora. Tente mais tarde."));
         setMsg("Se este e-mail tiver conta, você receberá um link para criar uma nova senha.");
       }
     } catch (err) {

@@ -83,6 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="mt-auto rounded-2xl border bg-card/70 p-4">
           <p className="text-sm font-semibold">Player Music</p>
           <p className="mt-1 text-xs text-muted-foreground">Sua biblioteca, do seu jeito.</p>
+          <p className="mt-2 text-[11px] font-semibold tracking-wide text-primary">Feito por Adevaldo Marques</p>
         </div>
       </aside>
 

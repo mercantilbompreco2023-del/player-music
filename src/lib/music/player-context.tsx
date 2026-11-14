@@ -6,7 +6,8 @@ import { moveItem, nextIndex, parseFileName, prevIndex, shuffleQueue } from "./q
 import { nativeMedia } from "./native-media";
 import { nativeFolder } from "./native-folder";
 import { supabase } from "@/integrations/supabase/client";
-import { defaultPrefs, fileStore, loadPrefs, savePrefs, type Prefs } from "./storage";
+import { defaultPrefs, fileStore, loadFolderHints, loadPrefs, saveFolderHints, savePrefs, type Prefs } from "./storage";
+import { trackKey } from "./backup";
 import type { Playlist, RepeatMode, Track } from "./types";
 import { audioMime, fingerprint, formatProblem, type ImportItem, type ImportProgress, type ImportReport } from "./import";
 
@@ -47,6 +48,8 @@ interface PlayerCtx {
   clearRecent: () => void;
   clearUpcoming: () => void;
   moveInQueue: (pos: number, dir: -1 | 1) => void;
+  /** Anexa pastas/caminhos recuperados da conta e aplica playlists e favoritos restaurados. */
+  applyRestoredLibrary: (r: { folderInfo: Array<{ id: string; folderName?: string | undefined; path?: string | undefined }>; playlists: Playlist[]; favorites: string[] }) => void;
 }
 
 // Mantém o mesmo contexto entre recarregamentos de módulo (HMR), evitando "usePlayer fora do PlayerProvider".
@@ -111,6 +114,17 @@ async function fetchCloudTracks(userId: string): Promise<Track[]> {
   });
 }
 
+/** Anexa as pastas já conhecidas às faixas que chegaram sem essa informação (ex.: lista da nuvem). */
+function withFolderHints(list: Track[]): Track[] {
+  const hints = loadFolderHints();
+  if (Object.keys(hints).length === 0) return list;
+  return list.map((t) => {
+    if (t.folderName || t.path) return t;
+    const h = hints[trackKey(t)];
+    return h ? { ...t, folderName: h.folderName, path: h.path } : t;
+  });
+}
+
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [ready, setReady] = useState(false);
@@ -158,7 +172,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       .then(({ data }) => data.user ? fetchCloudTracks(data.user.id) : [])
       .catch(() => [] as Track[]);
     Promise.all([localPromise, cloudPromise])
-      .then(([local, cloud]) => setLocalTracks([...local, ...cloud]))
+      .then(([local, cloud]) => setLocalTracks([...withFolderHints(local), ...withFolderHints(cloud)]))
       .finally(() => setReady(true));
   }, []);
 
@@ -167,7 +181,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
         void fetchCloudTracks(session.user.id).then((cloud) =>
-          setLocalTracks((current) => [...current.filter((t) => t.source !== "cloud"), ...cloud]),
+          setLocalTracks((current) => [...current.filter((t) => t.source !== "cloud"), ...withFolderHints(cloud)]),
         );
       }
       if (event === "SIGNED_OUT") {
@@ -184,6 +198,24 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       return n;
     });
   }, []);
+
+  /** Anexa pastas/caminhos vindos da conta e aplica playlists e favoritos restaurados. */
+  const applyRestoredLibrary = useCallback((r: { folderInfo: Array<{ id: string; folderName?: string | undefined; path?: string | undefined }>; playlists: Playlist[]; favorites: string[] }) => {
+    if (r.folderInfo.length) {
+      const fixes = new Map(r.folderInfo.map((f) => [f.id, f]));
+      const hints = loadFolderHints();
+      for (const t of localRef.current) {
+        const f = fixes.get(t.id);
+        if (f) hints[trackKey(t)] = { folderName: f.folderName, path: f.path };
+      }
+      if (!saveFolderHints(hints)) toast.error("Não foi possível guardar a lista de pastas neste aparelho.");
+      setLocalTracks((current) => current.map((t) => {
+        const f = fixes.get(t.id);
+        return f ? { ...t, folderName: f.folderName, path: f.path } : t;
+      }));
+    }
+    updatePrefs((p) => ({ ...p, playlists: r.playlists, favorites: r.favorites }));
+  }, [updatePrefs]);
 
   // Tema
   useEffect(() => {
@@ -580,6 +612,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       setQueue(r.queue);
       setIndex(r.index);
     },
+    applyRestoredLibrary,
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
