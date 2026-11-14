@@ -65,6 +65,9 @@ export function TrackRow({ track, list, playlistId }: { track: Track; list: stri
           {playlistId && (
             <DropdownMenuItem onClick={() => p.removeFromPlaylist(playlistId, track.id)}><X /> Remover da playlist</DropdownMenuItem>
           )}
+          {track.source === "local" && (
+            <DropdownMenuItem onClick={() => void p.saveTrackToCloud(track.id)}><CloudUpload /> Salvar na nuvem e liberar espaço</DropdownMenuItem>
+          )}
           {(track.source === "local" || track.source === "cloud") && (
             <>
               <DropdownMenuSeparator />
