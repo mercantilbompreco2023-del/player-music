@@ -163,6 +163,15 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
         </div>
       </div>
       {!!libraryTracks.length && <div className="mt-3 flex flex-wrap gap-2">
+        <Button
+          size="sm"
+          variant={p.autoNext ? "default" : "outline"}
+          aria-pressed={p.autoNext}
+          onClick={() => p.setAutoNext(!p.autoNext)}
+          title="Avançar automaticamente quando a música terminar"
+        >
+          <SkipForward /> {p.autoNext ? "Próxima automática: ligada" : "Próxima automática: desligada"}
+        </Button>
         <Button size="sm" variant="outline" onClick={() => { p.setAutoNext(true); p.playList(libraryTracks.map((track) => track.id), t?.id, "ordered"); }}><ListOrdered /> Tocar em sequência</Button>
         {t && t.source !== "demo" && <Button size="sm" variant="outline" onClick={() => void p.saveTrackLocally(t.id)}><Download /> Salvar no aparelho</Button>}
         {t && t.source === "local" && (user ? <Button size="sm" variant="outline" disabled={saving} onClick={() => { setSaving(true); void p.saveTrackToCloud(t.id).catch(() => {}).finally(() => setSaving(false)); }}><CloudUpload /> {saving ? "Salvando…" : "Salvar na conta"}</Button> : <Button size="sm" variant="outline" asChild><Link to="/auth"><CloudUpload /> Entrar para salvar na conta</Link></Button>)}
