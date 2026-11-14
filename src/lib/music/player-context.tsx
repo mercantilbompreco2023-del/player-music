@@ -39,6 +39,7 @@ interface PlayerCtx {
   toggleShuffle: () => void;
   cycleRepeat: () => void;
   addToQueue: (id: string) => void;
+  addManyToQueue: (ids: string[]) => void;
   removeFromQueue: (pos: number) => void;
   playAt: (pos: number) => void;
   importFiles: (files: FileList | File[]) => Promise<ImportReport>;
@@ -697,6 +698,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       if (!queue.length) return playList([id]);
       setQueue((q) => [...q, id]);
       toast.success("Adicionada à fila.");
+    },
+    addManyToQueue: (ids) => {
+      const uniqueIds = [...new Set(ids)].filter((id) => map.has(id));
+      if (!uniqueIds.length) { toast.message("Esta pasta não tem músicas disponíveis para adicionar."); return; }
+      if (!queue.length) { playList(uniqueIds); toast.success(`${uniqueIds.length} música(s) adicionada(s) à sequência.`); return; }
+      const upcoming = new Set(queue);
+      const additions = uniqueIds.filter((id) => !upcoming.has(id));
+      if (!additions.length) { toast.message("As músicas desta pasta já estão na sequência."); return; }
+      setQueue((q) => [...q, ...additions]);
+      toast.success(`${additions.length} música(s) adicionada(s) à sequência.`);
     },
     removeFromQueue: (pos) => {
       if (pos === index) return;
