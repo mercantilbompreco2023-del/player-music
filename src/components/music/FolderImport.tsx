@@ -50,6 +50,8 @@ export function FolderImport() {
       dir = await pickDirectory();
     } catch (e) {
       const msg = describePickerError(e);
+      // Se o seletor moderno for bloqueado pelo navegador, ofereça o seletor
+      // alternativo de pasta em vez de deixar a importação travada.
       setSt(msg ? { s: "erro", msg } : { s: "idle" });
       return;
     }
@@ -131,7 +133,14 @@ export function FolderImport() {
       )}
 
       {st.s === "erro" && (
-        <p role="alert" className="flex items-center gap-2 rounded-lg bg-destructive/15 p-3 text-sm"><AlertTriangle className="size-4 shrink-0 text-destructive" /> {st.msg}</p>
+        <div className="space-y-2">
+          <p role="alert" className="flex items-center gap-2 rounded-lg bg-destructive/15 p-3 text-sm"><AlertTriangle className="size-4 shrink-0 text-destructive" /> {st.msg}</p>
+          {webkitDir && (
+            <Button variant="secondary" className="w-full rounded-full" onClick={() => inputRef.current?.click()}>
+              <FolderOpen /> Tentar outro seletor de pasta
+            </Button>
+          )}
+        </div>
       )}
       {st.s === "fim" && (
         <div role="status" className="space-y-2 rounded-lg bg-muted p-3 text-sm">
