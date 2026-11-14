@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff } from "lucide-react";
+import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff, Volume2 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/music/player-context";
@@ -22,7 +22,10 @@ function MiniPlayer() {
       <div className="flex items-center gap-3 p-2.5 lg:px-4 lg:py-3">
         <Link to="/player" className="flex min-w-0 flex-1 items-center gap-3" aria-label="Abrir player">
           <Cover seed={p.current.id} className="size-11 lg:size-12" />
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
+            <p className="mb-0.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+              {p.isPlaying ? <><span className="size-1.5 animate-pulse rounded-full bg-primary" /> Tocando agora</> : "Reprodução pausada"}
+            </p>
             <p className="truncate text-sm font-semibold">{p.current.title}</p>
             <p className="truncate text-xs text-muted-foreground">{p.current.artist}</p>
           </div>
@@ -31,6 +34,7 @@ function MiniPlayer() {
           {p.isPlaying ? <Pause className="size-5 fill-current" /> : <Play className="size-5 fill-current" />}
         </button>
         <button onClick={p.next} aria-label="Próxima" className="p-2 text-foreground"><SkipForward className="size-5" /></button>
+        <Link to="/player" aria-label="Abrir painel de reprodução" className="hidden rounded-full border p-2 text-primary sm:flex"><Volume2 className="size-4" /></Link>
         <div className="hidden min-w-32 flex-1 lg:block">
           <div className="h-1.5 overflow-hidden rounded-full bg-muted">
             <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
