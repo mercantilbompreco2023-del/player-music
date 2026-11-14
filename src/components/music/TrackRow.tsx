@@ -29,10 +29,10 @@ export function TrackRow({ track, list, playlistId }: { track: Track; list: stri
         </div>
         <div className="min-w-0">
           <p className={cn("truncate font-semibold", active && "text-primary")}>{track.title}</p>
-          <p className="flex items-center gap-1.5 truncate text-sm text-muted-foreground">
+          <div className="flex items-center gap-1.5 truncate text-sm text-muted-foreground">
             {track.source === "demo" && <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">DEMO</Badge>}
-            {track.artist}
-          </p>
+            <span className="truncate">{track.artist}</span>
+          </div>
         </div>
       </button>
       <span className="hidden text-xs tabular-nums text-muted-foreground sm:block">{formatTime(track.duration)}</span>

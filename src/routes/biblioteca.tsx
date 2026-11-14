@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/music/AppShell";
 import { ImportButton } from "@/components/music/ImportButton";
 import { TrackRow } from "@/components/music/TrackRow";
@@ -35,14 +35,19 @@ function BibliotecaPage() {
   return (
     <div>
       <PageHeader title="Biblioteca" action={<ImportButton variant="secondary" />} />
-      <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)} className="mb-4">
-        <TabsList className="w-full">
-          <TabsTrigger value="todas">Todas</TabsTrigger>
-          <TabsTrigger value="minhas">Minhas</TabsTrigger>
-          <TabsTrigger value="favoritas">Favoritas</TabsTrigger>
-          <TabsTrigger value="demo">Demo</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div role="tablist" className="mb-4 grid grid-cols-4 gap-1 rounded-full bg-muted p-1">
+        {(["todas", "minhas", "favoritas", "demo"] as Tab[]).map((k) => (
+          <button
+            key={k}
+            role="tab"
+            aria-selected={tab === k}
+            onClick={() => setTab(k)}
+            className={cn("rounded-full py-2 text-sm font-semibold capitalize", tab === k ? "bg-background text-foreground" : "text-muted-foreground")}
+          >
+            {k}
+          </button>
+        ))}
+      </div>
       {!p.ready ? (
         <p className="text-sm text-muted-foreground">Carregando…</p>
       ) : list.length === 0 ? (
