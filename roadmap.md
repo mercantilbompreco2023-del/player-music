@@ -8,3 +8,5 @@
 - [ ] Corrigir recusas de áudio com tipo genérico e leitura sem resposta na importação
 - [ ] Exportar lista de pastas e músicas em CSV e verificar arquivo baixado
 - [ ] Entregar projeto e planilha v10; identificar pendências no Android real
+- [ ] Persistir e recuperar permissões de pastas Android; indicar acesso revogado
+- [ ] Gerar playlist por descrição com AI Gateway usando somente faixas da biblioteca
