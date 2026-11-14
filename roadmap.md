@@ -17,3 +17,4 @@
 - [x] Ocultar selo do Lovable e assinar "Feito por Adevaldo Marques" no app e no site publicado
 - [ ] Login válido: permitir criar conta e entrar com e-mail/senha (cadastro falhando)
 - [ ] Conceder acesso de administrador ao login do proprietário (ADM)
+- [ ] Importação de pasta: confirmar funcionamento e dar alternativa de selecionar todas as músicas de uma vez
