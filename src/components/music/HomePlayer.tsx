@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Cover } from "@/components/music/Cover";
-import { loadArtistFolderCover, loadCustomFolderCoverForTrack, saveArtistFolderCover } from "@/lib/music/folder-covers";
+import { loadArtistFolderCover, loadFolderCoverForTrack, saveArtistFolderCover } from "@/lib/music/folder-covers";
 import { AudioLines, Camera, Heart, ListMusic, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, UserRound, Sparkles, ListOrdered, Download, CloudUpload } from "lucide-react";
 import { TrackVisual } from "./TrackVisual";
 import { useSession } from "@/lib/auth";
@@ -29,7 +29,7 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
   useEffect(() => {
     let active = true;
     void loadArtistFolderCover(artist).then(async (url) => {
-      const chosen = url ?? await loadCustomFolderCoverForTrack(fallbackSeed);
+      const chosen = url ?? await loadFolderCoverForTrack(p.current ?? { id: fallbackSeed, artist });
       if (active) setFolderPhoto(chosen);
       else if (chosen) URL.revokeObjectURL(chosen);
     });
