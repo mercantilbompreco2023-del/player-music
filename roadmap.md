@@ -18,3 +18,4 @@
 - [ ] Login válido: permitir criar conta e entrar com e-mail/senha (cadastro falhando)
 - [ ] Conceder acesso de administrador ao login do proprietário (ADM)
 - [ ] Importação de pasta: confirmar funcionamento e dar alternativa de selecionar todas as músicas de uma vez
+- [ ] Lista de pastas e músicas salva na conta: restaurar em outro celular sem perder nada
