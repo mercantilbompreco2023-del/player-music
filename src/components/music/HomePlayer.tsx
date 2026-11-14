@@ -1,12 +1,75 @@
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Cover } from "@/components/music/Cover";
-import { AudioLines, Heart, ListMusic, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward } from "lucide-react";
+import { AudioLines, Camera, Heart, ListMusic, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { usePlayer } from "@/lib/music/player-context";
 import { formatTime } from "@/lib/music/queue";
 import { cn } from "@/lib/utils";
 import artwork from "@/assets/music-headphones.jpg";
+
+
+const ARTIST_PHOTO_PREF = "player-music-show-artist-photo";
+const artistPhotoCache = new Map<string, string | null>();
+
+function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: string }) {
+  const [enabled, setEnabled] = useState(true);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [loadedArtist, setLoadedArtist] = useState("");
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(ARTIST_PHOTO_PREF);
+      if (saved === "false") setEnabled(false);
+    } catch { /* usa padrão */ }
+  }, []);
+  useEffect(() => {
+    let active = true;
+    const name = artist.trim();
+    if (!enabled || !name) { setPhoto(null); return () => { active = false; }; }
+    setLoadedArtist(name);
+    const cached = artistPhotoCache.get(name.toLocaleLowerCase("pt-BR"));
+    if (cached !== undefined) { setPhoto(cached); return () => { active = false; }; }
+    setPhoto(null);
+    const params = new URLSearchParams({
+      action: "query",
+      generator: "search",
+      gsrsearch: name,
+      gsrnamespace: "0",
+      gsrlimit: "5",
+      prop: "pageimages",
+      piprop: "thumbnail",
+      pithumbsize: "600",
+      format: "json",
+      origin: "*",
+    });
+    fetch(`https://pt.wikipedia.org/w/api.php?${params.toString()}`)
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Falha ao buscar imagem")))
+      .then((data: { query?: { pages?: Record<string, { title?: string; thumbnail?: { source?: string } }> } }) => {
+        const pages = Object.values(data.query?.pages ?? {});
+        const normalized = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+        const match = pages.find((page) => page.thumbnail?.source && page.title?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").includes(normalized.split(" ")[0]));
+        const url = match?.thumbnail?.source ?? null;
+        artistPhotoCache.set(name.toLocaleLowerCase("pt-BR"), url);
+        if (active) setPhoto(url);
+      })
+      .catch(() => { artistPhotoCache.set(name.toLocaleLowerCase("pt-BR"), null); if (active) setPhoto(null); });
+    return () => { active = false; };
+  }, [artist, enabled]);
+  const toggle = () => setEnabled((current) => {
+    const next = !current;
+    try { localStorage.setItem(ARTIST_PHOTO_PREF, String(next)); } catch { /* preferência opcional */ }
+    return next;
+  });
+  return (
+    <div className="relative">
+      {enabled && photo && loadedArtist === artist ? <img src={photo} alt={`Foto de ${artist}`} className="aspect-square w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" /> : <Cover seed={fallbackSeed} className="aspect-square w-full rounded-none" iconClass="size-1/3" />}
+      <button type="button" onClick={toggle} aria-label={enabled ? "Desativar foto automática do cantor" : "Ativar foto automática do cantor"} aria-pressed={enabled} title={enabled ? "Foto automática ativada" : "Foto automática desativada"} className="absolute bottom-2 right-2 rounded-full border border-white/30 bg-black/70 p-2 text-white backdrop-blur">
+        <Camera className={`size-4 ${enabled ? "text-primary" : "text-white"}`} />
+      </button>
+    </div>
+  );
+}
 
 export function HomePlayer() {
   const p = usePlayer();
@@ -28,7 +91,7 @@ export function HomePlayer() {
         </div>
       </div>
       <div className="grid grid-cols-[112px_minmax(0,1fr)] items-center gap-3 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-6">
-        <Link to={t ? "/biblioteca" : "/importar"} aria-label={t ? "Ver biblioteca de músicas" : "Importar músicas"} className="overflow-hidden rounded-xl border border-primary/40">{t ? <Cover seed={t.id} className="aspect-square w-full rounded-none" iconClass="size-1/3" /> : <img src={artwork} alt="Fones de ouvido" width={1024} height={1024} className="aspect-square w-full object-cover" />}</Link>
+        <div className="overflow-hidden rounded-xl border border-primary/40">{t ? <ArtistPhoto artist={t.artist} fallbackSeed={t.id} /> : <Link to="/importar" aria-label="Importar músicas"><img src={artwork} alt="Fones de ouvido" width={1024} height={1024} className="aspect-square w-full object-cover" /></Link>}</div>
         <div className="min-w-0">
           <h2 className="truncate text-base font-bold sm:text-2xl">{t?.title ?? "Sua música aqui"}</h2>
           <p className="mt-1 truncate text-xs text-muted-foreground sm:text-base">{t?.artist ?? "Sua biblioteca pessoal"}</p>
