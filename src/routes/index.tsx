@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, FolderOpen, Heart, LogIn, Music, Play, Plus, Search, Settings } from "lucide-react";
+import { AlertTriangle, FolderOpen, Heart, LogIn, Music, Play, Plus, Search, Settings, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { HomePlayer } from "@/components/music/HomePlayer";
+import { ArtistPhoto, HomePlayer } from "@/components/music/HomePlayer";
 import { Cover } from "@/components/music/Cover";
 import { cardsQuery } from "@/lib/cards-query";
 import { FUNCTIONS, ICONS, isFunctionKey, visibleCards } from "@/lib/cards";
@@ -29,6 +30,9 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const p = usePlayer();
+  const [homeStyle, setHomeStyle] = useState<"classic" | "showcase">("classic");
+  useEffect(() => { try { setHomeStyle(localStorage.getItem("player-music-home-style") === "showcase" ? "showcase" : "classic"); } catch { /* usa padrão */ } }, []);
+  const toggleHomeStyle = () => setHomeStyle((current) => { const next = current === "showcase" ? "classic" : "showcase"; try { localStorage.setItem("player-music-home-style", next); } catch { /* preferência opcional */ } return next; });
   const { user } = useSession();
   const admin = useIsAdmin(user?.id);
   const cards = useQuery(cardsQuery);
@@ -41,12 +45,14 @@ function Index() {
       <header className="flex items-center justify-between gap-2">
         <Link to="/" className="flex min-w-0 items-center gap-2"><img src={playerIcon} alt="" width={48} height={48} className="size-11 rounded-lg" /><h1 className="text-xl font-bold sm:text-3xl">Player <span className="text-primary">Music</span></h1></Link>
         <div className="flex shrink-0 items-center gap-1">
+          <Button type="button" size="icon" variant="ghost" onClick={toggleHomeStyle} aria-label={homeStyle === "showcase" ? "Voltar ao modelo clássico" : "Ativar modelo visual da segunda foto"} title={homeStyle === "showcase" ? "Modelo clássico" : "Modelo vitrine"} className={homeStyle === "showcase" ? "text-primary" : ""}><Sparkles /></Button>
           <Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button>
           <Button asChild size="icon" variant="ghost"><Link to="/configuracoes" aria-label="Configurações"><Settings /></Link></Button>
           {!user && <Button asChild size="icon" variant="ghost"><Link to="/auth" search={{ redirect: undefined }} aria-label="Entrar na conta"><LogIn /></Link></Button>}
         </div>
       </header>
-      <HomePlayer />
+      <div className="flex items-center justify-between gap-2"><p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{homeStyle === "showcase" ? "Modelo vitrine ativado" : "Modelo clássico"}</p><button type="button" onClick={toggleHomeStyle} className="rounded-full border border-primary/40 px-3 py-1.5 text-xs font-semibold text-primary">{homeStyle === "showcase" ? "Usar modelo clássico" : "Ver modelo da 2ª foto"}</button></div>
+      <HomePlayer variant={homeStyle} />
       {cards.data && cards.data.source !== "servidor" && <p role="status" className="flex items-center gap-2 text-xs text-muted-foreground"><AlertTriangle className="size-4 shrink-0" /> Cartões salvos no aparelho.</p>}
       <nav aria-label="Funções do app" className="grid grid-cols-4 gap-2 sm:gap-3">
         {cards.isPending ? Array.from({length: 4}, (_, i) => <Skeleton key={i} className="h-28" />) : list.map(c => {
@@ -59,7 +65,7 @@ function Index() {
       </nav>
       <section>
         <div className="mb-4 flex items-center justify-between gap-2"><h2 className="section-heading text-lg font-bold">Seus artistas</h2><Link to="/buscar" className="text-xs text-primary">Ver todos ›</Link></div>
-        {artists.length ? <div className="flex gap-4 overflow-x-auto pb-2">{artists.map(artist => { const tracks = ownTracks.filter(t => t.artist === artist); const first = tracks[0]; return <Button key={artist} variant="ghost" className="h-auto w-20 shrink-0 flex-col gap-2 whitespace-normal p-0 hover:bg-transparent" onClick={() => first && p.playList(tracks.map(t => t.id), first.id)} aria-label={`Ouvir ${artist}`}><Cover seed={artist} className="size-18 rounded-full border-2 border-primary" /><span className="w-full break-words text-center text-xs">{artist}</span></Button>; })}</div> : <Button asChild variant="outline" className="w-full justify-start gap-3"><Link to="/importar"><Plus /> Adicionar minhas músicas</Link></Button>}
+        {artists.length ? <div className="flex gap-4 overflow-x-auto pb-2">{artists.map(artist => { const tracks = ownTracks.filter(t => t.artist === artist); const first = tracks[0]; return <Button key={artist} variant="ghost" className="h-auto w-20 shrink-0 flex-col gap-2 whitespace-normal p-0 hover:bg-transparent" onClick={() => first && p.playList(tracks.map(t => t.id), first.id)} aria-label={`Ouvir ${artist}`}><div className="w-18 overflow-hidden rounded-full border-2 border-primary shadow-[0_0_14px_-5px_hsl(var(--primary)/0.8)]"><ArtistPhoto artist={artist} fallbackSeed={artist} /></div><span className="w-full break-words text-center text-xs">{artist}</span></Button>; })}</div> : <Button asChild variant="outline" className="w-full justify-start gap-3"><Link to="/importar"><Plus /> Adicionar minhas músicas</Link></Button>}
       </section>
       <section>
         <div className="mb-4 flex items-center justify-between gap-2"><h2 className="section-heading text-lg font-bold">Playlists</h2><Link to="/playlists" className="flex items-center gap-1 text-xs text-primary"><Plus className="size-4" /> Nova playlist</Link></div>
