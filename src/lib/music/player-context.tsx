@@ -64,6 +64,32 @@ function probeDuration(url: string): Promise<number | undefined> {
   });
 }
 
+async function fetchCloudTracks(userId: string): Promise<Track[]> {
+  const { data: objects, error } = await supabase.storage.from("player-music").list(userId, { limit: 1000, sortBy: { column: "name", order: "asc" } });
+  if (error || !objects?.length) return [];
+  const files = objects.filter((o) => o.name && !o.name.endsWith("/"));
+  const paths = files.map((o) => `${userId}/${o.name}`);
+  if (!paths.length) return [];
+  const { data: signed, error: signedError } = await supabase.storage.from("player-music").createSignedUrls(paths, 60 * 60 * 24);
+  if (signedError || !signed) return [];
+  return signed.flatMap((entry, i) => {
+    if (!entry.signedUrl || !entry.path) return [];
+    const meta = (files[i]?.metadata ?? {}) as Record<string, unknown>;
+    const name = files[i]?.name ?? entry.path.split("/").pop() ?? "Música";
+    return [{
+      id: `cloud-${entry.path}`,
+      title: typeof meta.title === "string" ? meta.title : name.replace(/\\.[^.]+$/, ""),
+      artist: typeof meta.artist === "string" ? meta.artist : "Biblioteca na nuvem",
+      duration: typeof meta.duration === "number" ? meta.duration : undefined,
+      fingerprint: typeof meta.fingerprint === "string" ? meta.fingerprint : undefined,
+      path: typeof meta.originalPath === "string" ? meta.originalPath : undefined,
+      storagePath: entry.path,
+      url: entry.signedUrl,
+      source: "cloud" as const,
+    }];
+  });
+}
+
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [ready, setReady] = useState(false);
@@ -100,33 +126,28 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
           .sort((a, b) => b.addedAt - a.addedAt)
           .map((f) => ({ id: f.id, title: f.title, artist: f.artist, duration: f.duration, fingerprint: f.fingerprint, path: f.path, url: URL.createObjectURL(f.blob), source: "local" as const }));
         setLocalTracks(local);
-        // A biblioteca na nuvem é privada e vinculada à conta autenticada.
         const { data: auth } = await supabase.auth.getUser();
         if (!auth.user) return;
-        const { data: objects, error } = await supabase.storage.from("player-music").list(auth.user.id, { limit: 1000, sortBy: { column: "name", order: "asc" } });
-        if (error || !objects?.length) return;
-        const paths = objects.filter((o) => o.name && !o.name.endsWith("/")).map((o) => `${auth.user.id}/${o.name}`);
-        if (!paths.length) return;
-        const { data: signed, error: signedError } = await supabase.storage.from("player-music").createSignedUrls(paths, 60 * 60 * 24);
-        if (signedError || !signed) return;
-        const cloud = signed.flatMap((entry, i) => {
-          if (!entry.signedUrl || !entry.path) return [];
-          const meta = (objects[i]?.metadata ?? {}) as Record<string, unknown>;
-          const name = objects[i]?.name ?? entry.path.split("/").pop() ?? "Música";
-          const title = typeof meta.title === "string" ? meta.title : name.replace(/\\.[^.]+$/, "");
-          const artist = typeof meta.artist === "string" ? meta.artist : "Biblioteca na nuvem";
-          return [{
-            id: `cloud-${entry.path}`, title, artist,
-            duration: typeof meta.duration === "number" ? meta.duration : undefined,
-            fingerprint: typeof meta.fingerprint === "string" ? meta.fingerprint : undefined,
-            path: typeof meta.originalPath === "string" ? meta.originalPath : undefined,
-            storagePath: entry.path, url: entry.signedUrl, source: "cloud" as const,
-          }];
-        });
-        setLocalTracks((current) => [...current.filter((t) => !cloud.some((ct) => ct.storagePath === t.storagePath)), ...cloud]);
+        const cloud = await fetchCloudTracks(auth.user.id);
+        setLocalTracks((current) => [...current.filter((t) => t.source !== "cloud"), ...cloud]);
       })
       .catch(() => toast.error("Não foi possível carregar a biblioteca. Confira sua conexão e o armazenamento na nuvem."))
       .finally(() => setReady(true));
+  }, []);
+
+  // Atualiza a biblioteca quando o usuário entra ou sai da conta.
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        void fetchCloudTracks(session.user.id).then((cloud) =>
+          setLocalTracks((current) => [...current.filter((t) => t.source !== "cloud"), ...cloud]),
+        );
+      }
+      if (event === "SIGNED_OUT") {
+        setLocalTracks((current) => current.filter((t) => t.source !== "cloud"));
+      }
+    });
+    return () => data.subscription.unsubscribe();
   }, []);
 
   const updatePrefs = useCallback((fn: (p: Prefs) => Prefs) => {
