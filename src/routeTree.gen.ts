@@ -19,6 +19,7 @@ import { Route as DescobrirRouteImport } from './routes/descobrir'
 import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as FilaRouteImport } from './routes/fila'
 import { Route as ImportarRouteImport } from './routes/importar'
+import { Route as PastasRouteImport } from './routes/pastas'
 import { Route as PlayerRouteImport } from './routes/player'
 import { Route as PlaylistsRouteImport } from './routes/playlists'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
@@ -76,6 +77,11 @@ const ImportarRoute = ImportarRouteImport.update({
   path: '/importar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PastasRoute = PastasRouteImport.update({
+  id: '/pastas',
+  path: '/pastas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlayerRoute = PlayerRouteImport.update({
   id: '/player',
   path: '/player',
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/favoritos': typeof FavoritosRoute
   '/fila': typeof FilaRoute
   '/importar': typeof ImportarRoute
+  '/pastas': typeof PastasRoute
   '/player': typeof PlayerRoute
   '/playlists': typeof PlaylistsRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/favoritos': typeof FavoritosRoute
   '/fila': typeof FilaRoute
   '/importar': typeof ImportarRoute
+  '/pastas': typeof PastasRoute
   '/player': typeof PlayerRoute
   '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -159,6 +167,7 @@ export interface FileRoutesById {
   '/favoritos': typeof FavoritosRoute
   '/fila': typeof FilaRoute
   '/importar': typeof ImportarRoute
+  '/pastas': typeof PastasRoute
   '/player': typeof PlayerRoute
   '/playlists': typeof PlaylistsRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/favoritos'
     | '/fila'
     | '/importar'
+    | '/pastas'
     | '/player'
     | '/playlists'
     | '/privacidade'
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/favoritos'
     | '/fila'
     | '/importar'
+    | '/pastas'
     | '/player'
     | '/privacidade'
     | '/reset-password'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/favoritos'
     | '/fila'
     | '/importar'
+    | '/pastas'
     | '/player'
     | '/playlists'
     | '/privacidade'
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   FavoritosRoute: typeof FavoritosRoute
   FilaRoute: typeof FilaRoute
   ImportarRoute: typeof ImportarRoute
+  PastasRoute: typeof PastasRoute
   PlayerRoute: typeof PlayerRoute
   PlaylistsRoute: typeof PlaylistsRouteWithChildren
   PrivacidadeRoute: typeof PrivacidadeRoute
@@ -311,6 +324,13 @@ declare module '@tanstack/react-router' {
       path: '/importar'
       fullPath: '/importar'
       preLoaderRoute: typeof ImportarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pastas': {
+      id: '/pastas'
+      path: '/pastas'
+      fullPath: '/pastas'
+      preLoaderRoute: typeof PastasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/player': {
@@ -401,6 +421,7 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritosRoute: FavoritosRoute,
   FilaRoute: FilaRoute,
   ImportarRoute: ImportarRoute,
+  PastasRoute: PastasRoute,
   PlayerRoute: PlayerRoute,
   PlaylistsRoute: PlaylistsRouteWithChildren,
   PrivacidadeRoute: PrivacidadeRoute,
