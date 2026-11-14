@@ -18,3 +18,11 @@ Precisa de internet na primeira abertura. A música pode parar com a tela deslig
 
 ## Para a Play Store
 Use **Build → Generate Signed Bundle / APK**, crie sua chave de assinatura e guarde-a em local seguro (nunca no projeto).
+
+## Versão nativa (incluída)
+O APK tem um serviço de mídia Android (`android/app/src/main/java/.../MediaPlaybackService.java`):
+- serviço em primeiro plano do tipo `mediaPlayback` com notificação de mídia (anterior, tocar/pausar, próxima);
+- controles na tela bloqueada e nos fones Bluetooth (MediaSession);
+- mantém o processo e a CPU ativos enquanto toca.
+Permissões: `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `POST_NOTIFICATIONS` (pedida ao tocar a primeira música, Android 13+), `WAKE_LOCK`.
+Limite: economizadores de bateria muito agressivos de alguns fabricantes ainda podem fechar apps; nesse caso, marque o Player Music como "sem restrição" nas configurações de bateria.
