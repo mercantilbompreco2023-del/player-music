@@ -1,14 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, FolderOpen, LogIn, Music, Shuffle } from "lucide-react";
+import { AlertTriangle, FolderOpen, Heart, LogIn, Music, Play, Plus, Search, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { HomePlayer } from "@/components/music/HomePlayer";
+import { Cover } from "@/components/music/Cover";
 import { cardsQuery } from "@/lib/cards-query";
-import { FUNCTIONS, ICONS, isFunctionKey, visibleCards, type FunctionKey } from "@/lib/cards";
+import { FUNCTIONS, ICONS, isFunctionKey, visibleCards } from "@/lib/cards";
 import { useIsAdmin, useSession } from "@/lib/auth";
 import { usePlayer } from "@/lib/music/player-context";
-import { supabase } from "@/integrations/supabase/client";
 import { savedFolders } from "@/lib/music/folders";
-import { Button } from "@/components/ui/button";
+import playerIcon from "@/assets/player-music-icon.jpg";
+import artwork from "@/assets/music-headphones.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,146 +27,48 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function useCardStatus() {
-  const p = usePlayer();
-  const local = p.tracks.filter((t) => t.source === "local").length;
-  return (k: FunctionKey): string => {
-    switch (k) {
-      case "descobrir": return `${p.prefs.recent.length} recentes`;
-      case "player": return p.current ? `${p.isPlaying ? "Tocando" : "Pausado"}: ${p.current.title}` : "Nada tocando";
-      case "buscar": return `${p.tracks.length} faixas para buscar`;
-      case "biblioteca": return `${p.tracks.filter((t) => t.source === "local" || t.source === "cloud").length} músicas salvas`;
-      case "importar": return local ? `${local} importadas` : "Nenhuma importada";
-      case "playlists": return `${p.prefs.playlists.length} playlists`;
-      case "favoritos": return `${p.prefs.favorites.length} favoritas`;
-      case "fila": return p.queue.length ? `${p.queue.length - p.index - 1} a seguir` : "Fila vazia";
-      case "configuracoes": return p.prefs.theme === "dark" ? "Tema escuro" : "Tema claro";
-      case "admin": return "Acesso de administrador";
-    }
-  };
-}
-
-
-const CARD_PHOTOS: Record<FunctionKey, string> = {
-  descobrir: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=900&q=85",
-  player: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=900&q=85",
-  buscar: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=900&q=85",
-  biblioteca: "https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=85",
-  importar: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=900&q=85",
-  playlists: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=900&q=85",
-  favoritos: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=900&q=85",
-  fila: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=900&q=85",
-  configuracoes: "https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=900&q=85",
-  admin: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=900&q=85",
-};
-
 function Index() {
-  const player = usePlayer();
-  const folders = savedFolders(player.tracks);
+  const p = usePlayer();
   const { user } = useSession();
   const admin = useIsAdmin(user?.id);
   const cards = useQuery(cardsQuery);
-  const greeting = useQuery({
-    queryKey: ["setting", "home_greeting"],
-    queryFn: async () => {
-      const { data } = await supabase.from("app_settings").select("value").eq("key", "home_greeting").maybeSingle();
-      return typeof data?.value === "string" ? data.value : "Sua música, do seu jeito.";
-    },
-  });
-  const status = useCardStatus();
-  const ownTracks = player.tracks.filter((track) => track.source === "local" || track.source === "cloud");
-  const artistFolders = folders.length;
-  const HOME_FUNCTIONS = new Set(["biblioteca", "importar", "playlists", "favoritos", "player", "fila", "configuracoes"]);
-  const list = cards.data ? visibleCards(cards.data.cards, admin.data === true).filter((card) => HOME_FUNCTIONS.has(card.function_key)) : [];
-
+  const folders = savedFolders(p.tracks);
+  const list = cards.data ? visibleCards(cards.data.cards, admin.data === true).filter(c => c.function_key !== "descobrir" && c.function_key !== "buscar") : [];
+  const ownTracks = p.tracks.filter(t => t.source !== "demo");
+  const artists = [...new Set(ownTracks.map(t => t.artist))];
   return (
     <div className="space-y-6">
-      <section className="bg-hero -mx-4 -mt-6 px-4 pb-4 pt-6">
-        <div className="flex items-center justify-between">
-          <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary"><Music className="size-4" /> Player Music</p>
-          {user ? (
-            <span className="max-w-40 truncate text-xs text-muted-foreground">{user.email}</span>
-          ) : (
-            <Link to="/auth" search={{ redirect: undefined }} className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground"><LogIn className="size-4" /> Entrar</Link>
-          )}
+      <header className="flex items-center justify-between gap-2">
+        <Link to="/" className="flex min-w-0 items-center gap-2"><img src={playerIcon} alt="" width={48} height={48} className="size-11 rounded-lg" /><h1 className="text-xl font-bold sm:text-3xl">Player <span className="text-primary">Music</span></h1></Link>
+        <div className="flex shrink-0 items-center gap-1">
+          <Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button>
+          <Button asChild size="icon" variant="ghost"><Link to="/configuracoes" aria-label="Configurações"><Settings /></Link></Button>
+          {!user && <Button asChild size="icon" variant="ghost"><Link to="/auth" search={{ redirect: undefined }} aria-label="Entrar na conta"><LogIn /></Link></Button>}
         </div>
-        <h1 className="mt-3 text-3xl font-bold leading-tight">{greeting.data ?? "Sua música, do seu jeito."}</h1>
+      </header>
+      <HomePlayer />
+      {cards.data && cards.data.source !== "servidor" && <p role="status" className="flex items-center gap-2 text-xs text-muted-foreground"><AlertTriangle className="size-4 shrink-0" /> Cartões salvos no aparelho.</p>}
+      <nav aria-label="Funções do app" className="grid grid-cols-4 gap-2 sm:gap-3">
+        {cards.isPending ? Array.from({length: 4}, (_, i) => <Skeleton key={i} className="h-28" />) : list.map(c => {
+          if (!isFunctionKey(c.function_key)) return null;
+          const key = c.function_key;
+          const Icon = ICONS[c.icon] ?? Music;
+          return <Button asChild variant="outline" key={c.id} className="neon-tile h-auto min-h-28 flex-col gap-2 whitespace-normal px-1 py-3 text-center sm:px-3"><Link to={FUNCTIONS[key].route} aria-label={`${c.title}: ${c.description}`}><Icon className="size-7! text-primary" /><span className="w-full break-words text-[11px] font-bold leading-snug sm:text-sm">{c.title}</span></Link></Button>;
+        })}
+        <Button asChild variant="outline" className="neon-tile h-auto min-h-28 flex-col gap-2 whitespace-normal px-1 py-3 text-center"><Link to="/pastas"><FolderOpen className="size-7! text-primary" /><span className="text-[11px] font-bold sm:text-sm">Pastas</span><span className="text-[10px] text-muted-foreground">{folders.length} salvas</span></Link></Button>
+      </nav>
+      <section>
+        <div className="mb-4 flex items-center justify-between gap-2"><h2 className="section-heading text-lg font-bold">Seus artistas</h2><Link to="/buscar" className="text-xs text-primary">Ver todos ›</Link></div>
+        {artists.length ? <div className="flex gap-4 overflow-x-auto pb-2">{artists.map(artist => { const tracks = ownTracks.filter(t => t.artist === artist); const first = tracks[0]; return <Button key={artist} variant="ghost" className="h-auto w-20 shrink-0 flex-col gap-2 whitespace-normal p-0 hover:bg-transparent" onClick={() => first && p.playList(tracks.map(t => t.id), first.id)} aria-label={`Ouvir ${artist}`}><Cover seed={artist} className="size-18 rounded-full border-2 border-primary" /><span className="w-full break-words text-center text-xs">{artist}</span></Button>; })}</div> : <Button asChild variant="outline" className="w-full justify-start gap-3"><Link to="/importar"><Plus /> Adicionar minhas músicas</Link></Button>}
       </section>
-
-      {player.current && (
-        <Link to="/player" className="flex items-center gap-3 rounded-2xl border border-primary/30 bg-card p-3 shadow-lg transition-colors hover:bg-accent">
-          <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-primary/15 text-primary">
-            <Music className="size-6" />
-            {player.isPlaying && <span className="absolute bottom-1 right-1 size-2 rounded-full bg-primary ring-2 ring-card" />}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="mb-0.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-              {player.isPlaying ? "Tocando agora" : "Reprodução pausada"}
-            </p>
-            <p className="truncate text-sm font-bold">{player.current.title}</p>
-            <p className="truncate text-xs text-muted-foreground">{player.current.artist}</p>
-          </div>
-          <span className="rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">Abrir player</span>
-        </Link>
-      )}
-
-      {cards.data && cards.data.source !== "servidor" && (
-        <p role="status" className="flex items-center gap-2 rounded-xl bg-muted p-3 text-xs">
-          <AlertTriangle className="size-4 shrink-0" />
-          Não foi possível carregar os cartões do servidor. Mostrando a {cards.data.source === "cache" ? "última versão salva" : "configuração padrão"}.
-        </p>
-      )}
-
-      <Button asChild variant="outline" className="h-auto min-h-28 w-full justify-start gap-4 whitespace-normal rounded-lg bg-card p-5 text-left">
-        <Link to="/pastas">
-          <FolderOpen className="shrink-0 text-primary" />
-          <span className="min-w-0 flex-1"><span className="block text-xl font-bold">Ouvir por pasta</span><span className="mt-1 block text-sm text-muted-foreground">{player.ready ? `${folders.length} pasta(s) salva(s)` : "Carregando…"}</span></span>
-          <Shuffle className="shrink-0 text-primary" />
-        </Link>
-      </Button>
-
-      {cards.isPending ? (
-        <div className="grid grid-cols-2 gap-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="h-36 rounded-2xl" />)}</div>
-      ) : list.length === 0 ? (
-        <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Nenhum cartão ativo. Um administrador pode ativá-los.</p>
-      ) : (
-        <nav aria-label="Funções do app" className="grid grid-cols-2 gap-3">
-          {list.map((c) => {
-            const key = c.function_key as FunctionKey;
-            if (!isFunctionKey(key)) return null;
-            const Icon = ICONS[c.icon] ?? ICONS[FUNCTIONS[key].icon]!;
-            return (
-              <Link
-                key={c.id}
-                to={FUNCTIONS[key].route}
-                className="group relative isolate flex min-h-48 flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-card p-4 text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]"
-                aria-label={`${c.title}: ${c.description}. ${status(key)}`}
-              >
-                <img
-                  src={CARD_PHOTOS[key]}
-                  alt=""
-                  aria-hidden="true"
-                  loading="lazy"
-                  className="absolute inset-0 -z-20 size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <span className="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/35 to-black/10" />
-                <span className="flex size-10 items-center justify-center rounded-xl border border-white/25 bg-black/25 text-white shadow-lg backdrop-blur-sm">
-                  <Icon className="size-5" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block font-display text-base font-bold leading-tight drop-shadow">{c.title}</span>
-                  <span className="mt-1 block text-xs leading-snug text-white/80">{c.description}</span>
-                  <span className="mt-3 inline-flex max-w-full truncate rounded-full border border-white/20 bg-black/30 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">{status(key)}</span>
-                </span>
-              </Link>
-            );
-          })}
-        </nav>
-      )}
-      <p className="text-center text-xs text-muted-foreground">
-        Sua biblioteca musical, do seu jeito. <Link to="/privacidade" className="underline">Privacidade e dados</Link>
-      </p>
-      <p className="pb-2 text-center text-xs font-semibold tracking-wide text-primary">Feito por Adevaldo Marques</p>
+      <section>
+        <div className="mb-4 flex items-center justify-between gap-2"><h2 className="section-heading text-lg font-bold">Playlists</h2><Link to="/playlists" className="flex items-center gap-1 text-xs text-primary"><Plus className="size-4" /> Nova playlist</Link></div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {p.prefs.playlists.map(pl => <article key={pl.id} className="neon-tile flex items-center gap-3 rounded-lg border p-3"><Link to="/playlists/$id" params={{id: pl.id}} className="flex min-w-0 flex-1 items-center gap-3"><img src={artwork} alt="" width={1024} height={1024} loading="lazy" className="size-18 rounded-lg object-cover" /><div className="min-w-0"><h3 className="truncate text-sm font-bold">{pl.name}</h3><p className="mt-1 text-xs text-muted-foreground">{pl.trackIds.length} músicas</p></div></Link><Button size="icon" disabled={!pl.trackIds.some(id => p.byId(id))} className="shrink-0 rounded-full" onClick={() => p.playList(pl.trackIds.filter(id => p.byId(id)))} aria-label={`Ouvir playlist ${pl.name}`}><Play className="fill-current" /></Button></article>)}
+          {!p.prefs.playlists.length && <Link to="/playlists" className="neon-tile flex items-center gap-4 rounded-lg border p-3"><img src={artwork} alt="" width={1024} height={1024} loading="lazy" className="size-20 rounded-lg object-cover" /><div><h3 className="font-bold">Minha primeira playlist</h3><span className="text-xs text-primary">Criar playlist ›</span></div></Link>}
+        </div>
+      </section>
+      <p className="pb-2 text-center text-xs font-semibold text-primary">Feito por Adevaldo Marques</p>
     </div>
   );
 }
