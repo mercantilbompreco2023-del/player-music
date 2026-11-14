@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] Conferir commit 870961c716990273ebd785453fc1ba672a6ce6b2, validar primeira faixa no HomePlayer e início em sequência; verificar prévia e entregar ZIP/CSV.
+- [x] Commit 870961c716990273ebd785453fc1ba672a6ce6b2 confirmado já sincronizado; HomePlayer inicia em sequência explícita. Prévia verificada com importação e reprodução; 55 testes aprovados, build OK e entrega ZIP/CSV v20.
 - [x] Gerar APK do Player Music
 - [x] Versão Android nativa: serviço de mídia em primeiro plano, notificação de mídia, controles na tela bloqueada
 - [x] Importar pasta completa no APK (seletor de pasta nativo)
