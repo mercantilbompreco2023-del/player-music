@@ -10,7 +10,7 @@ import { saveAiArtistFolders } from "@/lib/music/folders";
 import { PageHeader } from "@/components/music/AppShell";
 import { TrackRow } from "@/components/music/TrackRow";
 import { Button } from "@/components/ui/button";
-import { artistFolders, savedFolders } from "@/lib/music/folders";
+import { artistFolders, customFolders, savedFolders } from "@/lib/music/folders";
 import { usePlayer } from "@/lib/music/player-context";
 
 export const Route = createFileRoute("/pastas")({
@@ -46,9 +46,10 @@ function FoldersPage() {
     finally { setOrganizing(false); }
   };
   const folders = savedFolders(p.tracks);
+  const manualFolders = customFolders(p.tracks);
   const [selected, setSelected] = useState<{ kind: "artist" | "physical"; name: string } | null>(null);
   const artistGroups = artistFolders(p.tracks);
-  const selectedFolder = (selected?.kind === "physical" ? folders : artistGroups)
+  const selectedFolder = (selected?.kind === "physical" ? folders : selected?.kind === "custom" ? manualFolders : artistGroups)
     .find((folder) => folder.name === selected?.name);
   const shownTracks = selectedFolder?.tracks ?? [];
   return <div>
@@ -87,6 +88,21 @@ function FoldersPage() {
           <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Importe músicas com o nome do cantor preenchido para criar as pastas automaticamente.</p>
         )}
       </section>
+      {manualFolders.length > 0 && <section>
+        <h2 className="mb-3 text-base font-semibold">Pastas criadas por você</h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {manualFolders.map((folder) => <article key={folder.name} className="rounded-lg border bg-card p-4">
+            <Button variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "custom", name: folder.name })}>
+              <FolderOpen className="shrink-0 text-primary" />
+              <span className="min-w-0"><span className="block break-words text-base font-semibold">{folder.name}</span><span className="text-sm text-muted-foreground">{folder.tracks.length} música(s)</span></span>
+            </Button>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Button size="sm" onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir tudo</Button>
+              <Button size="sm" variant="secondary" onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
+            </div>
+          </article>)}
+        </div>
+      </section>}
       {folders.length > 0 && <section>
         <h2 className="mb-3 text-base font-semibold">Pastas importadas do aparelho</h2>
         <div className="grid gap-3 sm:grid-cols-2">
