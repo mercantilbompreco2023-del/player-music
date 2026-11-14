@@ -37,7 +37,7 @@ export function TrackRow({ track, list, playlistId }: { track: Track; list: stri
         </div>
       </button>
       <span className="hidden text-xs tabular-nums text-muted-foreground sm:block">{formatTime(track.duration)}</span>
-      <button onClick={() => p.toggleFavorite(track.id)} aria-label={fav ? "Remover dos favoritos" : "Favoritar"} className="rounded-full p-2 text-muted-foreground hover:text-foreground">
+      {track.source === "local" && (\n        <button onClick={() => void p.saveTrackToCloud(track.id)} aria-label={`Salvar ${track.title} na nuvem`} title="Salvar na nuvem" className="rounded-full p-2 text-primary hover:bg-primary/10">\n          <CloudUpload className="size-5" />\n        </button>\n      )}\n      <button onClick={() => p.toggleFavorite(track.id)} aria-label={fav ? "Remover dos favoritos" : "Favoritar"} className="rounded-full p-2 text-muted-foreground hover:text-foreground">
         <Heart className={cn("size-5", fav && "fill-primary text-primary")} />
       </button>
       <DropdownMenu>
