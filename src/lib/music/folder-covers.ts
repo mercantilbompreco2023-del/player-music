@@ -48,6 +48,17 @@ export async function loadCustomFolderCover(folderName: string): Promise<string 
   } catch { return null; }
 }
 
+const ARTIST_COVER_PREFIX = "artist:";
+
+/** Guarda a capa escolhida para o cantor no armazenamento local do Android. */
+export async function saveArtistFolderCover(artistName: string, file: File): Promise<boolean> {
+  return saveCustomFolderCover(ARTIST_COVER_PREFIX + artistName.trim().toLocaleLowerCase("pt-BR"), file);
+}
+
+export async function loadArtistFolderCover(artistName: string): Promise<string | null> {
+  return loadCustomFolderCover(ARTIST_COVER_PREFIX + artistName.trim().toLocaleLowerCase("pt-BR"));
+}
+
 export async function loadCustomFolderCoverForTrack(trackId: string): Promise<string | null> {
   const folders = readCustomFolders();
   const match = Object.entries(folders).find(([, ids]) => ids.includes(trackId));
