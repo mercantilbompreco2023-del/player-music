@@ -38,7 +38,7 @@ export function FolderImport() {
       setSt({ s: "erro", msg: `A pasta “${folder}” está vazia.` });
       return;
     }
-    const r = await importItems(items, { signal: c.signal, quiet: true, onProgress: (p) => setSt({ s: "importando", p }) });
+    const r = await importItems(items.map((item) => ({ ...item, folderName: folder })), { signal: c.signal, quiet: true, onProgress: (p) => setSt({ s: "importando", p }) });
     r.skipped.unshift(...pre);
     r.found += pre.length;
     setSt({ s: "fim", r, folder });
@@ -71,9 +71,10 @@ export function FolderImport() {
 
   /** APK Android: seletor de pasta do sistema, lendo um arquivo por vez. */
   async function fromNative() {
+    if (!nativeFolder) return;
     let res;
     try {
-      res = await nativeFolder!.pick();
+      res = await nativeFolder.pick();
     } catch (e) {
       const code = (e as { code?: string })?.code;
       setSt(code === "CANCELLED" ? { s: "idle" } : { s: "erro", msg: "Não foi possível ler a pasta escolhida." });
@@ -91,7 +92,7 @@ export function FolderImport() {
       setSt({ s: "importando", p: { phase: "importando", found: total.found, processed, imported: total.imported, current: f.path } });
       try {
         const file = await readNativeFile(f);
-        const r = await importItems([{ file, path: f.path }], { signal: c.signal, quiet: true });
+        const r = await importItems([{ file, path: f.path, folderName: res.name }], { signal: c.signal, quiet: true });
         total.imported += r.imported;
         total.duplicates += r.duplicates;
         total.skipped.push(...r.skipped);

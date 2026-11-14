@@ -126,7 +126,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const localPromise = fileStore.all()
       .then((files) => files
         .sort((a, b) => b.addedAt - a.addedAt)
-        .map((f) => ({ id: f.id, title: f.title, artist: f.artist, duration: f.duration, fingerprint: f.fingerprint, path: f.path, url: URL.createObjectURL(f.blob), source: "local" as const })))
+        .map((f) => ({ id: f.id, title: f.title, artist: f.artist, duration: f.duration, fingerprint: f.fingerprint, path: f.path, folderName: f.folderName, url: URL.createObjectURL(f.blob), source: "local" as const })))
       .catch(() => {
         toast.error("Não foi possível abrir os arquivos salvos neste aparelho.");
         return [] as Track[];
@@ -364,7 +364,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         } catch { /* segue sem a checagem dos antigos */ }
       }
       let processed = 0;
-      for (const { file, path } of items) {
+      for (const { file, path, folderName } of items) {
         if (opts.signal?.aborted) { report.cancelled = true; break; }
         opts.onProgress?.({ phase: "importando", found: items.length, processed, imported: report.imported, current: path });
         processed++;
@@ -388,9 +388,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         if (opts.signal?.aborted) { URL.revokeObjectURL(url); report.cancelled = true; break; }
         const id = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         const meta = parseFileName(file.name);
-        const t: Track = { id, ...meta, duration, url, source: "local", fingerprint: fp, path };
+        const t: Track = { id, ...meta, duration, url, source: "local", fingerprint: fp, path, folderName };
         try {
-          await fileStore.put({ id, ...meta, duration, fingerprint: fp, path, blob: file, addedAt: Date.now() });
+          await fileStore.put({ id, ...meta, duration, fingerprint: fp, path, folderName, blob: file, addedAt: Date.now() });
         } catch {
           if (!opts.quiet) toast.warning(`"${meta["title"]}" ficará disponível só nesta sessão (sem espaço para salvar).`);
         }
