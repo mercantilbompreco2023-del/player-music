@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ChevronRight, FolderOpen, Play } from "lucide-react";
+import { ArrowLeft, ChevronRight, FolderOpen, Play, Shuffle } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/music/AppShell";
@@ -79,7 +79,8 @@ function BibliotecaPage() {
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <Button variant="ghost" size="icon" aria-label="Voltar para minhas músicas" onClick={() => { setTab("minhas"); setFolderName(null); }}><ArrowLeft /></Button>
             <h2 className="min-w-0 flex-1 break-words text-lg font-semibold">{folder.name}</h2>
-            <Button onClick={() => p.playList(folder.tracks.map((track) => track.id))}><Play /> Reproduzir pasta</Button>
+            <Button onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Reproduzir pasta</Button>
+            <Button variant="secondary" onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
           </div>
           {folder.tracks.map((track) => <TrackRow key={track.id} track={track} list={folder.tracks.map((item) => item.id)} />)}
         </section>
