@@ -47,6 +47,8 @@ interface PlayerCtx {
   clearRecent: () => void;
   clearUpcoming: () => void;
   moveInQueue: (pos: number, dir: -1 | 1) => void;
+  /** Anexa pastas/caminhos recuperados da conta e aplica playlists e favoritos restaurados. */
+  applyRestoredLibrary: (r: { folderInfo: Array<{ id: string; folderName?: string | undefined; path?: string | undefined }>; playlists: Playlist[]; favorites: string[] }) => void;
 }
 
 // Mantém o mesmo contexto entre recarregamentos de módulo (HMR), evitando "usePlayer fora do PlayerProvider".
