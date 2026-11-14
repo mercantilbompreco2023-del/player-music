@@ -22,8 +22,23 @@ export function LibraryBackup() {
   const save = useServerFn(saveLibraryBackup);
   const load = useServerFn(loadLibraryBackup);
   const [busy, setBusy] = useState<"salvar" | "ver" | "aplicar" | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+
+  /** Manda o som das músicas que ainda só existem neste aparelho para a conta. */
+  async function enviarSom() {
+    const locais = p.tracks.filter((t) => t.source === "local");
+    if (!locais.length) { toast.message("Todo o som das suas músicas já está na conta."); return; }
+    setUploading(true);
+    let ok = 0, falha = 0;
+    for (const t of locais) {
+      try { await p.saveTrackToCloud(t.id); ok++; } catch { falha++; }
+    }
+    setUploading(false);
+    if (ok) toast.success(`${ok} música(s) com o som guardado na conta.`);
+    if (falha) toast.error(`${falha} música(s) não puderam ser enviadas agora.`);
+  }
 
   async function salvar() {
     const payload = buildBackup(p.tracks, p.prefs);
@@ -76,6 +91,9 @@ export function LibraryBackup() {
         </Button>
         <Button variant="outline" onClick={() => void ver()} disabled={!!busy}>
           {busy === "ver" ? <Loader2 className="animate-spin" /> : <CloudDownload />} Ver o que está na conta
+        </Button>
+        <Button variant="outline" onClick={() => void enviarSom()} disabled={!!busy || uploading}>
+          {uploading ? <Loader2 className="animate-spin" /> : <CloudUpload />} Enviar o som que falta para a conta
         </Button>
       </div>
       {savedAt && <p className="text-xs text-muted-foreground">Última vez na conta: {savedAt}</p>}
