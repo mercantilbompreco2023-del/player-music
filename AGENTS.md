@@ -44,3 +44,4 @@ use the editor.
 - Folder playback uses the shared player's explicit ordered/shuffle mode, so queue creation and shuffle preference change together without stale toggles.
 - Android folder grants use persisted read-only SAF permissions and local grant checks; imported audio remains an IndexedDB copy, independent of later grant revocation.
 - Library CSV exports contain metadata only and never expose playback URLs, tokens, or audio blobs.
+- AI playlist selection runs in an authenticated server function with validated metadata only; verify IDs against the provided library and require explicit saving of the preview.
