@@ -13,6 +13,10 @@ on:
       - "src/routes/configuracoes.tsx"
       - "src/routes/pastas.tsx"
       - "src/routes/biblioteca.tsx"
+      - "src/routes/player.tsx"
+      - "src/components/music/HomePlayer.tsx"
+      - "src/lib/music/folder-covers.ts"
+      - "src/components/music/CustomFolderCover.tsx"
       - "package.json"
       - ".github/workflows/android-apk.yml"
 
