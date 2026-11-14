@@ -6,7 +6,7 @@ import { moveItem, nextIndex, parseFileName, prevIndex, shuffleQueue } from "./q
 import { nativeMedia } from "./native-media";
 import { nativeFolder } from "./native-folder";
 import { supabase } from "@/integrations/supabase/client";
-import { defaultPrefs, fileStore, loadFolderHints, loadPrefs, saveFolderHints, savePrefs, type Prefs } from "./storage";
+import { defaultPrefs, fileStore, loadFolderHints, loadPrefs, requestPersistentStorage, saveFolderHints, savePrefs, type Prefs } from "./storage";
 import { trackKey } from "./backup";
 import type { Playlist, RepeatMode, Track } from "./types";
 import { audioMime, fingerprint, formatProblem, type ImportItem, type ImportProgress, type ImportReport } from "./import";
@@ -516,7 +516,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     async (files: FileList | File[]) => {
       const items = Array.from(files).map((file) => ({ file, path: (file as File & { webkitRelativePath?: string }).webkitRelativePath || file.name }));
       const r = await importItems(items);
-      if (r.imported) toast.success(`${r.imported} faixa(s) importada(s).`);
+      if (r.imported) {
+        // Reforça a persistência do IndexedDB para reduzir o risco de o navegador
+        // remover os áudios importados automaticamente quando faltar espaço.
+        await requestPersistentStorage();
+        toast.success(`${r.imported} faixa(s) importada(s) e salva(s) neste aparelho.`);
+      }
       if (r.duplicates) toast.info(`${r.duplicates} já estava(m) na biblioteca.`);
       const other = r.skipped.length - r.duplicates;
       if (other) toast.error(`${other} arquivo(s) ignorado(s): ${r.skipped.find((s) => !s.reason.includes("duplicado"))?.reason}.`);
