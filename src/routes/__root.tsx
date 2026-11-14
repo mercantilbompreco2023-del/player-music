@@ -18,6 +18,14 @@ import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
+  const router = useRouter();
+  useEffect(() => {
+    // Capacitor opens the bundled index.html file, so Android WebView may
+    // report /index.html instead of /. Send only that local entry path home.
+    if (router.state.location.pathname === "/index.html") {
+      void router.navigate({ to: "/" });
+    }
+  }, [router]);
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
