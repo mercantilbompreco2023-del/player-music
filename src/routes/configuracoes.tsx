@@ -2,7 +2,8 @@ import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
 import { ArrowLeft, Cloud, Moon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { usePlayer } from "@/lib/music/player-context";\nimport { useSession } from "@/lib/auth";
+import { usePlayer } from "@/lib/music/player-context";
+import { useSession } from "@/lib/auth";
 
 export const Route = createFileRoute("/configuracoes")({
   head: () => ({
