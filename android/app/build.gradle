@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 
+// Assinatura: as credenciais ficam FORA do projeto. O caminho do arquivo vem da
+// variável PM_KEYSTORE_PROPS (ou de android/keystore.properties, se existir).
+def ksProps = new Properties()
+def ksFile = file(System.getenv('PM_KEYSTORE_PROPS') ?: 'keystore.properties')
+def ksReady = ksFile.exists()
+if (ksReady) {
+    ksFile.withInputStream { ksProps.load(it) }
+}
+
 android {
     namespace = "app.lovable.playermusic"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +16,8 @@ android {
         applicationId "app.lovable.playermusic"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.4"
+        versionCode 5
+        versionName "1.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,10 +25,23 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (ksReady) {
+            release {
+                storeFile file(ksProps.getProperty('storeFile'))
+                storePassword ksProps.getProperty('storePassword')
+                keyAlias ksProps.getProperty('keyAlias')
+                keyPassword ksProps.getProperty('keyPassword')
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (ksReady) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

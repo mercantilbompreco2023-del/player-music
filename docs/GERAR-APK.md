@@ -37,5 +37,9 @@ O pacote privado `player-music-assinatura_v1.zip` contém a chave e suas credenc
 
 No Android, a exportação usa `ACTION_CREATE_DOCUMENT` por meio do plugin `LibraryExport`, permitindo escolher onde salvar o CSV sem depender de downloads de URLs blob no WebView. A playlist por estilo precisa de internet e login; o APK continua abrindo o aplicativo publicado, não é uma versão totalmente offline. A publicação das mudanças foi solicitada nesta entrega.
 
-## Exportação e playlists por estilo
+## Busca de músicas do aparelho (v1.5)
+O plugin nativo `MediaScan` lista as músicas que já estão na biblioteca de mídia do Android (`MediaStore.Audio`, somente `IS_MUSIC != 0`) e lê uma delas por vez para copiar para a biblioteca do app. A tela é “Encontrar músicas do meu celular” em `/importar`.
+Permissões: `READ_MEDIA_AUDIO` (Android 13+) ou `READ_EXTERNAL_STORAGE` até o Android 12, pedidas só quando a pessoa toca em “Procurar músicas no celular”. A lista tem teto de 2000 itens; acima disso, use o seletor de pasta.
+No navegador (sem APK) a seção explica que o navegador não pode procurar no aparelho inteiro e orienta usar pasta/arquivos.
+A assinatura da versão 1.5 (versionCode 5) usa a chave `player-music.jks` com alias `playermusic`; as credenciais ficam fora do repositório e do ZIP do projeto. Esta chave é diferente da usada no APK v3/v4, então o novo APK não instala por cima do anterior: é preciso desinstalar o app antigo (as músicas importadas são apagadas junto; guarde os arquivos originais ou reimporte depois).
 Na Biblioteca, “Exportar lista da biblioteca” gera um CSV de metadados; não transfere os áudios nem restaura automaticamente uma biblioteca em outro aparelho. Em Playlists, uma pessoa conectada pode enviar descrição, títulos e artistas para a IA, visualizar a seleção e salvá-la. Os arquivos de áudio e URLs privadas não são enviados.

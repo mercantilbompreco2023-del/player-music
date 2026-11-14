@@ -20,3 +20,6 @@
 - [x] Importação de pasta confirmada no navegador; "Selecionar todas" e ações em lote na Biblioteca
 - [x] Lista de pastas e músicas salva na conta: restaurar em outro celular sem perder nada
 - [x] Atualização automática: o APK abre o app publicado, então as novidades chegam sozinhas ao abrir
+- [x] Gerar APK de novo: chave de assinatura anterior foi perdida, então a nova terá assinatura diferente
+- [x] Botão que detecta as músicas que já estão no celular e as adiciona ao app (no Android via biblioteca de mídia; no navegador continua sendo escolher pasta/arquivos)
+- [ ] Confirmar a busca de músicas do aparelho e a instalação do APK v1.5 em Android físico (depende de aparelho)
