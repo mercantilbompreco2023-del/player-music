@@ -5,9 +5,8 @@ import { Progress } from "@/components/ui/progress";
 import { useHydrated } from "@tanstack/react-router";
 import { usePlayer } from "@/lib/music/player-context";
 import { nativeFolder, readNativeFile } from "@/lib/music/native-folder";
-import { AUDIO_EXT } from "@/lib/music/import";
 import {
-  describePickerError, ImportCancelled, pickDirectory, supportsDirectoryPicker, supportsWebkitDirectory, walkDirectory,
+  AUDIO_EXT, describePickerError, ImportCancelled, pickDirectory, supportsDirectoryPicker, supportsWebkitDirectory, walkDirectory,
   type ImportItem, type ImportProgress, type ImportReport, type SkippedItem,
 } from "@/lib/music/import";
 
@@ -89,7 +88,7 @@ export function FolderImport() {
     let processed = total.skipped.length;
     for (const f of audio) {
       if (c.signal.aborted) { total.cancelled = true; break; }
-      setSt({ s: "importando", p: { found: total.found, processed, imported: total.imported, duplicates: total.duplicates, skipped: total.skipped.length, current: f.path } as ImportProgress });
+      setSt({ s: "importando", p: { phase: "importando", found: total.found, processed, imported: total.imported, current: f.path } });
       try {
         const file = await readNativeFile(f);
         const r = await importItems([{ file, path: f.path }], { signal: c.signal, quiet: true });
