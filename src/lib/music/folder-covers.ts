@@ -61,6 +61,16 @@ export async function loadArtistFolderCover(artistName: string): Promise<string 
   return loadCustomFolderCover(ARTIST_COVER_PREFIX + artistName.trim().toLocaleLowerCase("pt-BR"));
 }
 
+/** Procura capa associada à pasta física/importada da faixa. */
+export async function loadFolderCoverForTrack(track: { id: string; folderName?: string; path?: string }): Promise<string | null> {
+  const folderName = track.folderName || track.path?.replace(/\\/g, "/").split("/")[0];
+  if (folderName) {
+    const cover = await loadCustomFolderCover(folderName);
+    if (cover) return cover;
+  }
+  return loadCustomFolderCoverForTrack(track.id);
+}
+
 export async function loadCustomFolderCoverForTrack(trackId: string): Promise<string | null> {
   const folders = readCustomFolders();
   const match = Object.entries(folders).find(([, ids]) => ids.includes(trackId));
