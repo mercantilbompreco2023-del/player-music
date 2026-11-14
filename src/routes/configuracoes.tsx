@@ -8,11 +8,7 @@ export const Route = createFileRoute("/configuracoes")({
   head: () => ({
     meta: [
       { title: "Configurações — Player Music" },
-      { name: "description", content: "Tema, limitações de reprodução e informações do app." },
-      { property: "og:title", content: "Configurações — Player Music" },
-      { property: "og:description", content: "Tema, limitações de reprodução e informações do app." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { name: "description", content: "Tema e opções de reprodução do Player Music." },
     ],
   }),
   component: ConfigPage,
@@ -35,21 +31,9 @@ function ConfigPage() {
       <section className="space-y-2 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
         <h2 className="text-lg font-bold">Biblioteca neste aparelho</h2>
         <p className="text-muted-foreground">
-          Você pode importar e ouvir suas músicas, criar pastas por cantor, escolher capas, montar playlists e usar favoritos sem fazer login. As músicas e preferências ficam salvas neste aparelho. Para ouvir offline, mantenha os arquivos importados no armazenamento local.
+          Use o Player Music sem criar conta e sem fazer login. Importe suas músicas, organize por pastas e cantores, escolha capas, monte playlists e salve favoritos. Os arquivos e as preferências ficam neste aparelho; mantenha as músicas importadas localmente para ouvir sem internet.
         </p>
       </section>
-
-      <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
-          <div className="flex items-center gap-2">
-            <Cloud className="size-5 text-primary" />
-            <h2 className="text-lg font-bold">Lista de pastas e músicas na conta</h2>
-          </div>
-          <p className="text-muted-foreground">
-            Salve a lista das suas pastas e músicas na sua conta. No celular novo, entre com a mesma conta e aplique a lista para não perder pastas, playlists e favoritos.
-          </p>
-          <LibraryBackup />
-        </section>
-      )}
 
       <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
         <div className="flex items-center gap-2">
@@ -73,35 +57,21 @@ function ConfigPage() {
           <Switch id="background-playback" checked={p.backgroundPlayback} onCheckedChange={p.setBackgroundPlayback} />
         </div>
         <p className="text-muted-foreground">
-          Quando ativado em um APK Android com suporte de mídia, o Player Music usa o serviço já instalado para manter a notificação, os controles na tela bloqueada e o aparelho ativo durante a reprodução. Ao desativar, esse serviço é encerrado; a música aberta no player não é pausada automaticamente.
+          No APK Android, esta opção usa o serviço de mídia para manter a notificação e os controles na tela bloqueada. O Android ainda pode aplicar restrições de bateria.
         </p>
         <p className="text-muted-foreground">
-          No navegador, esta opção não instala um serviço Android nem garante áudio com a tela apagada. A continuidade depende do sistema e do navegador {hydrated && (hasMediaSession ? "(controles de mídia disponíveis neste navegador)" : "(este navegador não informa suporte aos controles de mídia)")}. Mesmo no APK, economia de bateria, suspensão do app ou restrições do aparelho podem interromper o áudio, que continua sendo reproduzido pela página dentro do aplicativo.
+          No navegador, a continuidade depende do suporte do navegador {hydrated && (hasMediaSession ? "(controles de mídia disponíveis)" : "(sem suporte aos controles de mídia)")}.
         </p>
       </section>
 
       <section className="space-y-2 rounded-2xl bg-card p-4 text-sm">
         <h2 className="text-lg font-bold">Suas músicas e dados</h2>
         <p className="text-muted-foreground">
-          Os arquivos importados, favoritos e playlists ficam guardados só neste aparelho e navegador. Limpar os dados do navegador apaga tudo.
-          Se o aparelho estiver sem espaço, a faixa vale apenas até fechar o app. Formatos aceitos dependem do navegador (MP3, M4A/AAC, OGG, WAV e
-          normalmente FLAC). Arquivos com proteção (DRM) não são suportados.
+          Músicas importadas, pastas, favoritos e playlists ficam guardados neste aparelho. Limpar os dados ou desinstalar o aplicativo pode apagar a biblioteca local. Faça uma cópia dos arquivos originais para não perdê-los.
         </p>
-        <p className="text-muted-foreground">
-          Não existe catálogo online nem streaming. As faixas DEMO são composições originais de domínio público (CC0) criadas para este app.
-        </p>
+        <p className="text-muted-foreground">O Player Music não exige login para ouvir arquivos locais. Recursos de administração e armazenamento privado na nuvem não fazem parte do uso offline.</p>
       </section>
 
-      <section className="space-y-2 rounded-2xl bg-card p-4 text-sm">
-        <h2 className="text-lg font-bold">Conta e administração</h2>
-        <p className="text-muted-foreground">
-          A área de administração exige login e a permissão de administrador, conferida pelo servidor a cada ação.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Link to="/auth" search={{ redirect: "/admin" }} className="font-semibold text-primary">Entrar / criar conta</Link>
-          <Link to="/privacidade" className="font-semibold text-primary">Privacidade e permissões</Link>
-        </div>
-      </section>
       <p className="text-center text-xs text-muted-foreground">Player Music · aplicativo Android</p>
       <p className="pb-2 text-center text-xs font-semibold tracking-wide text-primary">Feito por Adevaldo Marques</p>
     </div>
