@@ -187,6 +187,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  /** Anexa pastas/caminhos vindos da conta e aplica playlists e favoritos restaurados. */
+  const applyRestoredLibrary = useCallback((r: { folderInfo: Array<{ id: string; folderName?: string | undefined; path?: string | undefined }>; playlists: Playlist[]; favorites: string[] }) => {
+    if (r.folderInfo.length) {
+      const fixes = new Map(r.folderInfo.map((f) => [f.id, f]));
+      setLocalTracks((current) => current.map((t) => {
+        const f = fixes.get(t.id);
+        return f ? { ...t, folderName: f.folderName, path: f.path } : t;
+      }));
+    }
+    updatePrefs((p) => ({ ...p, playlists: r.playlists, favorites: r.favorites }));
+  }, [updatePrefs]);
+
   // Tema
   useEffect(() => {
     document.documentElement.classList.toggle("dark", prefs.theme === "dark");
@@ -582,6 +594,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       setQueue(r.queue);
       setIndex(r.index);
     },
+    applyRestoredLibrary,
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
