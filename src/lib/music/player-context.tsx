@@ -663,6 +663,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const value: PlayerCtx = {
     ready, tracks, byId, queue, index, current, isPlaying, currentTime, duration, prefs,
     backgroundPlayback, setBackgroundPlayback, autoNext, setAutoNext,
+    resumePlayback, setResumePlayback,
     playList, toggle, next, prev, seek,
     setVolume: (v) => updatePrefs((p) => ({ ...p, volume: Math.max(0, Math.min(1, v)) })),
     toggleShuffle: () => {
