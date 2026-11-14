@@ -82,26 +82,26 @@ function FoldersPage() {
       {shownTracks.length ? shownTracks.map((t) => <TrackRow key={t.id} track={t} list={shownTracks.map((item) => item.id)} />) : <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Esta pasta ainda está vazia. Importe as músicas desse artista para que elas apareçam aqui.</p>}
     </section> : <div className="space-y-6">
       <section>
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="text-base font-semibold">Pastas por cantor</h2><Button size="sm" onClick={organizeWithAi} disabled={organizing || !p.ready || !user}>{organizing ? <Loader2 className="animate-spin" /> : <Sparkles />} {organizing ? "Organizando…" : "Organizar com IA"}</Button></div>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h2 className="text-lg font-bold">Pastas por cantor</h2><p className="text-xs text-muted-foreground">Cada artista em sua própria pasta, com capa e reprodução separadas</p></div><Button size="sm" onClick={organizeWithAi} disabled={organizing || !p.ready || !user}>{organizing ? <Loader2 className="animate-spin" /> : <Sparkles />} {organizing ? "Organizando…" : "Organizar com IA"}</Button></div>
         {!user && <p className="mb-2 text-xs text-muted-foreground">Entre na sua conta para organizar com IA.</p>}
         <p className="mb-3 text-sm text-muted-foreground">Cada cantor tem sua própria pasta, criada automaticamente com as músicas da sua biblioteca.</p>
         {artistGroups.length ? (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             {artistGroups.map((artist) => (
-              <article key={artist.name} className="rounded-lg border bg-card p-4">
-                <Button variant="ghost" aria-label={`Abrir cantor ${artist.name}`} className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "artist", name: artist.name })}>
-                  <FolderOpen className="shrink-0 text-primary" />
-                  <span className="min-w-0"><span className="block break-words text-base font-semibold">{artist.name}</span><span className="text-sm text-muted-foreground">{artist.tracks.length} música(s)</span></span>
+              <article key={artist.name} className="overflow-hidden rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card p-4 shadow-[0_0_22px_-14px_hsl(var(--primary))]">
+                <Button variant="ghost" aria-label={`Abrir pasta de ${artist.name}`} className="h-auto min-h-24 w-full justify-start gap-3 whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "artist", name: artist.name })}>
+                  <CustomFolderCover artistName={artist.name} className="w-20 shrink-0" />
+                  <span className="min-w-0 flex-1"><span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.18em] text-primary">Pasta do cantor</span><span className="block break-words text-lg font-bold">{artist.name}</span><span className="text-sm text-muted-foreground">{artist.tracks.length} música(s)</span></span>
                 </Button>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <Button size="sm" aria-label={`Ouvir cantor ${artist.name}`} onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir pasta</Button>
-                  <Button size="sm" variant="secondary" aria-label={`Aleatório do cantor ${artist.name}`} onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button size="sm" aria-label={`Ouvir músicas de ${artist.name}`} onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir cantor</Button>
+                  <Button size="sm" variant="secondary" aria-label={`Aleatório de ${artist.name}`} onClick={() => p.playList(artist.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
                 </div>
               </article>
             ))}
           </div>
         ) : (
-          <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Importe músicas com o nome do cantor preenchido para criar as pastas automaticamente.</p>
+          <p className="rounded-xl border border-dashed border-primary/40 bg-primary/5 p-4 text-sm text-muted-foreground">As pastas aparecem aqui separadas pelo nome do cantor. Se alguma música estiver com nome em código ou “Biblioteca na nuvem”, selecione as faixas na biblioteca e use “Criar pasta com selecionadas”, colocando o nome correto do cantor.</p>
         )}
       </section>
       {manualFolders.length > 0 && <section>
