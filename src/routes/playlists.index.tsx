@@ -60,25 +60,25 @@ function PlaylistsPage() {
                       <p className="text-sm text-muted-foreground">{tracks.length} músicas disponíveis</p>
                     </div>
                   </Link>
-                  <Button size="icon" variant="ghost" aria-label={`Tocar playlist ${pl.name}`} disabled={!ids.length} onClick={() => p.playList(ids)}>
+                  <Button size="icon" variant="ghost" title={`Tocar playlist ${pl.name}`} aria-label={`Tocar playlist ${pl.name}`} disabled={!ids.length} onClick={() => p.playList(ids)}>
                     <Play className="size-5" />
                   </Button>
-                  <Button size="icon" variant="ghost" aria-label={isExpanded ? "Ocultar músicas" : "Mostrar músicas"} aria-expanded={isExpanded} onClick={() => setExpanded((current) => isExpanded ? current.filter((id) => id !== pl.id) : [...current, pl.id])}>
+                  <Button size="icon" variant="ghost" title={isExpanded ? "Ocultar músicas" : "Mostrar músicas"} aria-label={`${isExpanded ? "Ocultar músicas" : "Mostrar músicas"} de ${pl.name}`} aria-expanded={isExpanded} aria-controls={`playlist-tracks-${pl.id}`} onClick={() => setExpanded((current) => current.includes(pl.id) ? current.filter((id) => id !== pl.id) : [...current, pl.id])}>
                     <ChevronDown className={`size-5 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
                   </Button>
                 </div>
                 {isExpanded && (
-                  <div className="border-t border-primary/15 px-3 py-2">
+                  <div id={`playlist-tracks-${pl.id}`} className="border-t border-primary/15 px-3 py-2">
                     {tracks.length ? (
                       <div className="divide-y divide-border/60">
                         {tracks.map((track) => (
-                          <button key={track.id} onClick={() => p.playList(ids, track.id)} className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-accent/60">
+                          <Button key={track.id} type="button" variant="ghost" aria-label={`Tocar ${track.title} da playlist ${pl.name}`} onClick={() => p.playList(ids, track.id)} className="h-auto w-full justify-start gap-3 rounded-lg px-2 py-2 text-left">
                             <Play className="size-4 shrink-0 text-primary" />
                             <span className="min-w-0 flex-1">
                               <span className="block truncate text-sm font-medium">{track.title}</span>
                               <span className="block truncate text-xs text-muted-foreground">{track.artist}</span>
                             </span>
-                          </button>
+                          </Button>
                         ))}
                       </div>
                     ) : (
