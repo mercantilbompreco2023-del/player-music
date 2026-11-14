@@ -313,8 +313,25 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       }
       if (!shouldAutoNext) { setIsPlaying(false); wantPlay.current = false; return; }
       const n = nextIndex(q.length, i, repeat);
-      if (n === null) setIsPlaying(false);
-      else setIndex(n);
+      if (n === null) {
+        wantPlay.current = false;
+        setIsPlaying(false);
+      } else {
+        // O áudio pode terminar após uma pausa/retomada do Android. Reafirma
+        // a intenção de continuar antes de trocar o índice da faixa.
+        wantPlay.current = true;
+        if (n === i) {
+          // Em "repetir todas", uma fila com apenas uma música deve reiniciar.
+          a.currentTime = 0;
+          void a.play().catch(() => {
+            wantPlay.current = false;
+            setIsPlaying(false);
+            toast.error("Não foi possível reiniciar a música automaticamente.");
+          });
+        } else {
+          setIndex(n);
+        }
+      }
     };
     a.onerror = () => {
       if (!a.src) return;
