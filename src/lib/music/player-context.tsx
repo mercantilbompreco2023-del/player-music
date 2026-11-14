@@ -407,8 +407,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       if (signedError || !signed?.signedUrl) throw signedError ?? new Error("Não foi possível abrir a música salva.");
       try { await fileStore.remove(id); } catch { /* a cópia da nuvem já está segura */ }
       URL.revokeObjectURL(track.url);
-      const cloudTrack: Track = { ...track, id: `cloud-${storagePath}`, source: "cloud", storagePath, url: signed.signedUrl };
+      const cloudTrack: Track = { ...track, source: "cloud", storagePath, url: signed.signedUrl };
       setLocalTracks((current) => current.map((t) => t.id === id ? cloudTrack : t));
+      // Mantém favoritos, playlists e fila vinculados à mesma faixa após migrar o arquivo.
+      setQueue((current) => current.map((trackId) => trackId === id ? cloudTrack.id : trackId));
+      updatePrefs((p) => ({
+        ...p,
+        favorites: p.favorites,
+        recent: p.recent,
+        playlists: p.playlists,
+      }));
       toast.success("Música salva na nuvem. A cópia local foi liberada.");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Falha ao salvar na nuvem.";
