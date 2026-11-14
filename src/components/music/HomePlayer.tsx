@@ -2,7 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Cover } from "@/components/music/Cover";
 import { loadArtistFolderCover, loadCustomFolderCoverForTrack, saveArtistFolderCover } from "@/lib/music/folder-covers";
-import { AudioLines, Camera, Heart, ListMusic, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, UserRound, Sparkles } from "lucide-react";
+import { AudioLines, Camera, Heart, ListMusic, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, UserRound, Sparkles, ListOrdered, Download, CloudUpload } from "lucide-react";
+import { TrackVisual } from "./TrackVisual";
+import { useSession } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { usePlayer } from "@/lib/music/player-context";
@@ -117,6 +119,8 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
 
 export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "showcase" }) {
   const p = usePlayer();
+  const { user } = useSession();
+  const [saving, setSaving] = useState(false);
   const [showArtistName, setShowArtistName] = useState(true);
   useEffect(() => {
     try { setShowArtistName(localStorage.getItem("player-music-show-artist-name") !== "false"); } catch { /* usa padrão */ }
@@ -132,7 +136,7 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
   const hasCurrent = !!p.current;
   const startLibrary = () => {
     if (hasCurrent) p.toggle();
-    else if (libraryTracks.length) p.playList(libraryTracks.map((track) => track.id), previewTrack?.id);
+    else if (libraryTracks.length) p.playList(libraryTracks.map((track) => track.id), previewTrack?.id, "ordered");
   };
   return (
     <section aria-label="Tocando agora" className={cn("neon-panel rounded-2xl border border-primary/60 p-3 sm:p-5", variant === "showcase" && "rounded-[2rem] bg-gradient-to-br from-fuchsia-950/50 via-card to-background p-4 shadow-[0_0_32px_-8px_hsl(var(--primary)/0.65)] sm:p-6")}>
@@ -144,7 +148,7 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
         </div>
       </div>
       <div className={cn("grid items-center gap-3 sm:gap-6", variant === "showcase" ? "grid-cols-[minmax(116px,0.9fr)_minmax(0,1.1fr)] sm:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.1fr)]" : "grid-cols-[112px_minmax(0,1fr)] sm:grid-cols-[220px_minmax(0,1fr)]")}>
-        <div className={cn("overflow-hidden border border-primary/40", variant === "showcase" ? "rounded-2xl shadow-[0_0_22px_-8px_hsl(var(--primary)/0.8)]" : "rounded-xl")}>{t ? <ArtistPhoto artist={t.artist} fallbackSeed={t.id} /> : <Link to="/importar" aria-label="Importar músicas"><img src={artwork} alt="Fones de ouvido" width={1024} height={1024} className="aspect-square w-full object-cover" /></Link>}</div>
+        <div className={cn("overflow-hidden border border-primary/40", variant === "showcase" ? "rounded-2xl shadow-[0_0_22px_-8px_hsl(var(--primary)/0.8)]" : "rounded-xl")}>{t ? <TrackVisual track={t} /> : <Link to="/importar" aria-label="Importar músicas"><img src={artwork} alt="Fones de ouvido" width={1024} height={1024} className="aspect-square w-full object-cover" /></Link>}</div>
         <div className="min-w-0">
           <h2 className={cn("truncate font-bold", variant === "showcase" ? "text-lg sm:text-3xl" : "text-base sm:text-2xl")}>{t?.title ?? "Sua música aqui"}</h2>
           <div className="mt-1 flex items-center gap-1"><p className="min-w-0 flex-1 truncate text-xs text-muted-foreground sm:text-base">{showArtistName ? (t?.artist ?? "Sua biblioteca pessoal") : ""}</p><Button type="button" size="icon" variant="ghost" className="size-7 shrink-0" onClick={toggleArtistName} aria-label={showArtistName ? "Ocultar nome do cantor" : "Mostrar nome do cantor"} aria-pressed={showArtistName} title={showArtistName ? "Nome do cantor visível" : "Nome do cantor oculto"}><UserRound className={cn("size-4", showArtistName && "text-primary")} /></Button></div>
@@ -158,6 +162,11 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
           </div>
         </div>
       </div>
+      {!!libraryTracks.length && <div className="mt-3 flex flex-wrap gap-2">
+        <Button size="sm" variant="outline" onClick={() => { p.setAutoNext(true); p.playList(libraryTracks.map((track) => track.id), t?.id, "ordered"); }}><ListOrdered /> Tocar em sequência</Button>
+        {t && t.source !== "demo" && <Button size="sm" variant="outline" onClick={() => void p.saveTrackLocally(t.id)}><Download /> Salvar no aparelho</Button>}
+        {t && t.source === "local" && (user ? <Button size="sm" variant="outline" disabled={saving} onClick={() => { setSaving(true); void p.saveTrackToCloud(t.id).catch(() => {}).finally(() => setSaving(false)); }}><CloudUpload /> {saving ? "Salvando…" : "Salvar na conta"}</Button> : <Button size="sm" variant="outline" asChild><Link to="/auth"><CloudUpload /> Entrar para salvar na conta</Link></Button>)}
+      </div>}
       {t?.license && <p className="mt-3 text-[10px] text-muted-foreground">{t.license}</p>}
     </section>
   );

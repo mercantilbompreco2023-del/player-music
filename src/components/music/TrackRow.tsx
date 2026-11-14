@@ -1,4 +1,4 @@
-import { Check, Cloud, CloudUpload, Heart, ListPlus, MoreVertical, Plus, Trash2, X } from "lucide-react";
+import { Check, Cloud, CloudUpload, Download, Heart, ListPlus, MoreVertical, Plus, Trash2, X } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
   DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger,
@@ -50,7 +50,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
       </button>
       <span className="hidden text-xs tabular-nums text-muted-foreground sm:block">{formatTime(track.duration)}</span>
       {track.source === "local" && (
-        <button onClick={() => void p.saveTrackToCloud(track.id)} aria-label={`Salvar ${track.title} na nuvem`} title="Salvar na nuvem" className="rounded-full p-2 text-primary hover:bg-primary/10">
+        <button onClick={() => void p.saveTrackToCloud(track.id).catch(() => {})} aria-label={`Salvar ${track.title} na nuvem`} title="Salvar na nuvem" className="rounded-full p-2 text-primary hover:bg-primary/10">
           <CloudUpload className="size-5" />
         </button>
       )}
@@ -63,6 +63,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => p.addToQueue(track.id)}><ListPlus /> Adicionar à fila</DropdownMenuItem>
+          {track.source !== "demo" && <DropdownMenuItem onClick={() => void p.saveTrackLocally(track.id)}><Download /> Salvar no aparelho</DropdownMenuItem>}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger><Plus className="mr-2 size-4" /> Adicionar à playlist</DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -84,7 +85,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
             <DropdownMenuItem onClick={() => p.removeFromPlaylist(playlistId, track.id)}><X /> Remover da playlist</DropdownMenuItem>
           )}
           {track.source === "local" && (
-            <DropdownMenuItem onClick={() => void p.saveTrackToCloud(track.id)}><CloudUpload /> Salvar na nuvem e liberar espaço</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void p.saveTrackToCloud(track.id).catch(() => {})}><CloudUpload /> Salvar na conta e manter no aparelho</DropdownMenuItem>
           )}
           {(track.source === "local" || track.source === "cloud") && (
             <>
