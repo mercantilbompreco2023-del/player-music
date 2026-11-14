@@ -21,3 +21,4 @@
 - [x] Lista de pastas e músicas salva na conta: restaurar em outro celular sem perder nada
 - [x] Atualização automática: o APK abre o app publicado, então as novidades chegam sozinhas ao abrir
 - [ ] Gerar APK de novo: chave de assinatura anterior foi perdida, então a nova terá assinatura diferente
+- [ ] Botão que detecta as músicas que já estão no celular e as adiciona ao app (no Android via biblioteca de mídia; no navegador continua sendo escolher pasta/arquivos)
