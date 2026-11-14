@@ -30,7 +30,8 @@ export function TrackRow({ track, list, playlistId }: { track: Track; list: stri
         <div className="min-w-0">
           <p className={cn("truncate font-semibold", active && "text-primary")}>{track.title}</p>
           <div className="flex items-center gap-1.5 truncate text-sm text-muted-foreground">
-            {track.source === "demo" && <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">DEMO</Badge>}\n            {track.source === "cloud" && <Badge variant="outline" className="h-4 gap-1 px-1.5 text-[10px]"><Cloud className="size-3" /> NUVEM</Badge>}
+            {track.source === "demo" && <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">DEMO</Badge>}
+            {track.source === "cloud" && <Badge variant="outline" className="h-4 gap-1 px-1.5 text-[10px]"><Cloud className="size-3" /> NUVEM</Badge>}
             <span className="truncate">{track.artist}</span>
           </div>
         </div>
