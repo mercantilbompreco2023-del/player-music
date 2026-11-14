@@ -29,6 +29,13 @@
       "when": 1794668745296,
       "tag": "0003_has_role_self_only",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794668753021,
+      "tag": "0004_has_role_anon_policy_exec",
+      "breakpoints": true
     }
   ]
 }
