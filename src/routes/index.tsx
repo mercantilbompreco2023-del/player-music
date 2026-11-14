@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { AlertTriangle, ExternalLink, LogIn, Music } from "lucide-react";
+import { AlertTriangle, LogIn, Music } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cardsQuery } from "@/lib/cards-query";
 import { FUNCTIONS, ICONS, isFunctionKey, visibleCards, type FunctionKey } from "@/lib/cards";
@@ -29,7 +28,7 @@ function useCardStatus() {
       case "descobrir": return `${p.prefs.recent.length} recentes`;
       case "player": return p.current ? `${p.isPlaying ? "Tocando" : "Pausado"}: ${p.current.title}` : "Nada tocando";
       case "buscar": return `${p.tracks.length} faixas para buscar`;
-      case "biblioteca": return `${p.tracks.length} faixas`;
+      case "biblioteca": return `${p.tracks.filter((t) => t.source === "local" || t.source === "cloud").length} músicas salvas`;
       case "importar": return local ? `${local} importadas` : "Nenhuma importada";
       case "playlists": return `${p.prefs.playlists.length} playlists`;
       case "favoritos": return `${p.prefs.favorites.length} favoritas`;
@@ -40,53 +39,6 @@ function useCardStatus() {
   };
 }
 
-
-const ARTISTS = [
-  "Marília Tavares",
-  "Marina Fagundes",
-  "Ana Castela",
-  "Grelo",
-  "Theuzinho",
-  "Mari Fernandez",
-  "Wesley Safadão",
-  "Mais artistas",
-];
-
-function ArtistDiscovery() {
-  const [platform, setPlatform] = useState<"youtube" | "spotify">("youtube");
-  const searchUrl = (artist: string) => platform === "youtube"
-    ? `https://music.youtube.com/search?q=${encodeURIComponent(artist)}`
-    : `https://open.spotify.com/search/${encodeURIComponent(artist)}`;
-
-  return (
-    <section className="space-y-3" aria-labelledby="artistas-title">
-      <div>
-        <h2 id="artistas-title" className="text-xl font-bold">Cantores e músicas</h2>
-        <p className="text-sm text-muted-foreground">Escolha onde quer ouvir. A música abre no serviço oficial.</p>
-      </div>
-      <div className="grid grid-cols-2 gap-2 rounded-full bg-muted p-1">
-        <button type="button" aria-pressed={platform === "youtube"} onClick={() => setPlatform("youtube")}
-          className={`rounded-full py-2 text-sm font-semibold transition-colors ${platform === "youtube" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}>
-          YouTube Music
-        </button>
-        <button type="button" aria-pressed={platform === "spotify"} onClick={() => setPlatform("spotify")}
-          className={`rounded-full py-2 text-sm font-semibold transition-colors ${platform === "spotify" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}>
-          Spotify
-        </button>
-      </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {ARTISTS.map((artist) => (
-          <a key={artist} href={searchUrl(artist)} target="_blank" rel="noopener noreferrer"
-            className="group flex min-h-20 items-center justify-between gap-2 rounded-2xl border bg-card p-3 transition-colors hover:border-primary/60 hover:bg-accent/50">
-            <span className="text-sm font-semibold">{artist}</span>
-            <ExternalLink className="size-4 shrink-0 text-muted-foreground group-hover:text-primary" />
-          </a>
-        ))}
-      </div>
-      <p className="text-xs text-muted-foreground">Para ouvir com a tela desligada, use o aplicativo oficial e o plano que oferece reprodução em segundo plano. A disponibilidade depende do serviço e da sua conta.</p>
-    </section>
-  );
-}
 
 const CARD_PHOTOS: Record<FunctionKey, string> = {
   descobrir: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=900&q=85",
@@ -113,7 +65,7 @@ function Index() {
     },
   });
   const status = useCardStatus();
-  const list = cards.data ? visibleCards(cards.data.cards, admin.data === true) : [];
+  const list = cards.data ? visibleCards(cards.data.cards, admin.data === true).filter((card) => card.function_key === "biblioteca") : [];
 
   return (
     <div className="space-y-6">
