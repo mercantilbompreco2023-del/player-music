@@ -90,56 +90,22 @@ function Index() {
         <h1 className="mt-3 text-3xl font-bold leading-tight">{greeting.data ?? "Sua música, do seu jeito."}</h1>
       </section>
 
-      <section className="space-y-4 rounded-3xl border border-primary/25 bg-card p-4 shadow-lg sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Painel musical</p>
-            <h2 className="mt-1 text-2xl font-bold">Sua central de músicas</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Acompanhe sua biblioteca e acesse seus controles rapidamente.</p>
+      {player.current && (
+        <Link to="/player" className="flex items-center gap-3 rounded-2xl border border-primary/30 bg-card p-3 shadow-lg transition-colors hover:bg-accent">
+          <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-primary/15 text-primary">
+            <Music className="size-6" />
+            {player.isPlaying && <span className="absolute bottom-1 right-1 size-2 rounded-full bg-primary ring-2 ring-card" />}
           </div>
-          <Link to="/player" className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-            <Music className="size-4" /> Abrir player
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <Link to="/biblioteca" className="rounded-2xl bg-muted/70 p-3 transition-colors hover:bg-muted">
-            <p className="text-xs text-muted-foreground">Minhas músicas</p>
-            <p className="mt-1 text-2xl font-bold tabular-nums">{player.ready ? ownTracks.length : "—"}</p>
-          </Link>
-          <Link to="/pastas" className="rounded-2xl bg-muted/70 p-3 transition-colors hover:bg-muted">
-            <p className="text-xs text-muted-foreground">Pastas</p>
-            <p className="mt-1 text-2xl font-bold tabular-nums">{player.ready ? artistFolders + 8 : "—"}</p>
-          </Link>
-          <Link to="/playlists" className="rounded-2xl bg-muted/70 p-3 transition-colors hover:bg-muted">
-            <p className="text-xs text-muted-foreground">Playlists</p>
-            <p className="mt-1 text-2xl font-bold tabular-nums">{player.prefs.playlists.length}</p>
-          </Link>
-          <Link to="/favoritos" className="rounded-2xl bg-muted/70 p-3 transition-colors hover:bg-muted">
-            <p className="text-xs text-muted-foreground">Favoritos</p>
-            <p className="mt-1 text-2xl font-bold tabular-nums">{player.prefs.favorites.length}</p>
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          <Link to="/importar" className="flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold hover:bg-accent">
-            <FolderOpen className="size-4" /> Importar músicas
-          </Link>
-          <Link to="/biblioteca" className="flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold hover:bg-accent">
-            <Music className="size-4" /> Minha biblioteca
-          </Link>
-          <Link to="/pastas" className="col-span-2 flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold hover:bg-accent sm:col-span-1">
-            <Shuffle className="size-4" /> Ouvir por pasta
-          </Link>
-        </div>
-        <div className="flex items-center gap-3 rounded-2xl bg-muted/50 p-3">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary"><Music className="size-5" /></div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-muted-foreground">Tocando agora</p>
-            <p className="truncate text-sm font-semibold">{player.current?.title ?? "Nenhuma música tocando"}</p>
-            <p className="truncate text-xs text-muted-foreground">{player.current?.artist ?? "Escolha uma faixa na biblioteca"}</p>
+            <p className="mb-0.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+              {player.isPlaying ? "Tocando agora" : "Reprodução pausada"}
+            </p>
+            <p className="truncate text-sm font-bold">{player.current.title}</p>
+            <p className="truncate text-xs text-muted-foreground">{player.current.artist}</p>
           </div>
-          {player.current && <Link to="/player" className="rounded-full border px-3 py-1.5 text-xs font-semibold">Controles</Link>}
-        </div>
-      </section>
+          <span className="rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">Abrir player</span>
+        </Link>
+      )}
 
       {cards.data && cards.data.source !== "servidor" && (
         <p role="status" className="flex items-center gap-2 rounded-xl bg-muted p-3 text-xs">
