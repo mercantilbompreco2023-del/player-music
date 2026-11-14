@@ -13,6 +13,17 @@ function safePath(p: unknown): string {
   return typeof p === "string" && p.startsWith("/") && !p.startsWith("//") ? p : "/";
 }
 
+// Traduz as falhas mais comuns de login para pt-BR; qualquer outra mostra o texto do servidor.
+function authMessage(err: { message?: string } | null | undefined, fallback: string): string {
+  const m = (err?.message ?? "").toLowerCase();
+  if (m.includes("invalid login credentials")) return "E-mail ou senha incorretos.";
+  if (m.includes("email not confirmed")) return "Confirme seu e-mail primeiro: abra o link que enviamos para você.";
+  if (m.includes("not allowed")) return err?.message ?? "Este e-mail não é aceito. Use um e-mail real.";
+  if (m.includes("rate limit") || m.includes("over_email")) return "Muitas tentativas seguidas. Aguarde um pouco e tente de novo.";
+  if (m.includes("already registered") || m.includes("already exists")) return "Este e-mail já tem conta. Entre com a senha ou recupere a senha.";
+  return err?.message?.trim() || fallback;
+}
+
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>) => ({ redirect: typeof s["redirect"] === "string" ? (s["redirect"] as string) : undefined }),
   head: () => ({
