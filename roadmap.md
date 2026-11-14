@@ -1,6 +1,6 @@
 # Roadmap
-- [ ] Login fácil com link por e-mail sem senha, sessão mantida ao reabrir e sem acesso automático a contas alheias.
-- [ ] Salvar áudio no aparelho e na conta sem apagar a cópia local; foto/vídeo local e sequência explícita; testes e entrega v25.
+- [x] Login fácil por link de e-mail implementado; conta conectada restaurada e teste da solicitação sem senha. Recebimento do link depende de acesso ao e-mail.
+- [x] Salvar áudio na conta sem apagar cópia local; foto/vídeo local e sequência explícita; navegador autenticado e 69 testes aprovados; entrega v25.
 - [x] Conferir commit ce2a6f6 incluído na versão posterior; opção de segundo plano salva, integração de mídia com testes simulados, prévia sem erros, 62 testes aprovados e entrega v24.
 - [x] Conferir commit 97ce987e incluído na versão posterior, pastas por cantor e físicas sem colisão de nomes, reprodução e prévia: 59 testes aprovados, build OK, entrega v23.
 - [x] Gerar APK do Player Music

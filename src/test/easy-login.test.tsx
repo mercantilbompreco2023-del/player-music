@@ -13,7 +13,7 @@ it("entra sem senha por link validado enviado ao e-mail, não por conta automát
   if (!Page) throw new Error("Página ausente");
   render(<Page />);
   fireEvent.change(screen.getByLabelText("E-mail"), { target: { value: "pessoa@example.org" } });
-  fireEvent.click(screen.getByRole("button", { name: "Entrar sem senha", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Entrar sem senha" }));
   await waitFor(() => expect(otp).toHaveBeenCalledWith({ email: "pessoa@example.org", options: { emailRedirectTo: window.location.origin } }));
   expect(screen.queryByText("Conta conectada")).toBeNull();
 });
