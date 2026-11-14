@@ -20,3 +20,4 @@
 - [x] Importação de pasta confirmada no navegador; "Selecionar todas" e ações em lote na Biblioteca
 - [x] Lista de pastas e músicas salva na conta: restaurar em outro celular sem perder nada
 - [x] Atualização automática: o APK abre o app publicado, então as novidades chegam sozinhas ao abrir
+- [ ] Gerar APK de novo: chave de assinatura anterior foi perdida, então a nova terá assinatura diferente
