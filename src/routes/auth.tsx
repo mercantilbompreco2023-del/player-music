@@ -56,16 +56,16 @@ function AuthPage() {
     try {
       if (mode === "entrar") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw new Error("E-mail ou senha incorretos, ou e-mail ainda não confirmado.");
+        if (error) throw new Error(authMessage(error, "Não foi possível entrar agora. Tente de novo."));
         toast.success("Você entrou.");
         navigate({ to: target });
       } else if (mode === "criar") {
         const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + target } });
-        if (error) throw new Error("Não foi possível criar a conta. Verifique os dados e tente de novo.");
+        if (error) throw new Error(authMessage(error, "Não foi possível criar a conta. Verifique os dados e tente de novo."));
         setMsg("Conta criada! Abra o link que enviamos para o seu e-mail para confirmar.");
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
-        if (error) throw new Error("Não foi possível enviar agora. Tente mais tarde.");
+        if (error) throw new Error(authMessage(error, "Não foi possível enviar agora. Tente mais tarde."));
         setMsg("Se este e-mail tiver conta, você receberá um link para criar uma nova senha.");
       }
     } catch (err) {
