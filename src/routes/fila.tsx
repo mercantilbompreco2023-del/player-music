@@ -13,6 +13,8 @@ export const Route = createFileRoute("/fila")({
       { name: "description", content: "Veja, reordene e edite a fila de reprodução." },
       { property: "og:title", content: "Fila — Player Music" },
       { property: "og:description", content: "Veja, reordene e edite a fila de reprodução." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: FilaPage,

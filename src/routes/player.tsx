@@ -13,6 +13,8 @@ export const Route = createFileRoute("/player")({
       { name: "description", content: "Controles completos de reprodução e fila." },
       { property: "og:title", content: "Tocando agora — Player Music" },
       { property: "og:description", content: "Controles completos de reprodução e fila." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PlayerPage,

@@ -20,6 +20,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Administração — Player Music" },
       { property: "og:description", content: "Área restrita a administradores." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AdminPage,

@@ -14,6 +14,8 @@ export const Route = createFileRoute("/importar")({
       { name: "description", content: "Adicione músicas à sua biblioteca de forma rápida e segura." },
       { property: "og:title", content: "Importar músicas — Player Music" },
       { property: "og:description", content: "Adicione músicas à sua biblioteca de forma rápida e segura." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ImportarPage,

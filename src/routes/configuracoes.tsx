@@ -13,6 +13,8 @@ export const Route = createFileRoute("/configuracoes")({
       { name: "description", content: "Tema, limitações de reprodução e informações do app." },
       { property: "og:title", content: "Configurações — Player Music" },
       { property: "og:description", content: "Tema, limitações de reprodução e informações do app." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ConfigPage,

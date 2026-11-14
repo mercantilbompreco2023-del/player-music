@@ -11,6 +11,10 @@ export const Route = createFileRoute("/pastas")({
   head: () => ({ meta: [
     { title: "Ouvir por pasta — Player Music" },
     { name: "description", content: "Ouça suas pastas de músicas em sequência ou em ordem aleatória." },
+    { property: "og:title", content: "Ouvir por pasta — Player Music" },
+    { property: "og:description", content: "Ouça suas pastas de músicas em sequência ou em ordem aleatória." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
   ] }),
   component: FoldersPage,
 });

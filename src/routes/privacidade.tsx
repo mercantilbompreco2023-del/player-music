@@ -8,6 +8,8 @@ export const Route = createFileRoute("/privacidade")({
       { name: "description", content: "Quais dados o Player Music usa e por quê." },
       { property: "og:title", content: "Privacidade — Player Music" },
       { property: "og:description", content: "Quais dados o Player Music usa e por quê." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PrivPage,

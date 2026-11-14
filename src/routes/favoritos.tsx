@@ -12,6 +12,8 @@ export const Route = createFileRoute("/favoritos")({
       { name: "description", content: "Suas faixas favoritas." },
       { property: "og:title", content: "Favoritos — Player Music" },
       { property: "og:description", content: "Suas faixas favoritas." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: FavPage,

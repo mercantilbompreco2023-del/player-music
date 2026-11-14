@@ -18,6 +18,8 @@ export const Route = createFileRoute("/playlists/$id")({
       { name: "description", content: "Veja e toque as faixas desta playlist." },
       { property: "og:title", content: "Playlist — Player Music" },
       { property: "og:description", content: "Veja e toque as faixas desta playlist." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PlaylistPage,
