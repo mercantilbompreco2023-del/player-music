@@ -16,7 +16,7 @@ export function HomePlayer() {
   const hasCurrent = !!p.current;
   const startLibrary = () => {
     if (hasCurrent) p.toggle();
-    else if (libraryTracks.length) p.playList(libraryTracks.map((track) => track.id), previewTrack?.id);
+    else if (libraryTracks.length) p.playList(libraryTracks.map((track) => track.id), previewTrack?.id, "ordered");
   };
   return (
     <section aria-label="Tocando agora" className="neon-panel rounded-2xl border border-primary/60 p-3 sm:p-5">
