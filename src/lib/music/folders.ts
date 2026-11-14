@@ -12,6 +12,43 @@ export interface MusicFolder<T extends FolderSource = Track> {
   tracks: T[];
 }
 
+const CUSTOM_FOLDERS_KEY = "player-music-custom-folders";
+
+type CustomFolderMap = Record<string, string[]>;
+
+function readCustomFolders(): CustomFolderMap {
+  try { return JSON.parse(localStorage.getItem(CUSTOM_FOLDERS_KEY) || "{}") as CustomFolderMap; }
+  catch { return {}; }
+}
+
+export function createCustomFolder(name: string, trackIds: string[]): boolean {
+  try {
+    const folders = readCustomFolders();
+    const key = name.trim();
+    if (!key || Object.keys(folders).some((item) => item.toLocaleLowerCase("pt-BR") === key.toLocaleLowerCase("pt-BR"))) return false;
+    folders[key] = [...new Set(trackIds)];
+    localStorage.setItem(CUSTOM_FOLDERS_KEY, JSON.stringify(folders));
+    return true;
+  } catch { return false; }
+}
+
+export function addTracksToCustomFolder(name: string, trackIds: string[]): boolean {
+  try {
+    const folders = readCustomFolders();
+    if (!folders[name]) return false;
+    folders[name] = [...new Set([...folders[name], ...trackIds])];
+    localStorage.setItem(CUSTOM_FOLDERS_KEY, JSON.stringify(folders));
+    return true;
+  } catch { return false; }
+}
+
+export function customFolders<T extends { id: string }>(tracks: T[]): MusicFolder<T>[] {
+  const byId = new Map(tracks.map((track) => [track.id, track]));
+  return Object.entries(readCustomFolders()).map(([name, ids]) => ({
+    name, tracks: ids.flatMap((id) => { const track = byId.get(id); return track ? [track] : []; }),
+  })).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+}
+
 const AI_ARTIST_FOLDERS_KEY = "player-music-ai-artist-folders";
 
 export function saveAiArtistFolders(assignments: Array<{ id: string; artist: string }>): boolean {
