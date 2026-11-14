@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
-import { ArrowLeft, Cloud, Moon } from "lucide-react";
+import { ArrowLeft, Cloud, Moon, Smartphone } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { usePlayer } from "@/lib/music/player-context";
@@ -66,15 +66,20 @@ function ConfigPage() {
         </section>
       )}
 
-      <section className="space-y-2 rounded-2xl bg-card p-4 text-sm">
-        <h2 className="text-lg font-bold">Tocar em segundo plano</h2>
+      <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
+        <div className="flex items-center gap-2">
+          <Smartphone className="size-5 text-primary" />
+          <h2 className="text-lg font-bold">Tocar em segundo plano</h2>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <Label htmlFor="background-playback" className="text-base">Ativar reprodução em segundo plano</Label>
+          <Switch id="background-playback" checked={p.backgroundPlayback} onCheckedChange={p.setBackgroundPlayback} />
+        </div>
         <p className="text-muted-foreground">
-          Este é um app web (MVP), não um aplicativo instalado (APK). A música costuma continuar com a tela bloqueada, e os controles podem aparecer
-          na notificação/tela de bloqueio {hydrated && (hasMediaSession ? "(seu navegador suporta esses controles)" : "(seu navegador não suporta esses controles)")}.
+          Quando ativado no APK Android, o Player Music usa um serviço de mídia em primeiro plano, mantém os controles na notificação e na tela bloqueada e permite continuar ouvindo com a tela apagada. Os botões de tocar, pausar, próxima e anterior também controlam o player.
         </p>
         <p className="text-muted-foreground">
-          Mas não há garantia: o Android ou o navegador podem pausar ou fechar a página para economizar bateria, principalmente com economia de
-          energia ativa ou após muito tempo em segundo plano. Reprodução garantida em segundo plano exige um app Android nativo com serviço de mídia e notificação permanente — isso ainda não existe.
+          No navegador, a continuidade depende do suporte do Android e do próprio navegador {hydrated && (hasMediaSession ? "(controles de mídia disponíveis neste navegador)" : "(este navegador não informa suporte aos controles de mídia)")}. Economia de bateria e restrições do aparelho ainda podem interromper a reprodução.
         </p>
       </section>
 
