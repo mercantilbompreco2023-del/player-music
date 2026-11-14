@@ -35,6 +35,7 @@ function BibliotecaPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [newFolderName, setNewFolderName] = useState("");
   const [showFolderCreator, setShowFolderCreator] = useState(false);
+  const [targetFolder, setTargetFolder] = useState("");
   const folders = savedFolders(p.tracks);
   const manualFolders = customFolders(p.tracks);
   const folder = [...folders, ...manualFolders].find((item) => item.name === folderName);
@@ -74,6 +75,17 @@ function BibliotecaPage() {
           <Button size="sm" onClick={() => p.playList(selecionadas, selecionadas[0])}><Play /> Tocar</Button>
           <Button size="sm" variant="secondary" onClick={() => { selecionadas.forEach((id) => p.addToQueue(id)); toast.success(`${selecionadas.length} adicionada(s) à fila.`); }}><ListPlus /> Adicionar selecionadas à fila</Button>
           <Button size="sm" variant="secondary" onClick={() => { const novas = selecionadas.filter((id) => !p.isFavorite(id)); novas.forEach((id) => p.toggleFavorite(id)); toast.success(novas.length ? `${novas.length} adicionada(s) aos favoritos.` : "Já estavam nos favoritos."); }}><Heart /> Favoritar selecionadas</Button>
+          {manualFolders.length > 0 && <div className="flex flex-wrap items-center gap-2">
+            <select aria-label="Escolher pasta existente" value={targetFolder} onChange={(event) => setTargetFolder(event.target.value)} className="max-w-44 rounded-lg border bg-background px-2 py-2 text-xs">
+              <option value="">Escolher pasta</option>
+              {manualFolders.map((folder) => <option key={folder.name} value={folder.name}>{folder.name}</option>)}
+            </select>
+            <Button size="sm" variant="secondary" disabled={!targetFolder} onClick={() => {
+              if (addTracksToCustomFolder(targetFolder, [...selected])) { toast.success("Músicas adicionadas à pasta."); setTargetFolder(""); limpar(); }
+              else toast.error("Não foi possível atualizar a pasta.");
+            }}>Adicionar à pasta</Button>
+          </div>}
+          <Button size="sm" variant="secondary" onClick={() => setShowFolderCreator(true)}><FolderOpen /> Criar pasta com selecionadas</Button>
           <Button size="sm" variant="ghost" onClick={limpar}><X /> Limpar</Button>
         </div>
       )}
