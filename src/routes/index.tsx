@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, LogIn, Music } from "lucide-react";
+import { AlertTriangle, FolderOpen, LogIn, Music, Shuffle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cardsQuery } from "@/lib/cards-query";
 import { FUNCTIONS, ICONS, isFunctionKey, visibleCards, type FunctionKey } from "@/lib/cards";
 import { useIsAdmin, useSession } from "@/lib/auth";
 import { usePlayer } from "@/lib/music/player-context";
 import { supabase } from "@/integrations/supabase/client";
+import { savedFolders } from "@/lib/music/folders";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -15,6 +17,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Ouça seus próprios arquivos de áudio com playlists, favoritos e fila." },
       { property: "og:title", content: "Player Music" },
       { property: "og:description", content: "Ouça seus próprios arquivos de áudio com playlists, favoritos e fila." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Index,
@@ -54,6 +58,8 @@ const CARD_PHOTOS: Record<FunctionKey, string> = {
 };
 
 function Index() {
+  const player = usePlayer();
+  const folders = savedFolders(player.tracks);
   const { user } = useSession();
   const admin = useIsAdmin(user?.id);
   const cards = useQuery(cardsQuery);
@@ -88,6 +94,14 @@ function Index() {
           Não foi possível carregar os cartões do servidor. Mostrando a {cards.data.source === "cache" ? "última versão salva" : "configuração padrão"}.
         </p>
       )}
+
+      <Button asChild variant="outline" className="h-auto min-h-28 w-full justify-start gap-4 whitespace-normal rounded-lg bg-card p-5 text-left">
+        <Link to="/pastas">
+          <FolderOpen className="shrink-0 text-primary" />
+          <span className="min-w-0 flex-1"><span className="block text-xl font-bold">Ouvir por pasta</span><span className="mt-1 block text-sm text-muted-foreground">{player.ready ? `${folders.length} pasta(s) salva(s)` : "Carregando…"}</span></span>
+          <Shuffle className="shrink-0 text-primary" />
+        </Link>
+      </Button>
 
       {cards.isPending ? (
         <div className="grid grid-cols-2 gap-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="h-36 rounded-2xl" />)}</div>

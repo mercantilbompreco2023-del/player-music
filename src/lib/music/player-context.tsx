@@ -20,7 +20,7 @@ interface PlayerCtx {
   currentTime: number;
   duration: number;
   prefs: Prefs;
-  playList: (ids: string[], startId?: string) => void;
+  playList: (ids: string[], startId?: string, mode?: "ordered" | "shuffle") => void;
   toggle: () => void;
   next: () => void;
   prev: () => void;
@@ -230,10 +230,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }, [current?.id, current?.url]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const playList = useCallback(
-    (ids: string[], startId?: string) => {
+    (ids: string[], startId?: string, mode?: "ordered" | "shuffle") => {
       if (!ids.length) return;
-      const start = startId ?? ids[0]!;
-      const q = prefs.shuffle ? shuffleQueue(ids, start ?? null) : ids;
+      const shuffled = mode ? mode === "shuffle" : prefs.shuffle;
+      const q = shuffled ? shuffleQueue(ids, startId ?? (mode === "shuffle" ? null : ids[0] ?? null)) : [...ids];
+      const start = startId ?? q[0];
+      if (!start) return;
+      if (mode) updatePrefs((p) => ({ ...p, shuffle: shuffled }));
       wantPlay.current = true;
       setQueue(q);
       const i = q.indexOf(start);
@@ -244,7 +247,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         void a.play().catch(() => {});
       }
     },
-    [prefs.shuffle, queue, index],
+    [prefs.shuffle, queue, index, updatePrefs],
   );
 
   const toggle = useCallback(() => {
