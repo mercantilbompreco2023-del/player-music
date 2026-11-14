@@ -39,8 +39,8 @@ function AuthPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
-    if (!/^\S+@\S+\.\S+$/.test(email)) return setMsg("Digite um e-mail válido.");
-    if (mode !== "esqueci" && password.length < 8) return setMsg("A senha precisa ter pelo menos 8 caracteres.");
+    if (!/^\S+@\S+\.\S+$/.test(email)) { setMsg("Digite um e-mail válido."); return; }
+    if (mode !== "esqueci" && password.length < 8) { setMsg("A senha precisa ter pelo menos 8 caracteres."); return; }
     setBusy(true);
     try {
       if (mode === "entrar") {
@@ -67,8 +67,8 @@ function AuthPage() {
   async function social(provider: "google" | "lovable") {
     if (target !== "/") sessionStorage.setItem("pm:after-login", target);
     const r = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin });
-    if (r.error) return toast.error("Não foi possível entrar agora.");
-    if (r.redirected) return;
+    if (r.error) { toast.error("Não foi possível entrar agora."); return; }
+    if (r.redirected) { return; }
     navigate({ to: target });
   }
 

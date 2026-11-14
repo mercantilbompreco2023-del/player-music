@@ -88,7 +88,6 @@ function Index() {
               <Link
                 key={c.id}
                 to={FUNCTIONS[key].route}
-                search={key === "admin" ? undefined : undefined}
                 className="group flex min-h-36 flex-col justify-between rounded-2xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]"
                 aria-label={`${c.title}: ${c.description}. ${status(key)}`}
               >

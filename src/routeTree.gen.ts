@@ -10,17 +10,35 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BibliotecaRouteImport } from './routes/biblioteca'
 import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as DescobrirRouteImport } from './routes/descobrir'
+import { Route as FavoritosRouteImport } from './routes/favoritos'
+import { Route as FilaRouteImport } from './routes/fila'
+import { Route as ImportarRouteImport } from './routes/importar'
 import { Route as PlayerRouteImport } from './routes/player'
 import { Route as PlaylistsRouteImport } from './routes/playlists'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as PlaylistsIndexRouteImport } from './routes/playlists.index'
 import { Route as PlaylistsIdRouteImport } from './routes/playlists.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BibliotecaRoute = BibliotecaRouteImport.update({
@@ -38,6 +56,26 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   path: '/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DescobrirRoute = DescobrirRouteImport.update({
+  id: '/descobrir',
+  path: '/descobrir',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritosRoute = FavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FilaRoute = FilaRouteImport.update({
+  id: '/fila',
+  path: '/fila',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImportarRoute = ImportarRouteImport.update({
+  id: '/importar',
+  path: '/importar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlayerRoute = PlayerRouteImport.update({
   id: '/player',
   path: '/player',
@@ -47,6 +85,21 @@ const PlaylistsRoute = PlaylistsRouteImport.update({
   id: '/playlists',
   path: '/playlists',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const PlaylistsIndexRoute = PlaylistsIndexRouteImport.update({
   id: '/',
@@ -61,31 +114,56 @@ const PlaylistsIdRoute = PlaylistsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/biblioteca': typeof BibliotecaRoute
   '/buscar': typeof BuscarRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/descobrir': typeof DescobrirRoute
+  '/favoritos': typeof FavoritosRoute
+  '/fila': typeof FilaRoute
+  '/importar': typeof ImportarRoute
   '/player': typeof PlayerRoute
   '/playlists': typeof PlaylistsRouteWithChildren
+  '/privacidade': typeof PrivacidadeRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/playlists/$id': typeof PlaylistsIdRoute
   '/playlists/': typeof PlaylistsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/biblioteca': typeof BibliotecaRoute
   '/buscar': typeof BuscarRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/descobrir': typeof DescobrirRoute
+  '/favoritos': typeof FavoritosRoute
+  '/fila': typeof FilaRoute
+  '/importar': typeof ImportarRoute
   '/player': typeof PlayerRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/playlists/$id': typeof PlaylistsIdRoute
   '/playlists': typeof PlaylistsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/biblioteca': typeof BibliotecaRoute
   '/buscar': typeof BuscarRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/descobrir': typeof DescobrirRoute
+  '/favoritos': typeof FavoritosRoute
+  '/fila': typeof FilaRoute
+  '/importar': typeof ImportarRoute
   '/player': typeof PlayerRoute
   '/playlists': typeof PlaylistsRouteWithChildren
+  '/privacidade': typeof PrivacidadeRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/playlists/$id': typeof PlaylistsIdRoute
   '/playlists/': typeof PlaylistsIndexRoute
 }
@@ -93,41 +171,74 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/biblioteca'
     | '/buscar'
     | '/configuracoes'
+    | '/descobrir'
+    | '/favoritos'
+    | '/fila'
+    | '/importar'
     | '/player'
     | '/playlists'
+    | '/privacidade'
+    | '/reset-password'
+    | '/admin'
     | '/playlists/$id'
     | '/playlists/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/biblioteca'
     | '/buscar'
     | '/configuracoes'
+    | '/descobrir'
+    | '/favoritos'
+    | '/fila'
+    | '/importar'
     | '/player'
+    | '/privacidade'
+    | '/reset-password'
+    | '/admin'
     | '/playlists/$id'
     | '/playlists'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
     | '/biblioteca'
     | '/buscar'
     | '/configuracoes'
+    | '/descobrir'
+    | '/favoritos'
+    | '/fila'
+    | '/importar'
     | '/player'
     | '/playlists'
+    | '/privacidade'
+    | '/reset-password'
+    | '/_authenticated/admin'
     | '/playlists/$id'
     | '/playlists/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   BibliotecaRoute: typeof BibliotecaRoute
   BuscarRoute: typeof BuscarRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
+  DescobrirRoute: typeof DescobrirRoute
+  FavoritosRoute: typeof FavoritosRoute
+  FilaRoute: typeof FilaRoute
+  ImportarRoute: typeof ImportarRoute
   PlayerRoute: typeof PlayerRoute
   PlaylistsRoute: typeof PlaylistsRouteWithChildren
+  PrivacidadeRoute: typeof PrivacidadeRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -137,6 +248,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/biblioteca': {
@@ -160,6 +285,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/descobrir': {
+      id: '/descobrir'
+      path: '/descobrir'
+      fullPath: '/descobrir'
+      preLoaderRoute: typeof DescobrirRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favoritos': {
+      id: '/favoritos'
+      path: '/favoritos'
+      fullPath: '/favoritos'
+      preLoaderRoute: typeof FavoritosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fila': {
+      id: '/fila'
+      path: '/fila'
+      fullPath: '/fila'
+      preLoaderRoute: typeof FilaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/importar': {
+      id: '/importar'
+      path: '/importar'
+      fullPath: '/importar'
+      preLoaderRoute: typeof ImportarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/player': {
       id: '/player'
       path: '/player'
@@ -173,6 +326,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/playlists'
       preLoaderRoute: typeof PlaylistsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/playlists/': {
       id: '/playlists/'
@@ -191,6 +365,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 interface PlaylistsRouteChildren {
   PlaylistsIdRoute: typeof PlaylistsIdRoute
   PlaylistsIndexRoute: typeof PlaylistsIndexRoute
@@ -207,11 +392,19 @@ const PlaylistsRouteWithChildren = PlaylistsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   BibliotecaRoute: BibliotecaRoute,
   BuscarRoute: BuscarRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
+  DescobrirRoute: DescobrirRoute,
+  FavoritosRoute: FavoritosRoute,
+  FilaRoute: FilaRoute,
+  ImportarRoute: ImportarRoute,
   PlayerRoute: PlayerRoute,
   PlaylistsRoute: PlaylistsRouteWithChildren,
+  PrivacidadeRoute: PrivacidadeRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

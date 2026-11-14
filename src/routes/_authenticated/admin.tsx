@@ -175,7 +175,7 @@ function CardEditor({ card, first, last, onMove, run }: {
           disabled={!dirty}
           onClick={() => {
             const err = validateCard({ title, description, icon, function_key: card.function_key });
-            if (err) return toast.error(err);
+            if (err) { toast.error(err); return; }
             void run(() => supabase.from("app_cards").update({ title: title.trim(), description: description.trim(), icon }).eq("id", card.id), "Cartão salvo.");
           }}
         >Salvar</Button>
@@ -248,7 +248,7 @@ function SettingsAdmin() {
   const g = greeting ?? String(q.data["home_greeting"] ?? "");
   return (
     <div className="space-y-4">
-      <form className="space-y-2 rounded-2xl bg-card p-3" onSubmit={(e) => { e.preventDefault(); const t = g.trim(); if (t.length < 1 || t.length > 60) return toast.error("Use de 1 a 60 caracteres."); void save("home_greeting", t); }}>
+      <form className="space-y-2 rounded-2xl bg-card p-3" onSubmit={(e) => { e.preventDefault(); const t = g.trim(); if (t.length < 1 || t.length > 60) { toast.error("Use de 1 a 60 caracteres."); return; } void save("home_greeting", t); }}>
         <Label htmlFor="saudacao">Frase da tela inicial</Label>
         <Input id="saudacao" value={g} maxLength={60} onChange={(e) => setGreeting(e.target.value)} />
         <Button size="sm" type="submit">Salvar</Button>

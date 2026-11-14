@@ -38,11 +38,11 @@ function ResetPage() {
           className="space-y-3"
           onSubmit={async (e) => {
             e.preventDefault();
-            if (pw.length < 8) return toast.error("A senha precisa ter pelo menos 8 caracteres.");
+            if (pw.length < 8) { toast.error("A senha precisa ter pelo menos 8 caracteres."); return; }
             setBusy(true);
             const { error } = await supabase.auth.updateUser({ password: pw });
             setBusy(false);
-            if (error) return toast.error("Não foi possível trocar a senha. Peça um novo link.");
+            if (error) { toast.error("Não foi possível trocar a senha. Peça um novo link."); return; }
             toast.success("Senha alterada.");
             navigate({ to: "/" });
           }}
