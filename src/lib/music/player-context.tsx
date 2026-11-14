@@ -22,6 +22,8 @@ interface PlayerCtx {
   currentTime: number;
   duration: number;
   prefs: Prefs;
+  backgroundPlayback: boolean;
+  setBackgroundPlayback: (enabled: boolean) => void;
   playList: (ids: string[], startId?: string, mode?: "ordered" | "shuffle") => void;
   toggle: () => void;
   next: () => void;
@@ -135,6 +137,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [backgroundPlayback, setBackgroundPlaybackState] = useState(true);
+  useEffect(() => {
+    try { setBackgroundPlaybackState(localStorage.getItem("player-music-background-playback") !== "false"); } catch { /* mantém ativado por padrão */ }
+  }, []);
+  const setBackgroundPlayback = useCallback((enabled: boolean) => {
+    setBackgroundPlaybackState(enabled);
+    try { localStorage.setItem("player-music-background-playback", String(enabled)); } catch { /* preferência opcional */ }
+  }, []);
   useEffect(() => {
     if (!nativeFolder) return;
     void nativeFolder.restore().then(({ folders }) => {
@@ -381,7 +391,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const actionsRef = useRef({ toggle, next, prev, isPlaying });
   actionsRef.current = { toggle, next, prev, isPlaying };
   useEffect(() => {
-    if (!nativeMedia) return;
+    if (!nativeMedia || !backgroundPlayback) return;
     const h = nativeMedia.addListener("action", ({ action }) => {
       const a = actionsRef.current;
       if (action === "next") a.next();
@@ -389,14 +399,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       else if ((action === "play") !== a.isPlaying) a.toggle();
     });
     return () => { void h.then((x) => x.remove()); };
-  }, []);
+  }, [backgroundPlayback]);
   useEffect(() => {
     if (!nativeMedia) return;
-    if (!current) { void nativeMedia.stop().catch(() => {}); return; }
+    if (!backgroundPlayback || !current) { void nativeMedia.stop().catch(() => {}); return; }
     void nativeMedia
       .update({ title: current.title, artist: current.artist, isPlaying, position: currentTime, duration })
       .catch(() => {});
-  }, [current?.id, isPlaying, Math.floor(duration)]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [backgroundPlayback, current?.id, isPlaying, Math.floor(duration)]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const localRef = useRef<Track[]>([]);
   localRef.current = localTracks;
