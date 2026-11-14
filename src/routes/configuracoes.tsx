@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
-import { ArrowLeft, Moon } from "lucide-react";
+import { ArrowLeft, Cloud, Moon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { usePlayer } from "@/lib/music/player-context";
+import { usePlayer } from "@/lib/music/player-context";\nimport { useSession } from "@/lib/auth";
 
 export const Route = createFileRoute("/configuracoes")({
   head: () => ({
@@ -28,6 +28,24 @@ function ConfigPage() {
       <section className="flex items-center justify-between rounded-2xl bg-card p-4">
         <Label htmlFor="tema" className="flex items-center gap-3 text-base"><Moon className="size-5" /> Tema escuro</Label>
         <Switch id="tema" checked={p.prefs.theme === "dark"} onCheckedChange={(c) => p.setTheme(c ? "dark" : "light")} />
+      </section>
+
+      <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
+        <div className="flex items-center gap-2">
+          <Cloud className="size-5 text-primary" />
+          <h2 className="text-lg font-bold">Salvar músicas na nuvem</h2>
+        </div>
+        <p className="text-muted-foreground">
+          Guarde suas músicas importadas na sua conta, sem manter uma cópia permanente na memória do celular. Na lista de músicas, abra o menu de três pontos e escolha “Salvar na nuvem e liberar espaço”. Depois do envio, o arquivo local é removido e a reprodução passa a usar a cópia privada online.
+        </p>
+        <p className="text-muted-foreground">
+          É necessário entrar na sua conta e ter internet para enviar e ouvir músicas salvas na nuvem. Cada arquivo pode ter até 100 MB; o espaço total disponível depende do plano e dos limites do armazenamento Supabase conectado ao projeto. A biblioteca na nuvem é privada e separada por conta.
+        </p>
+        {user ? (
+          <p className="font-medium text-primary">Conectado: {user.email ?? "sua conta Player Music"}</p>
+        ) : (
+          <Link to="/auth" search={{ redirect: "/configuracoes" }} className="inline-flex items-center rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground">Entrar para usar a nuvem</Link>
+        )}
       </section>
 
       <section className="space-y-2 rounded-2xl bg-card p-4 text-sm">
