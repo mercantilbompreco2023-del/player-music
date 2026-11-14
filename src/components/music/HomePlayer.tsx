@@ -15,6 +15,7 @@ const artistPhotoCache = new Map<string, string | null>();
 
 function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: string }) {
   const [enabled, setEnabled] = useState(true);
+  const [preferenceReady, setPreferenceReady] = useState(false);
   const [photo, setPhoto] = useState<string | null>(null);
   const [loadedArtist, setLoadedArtist] = useState("");
   useEffect(() => {
@@ -22,11 +23,12 @@ function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: s
       const saved = localStorage.getItem(ARTIST_PHOTO_PREF);
       if (saved === "false") setEnabled(false);
     } catch { /* usa padrão */ }
+    setPreferenceReady(true);
   }, []);
   useEffect(() => {
     let active = true;
     const name = artist.trim();
-    if (!enabled || !name) { setPhoto(null); return () => { active = false; }; }
+    if (!preferenceReady || !enabled || !name) { setPhoto(null); return () => { active = false; }; }
     setLoadedArtist(name);
     const cached = artistPhotoCache.get(name.toLocaleLowerCase("pt-BR"));
     if (cached !== undefined) { setPhoto(cached); return () => { active = false; }; }
@@ -55,7 +57,7 @@ function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: s
       })
       .catch(() => { artistPhotoCache.set(name.toLocaleLowerCase("pt-BR"), null); if (active) setPhoto(null); });
     return () => { active = false; };
-  }, [artist, enabled]);
+  }, [artist, enabled, preferenceReady]);
   const toggle = () => setEnabled((current) => {
     const next = !current;
     try { localStorage.setItem(ARTIST_PHOTO_PREF, String(next)); } catch { /* preferência opcional */ }
@@ -63,10 +65,10 @@ function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: s
   });
   return (
     <div className="relative">
-      {enabled && photo && loadedArtist === artist ? <img src={photo} alt={`Foto de ${artist}`} className="aspect-square w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" /> : <Cover seed={fallbackSeed} className="aspect-square w-full rounded-none" iconClass="size-1/3" />}
-      <button type="button" onClick={toggle} aria-label={enabled ? "Desativar foto automática do cantor" : "Ativar foto automática do cantor"} aria-pressed={enabled} title={enabled ? "Foto automática ativada" : "Foto automática desativada"} className="absolute bottom-2 right-2 rounded-full border border-white/30 bg-black/70 p-2 text-white backdrop-blur">
-        <Camera className={`size-4 ${enabled ? "text-primary" : "text-white"}`} />
-      </button>
+      {enabled && photo && loadedArtist === artist.trim() ? <img src={photo} alt={`Foto de ${artist}`} className="aspect-square w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" onError={() => setPhoto(null)} /> : <Cover seed={fallbackSeed} className="aspect-square w-full rounded-none" iconClass="size-1/3" />}
+      <Button type="button" size="icon" variant="outline" onClick={toggle} aria-label={enabled ? "Desativar foto automática do cantor" : "Ativar foto automática do cantor"} aria-pressed={enabled} title={enabled ? "Foto automática ativada" : "Foto automática desativada"} className="absolute bottom-2 right-2 rounded-full bg-background/80 backdrop-blur">
+        <Camera className={cn("size-4", enabled && "text-primary")} />
+      </Button>
     </div>
   );
 }
@@ -88,7 +90,7 @@ export function HomePlayer() {
   const hasCurrent = !!p.current;
   const startLibrary = () => {
     if (hasCurrent) p.toggle();
-    else if (libraryTracks.length) p.playList(libraryTracks.map((track) => track.id), previewTrack?.id);
+    else if (libraryTracks.length) p.playList(libraryTracks.map((track) => track.id), previewTrack?.id, "ordered");
   };
   return (
     <section aria-label="Tocando agora" className="neon-panel rounded-2xl border border-primary/60 p-3 sm:p-5">

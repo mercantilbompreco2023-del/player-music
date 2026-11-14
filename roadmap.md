@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Validar commit 7832741 e alteração posterior preservada: fotos de artistas, câmera, alternativa sem foto e prévia; entregar ZIP/CSV v21.
 - [x] Gerar APK do Player Music
 - [x] Versão Android nativa: serviço de mídia em primeiro plano, notificação de mídia, controles na tela bloqueada
 - [x] Importar pasta completa no APK (seletor de pasta nativo)
