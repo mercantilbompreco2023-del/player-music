@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Library, ListMusic, Pause, Play, Search, SkipForward } from "lucide-react";
-import type { ReactNode } from "react";
+import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/music/player-context";
 import { Cover } from "./Cover";
@@ -39,8 +39,21 @@ function MiniPlayer() {
 export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const onPlayer = pathname === "/player";
+  const [offline, setOffline] = useState(false);
+  useEffect(() => {
+    const u = () => setOffline(!navigator.onLine);
+    u();
+    window.addEventListener("online", u);
+    window.addEventListener("offline", u);
+    return () => { window.removeEventListener("online", u); window.removeEventListener("offline", u); };
+  }, []);
   return (
     <div className="mx-auto min-h-screen max-w-2xl">
+      {offline && (
+        <div role="status" className="flex items-center gap-2 bg-muted px-4 py-2 text-xs">
+          <WifiOff className="size-4" /> Sem conexão. Suas músicas importadas continuam tocando; cartões e administração usam a última versão salva.
+        </div>
+      )}
       <main className={cn("px-4 pt-6", onPlayer ? "pb-24" : "pb-44")}>{children}</main>
       <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-2xl pb-safe">
         {!onPlayer && <MiniPlayer />}
@@ -60,11 +73,17 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 }
 
-export function PageHeader({ title, action }: { title: string; action?: ReactNode }) {
+export function PageHeader({ title, action, description }: { title: string; action?: ReactNode; description?: string }) {
   return (
-    <header className="mb-5 flex items-center justify-between gap-3">
-      <h1 className="text-3xl font-bold">{title}</h1>
-      {action}
+    <header className="mb-5 space-y-2">
+      <Link to="/" className="inline-flex items-center gap-1 rounded-full py-1 text-sm text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="size-4" /> Início
+      </Link>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-3xl font-bold">{title}</h1>
+        {action}
+      </div>
+      {description && <p className="text-sm text-muted-foreground">{description}</p>}
     </header>
   );
 }

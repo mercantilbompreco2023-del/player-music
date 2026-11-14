@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { DEMO_TRACKS } from "./catalog";
-import { nextIndex, parseFileName, prevIndex, shuffleQueue } from "./queue";
+import { moveItem, nextIndex, parseFileName, prevIndex, shuffleQueue } from "./queue";
+import { supabase } from "@/integrations/supabase/client";
 import { defaultPrefs, fileStore, loadPrefs, savePrefs, type Prefs } from "./storage";
 import type { Playlist, RepeatMode, Track } from "./types";
 
@@ -37,6 +38,9 @@ interface PlayerCtx {
   addToPlaylist: (pid: string, tid: string) => void;
   removeFromPlaylist: (pid: string, tid: string) => void;
   setTheme: (t: "dark" | "light") => void;
+  clearRecent: () => void;
+  clearUpcoming: () => void;
+  moveInQueue: (pos: number, dir: -1 | 1) => void;
 }
 
 const Ctx = createContext<PlayerCtx | null>(null);
@@ -68,7 +72,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  const tracks = useMemo(() => [...localTracks, ...DEMO_TRACKS], [localTracks]);
+  const [demosOn, setDemosOn] = useState(true);
+  useEffect(() => {
+    supabase.from("app_settings").select("value").eq("key", "demo_tracks_enabled").maybeSingle()
+      .then(({ data }) => { if (data && data.value === false) setDemosOn(false); }, () => {});
+  }, []);
+  const tracks = useMemo(() => [...localTracks, ...(demosOn ? DEMO_TRACKS : [])], [localTracks, demosOn]);
   const map = useMemo(() => new Map(tracks.map((t) => [t.id, t])), [tracks]);
   const byId = useCallback((id: string) => map.get(id), [map]);
   const currentId = queue[index] ?? null;
@@ -373,6 +382,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     removeFromPlaylist: (pid, tid) =>
       updatePrefs((p) => ({ ...p, playlists: p.playlists.map((pl) => (pl.id === pid ? { ...pl, trackIds: pl.trackIds.filter((x) => x !== tid) } : pl)) })),
     setTheme: (t) => updatePrefs((p) => ({ ...p, theme: t })),
+    clearRecent: () => updatePrefs((p) => ({ ...p, recent: [] })),
+    clearUpcoming: () => setQueue((q) => q.slice(0, index + 1)),
+    moveInQueue: (pos, dir) => {
+      const r = moveItem(queue, index, pos, dir);
+      setQueue(r.queue);
+      setIndex(r.index);
+    },
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

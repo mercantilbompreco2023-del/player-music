@@ -68,7 +68,7 @@ export function TrackRow({ track, list, playlistId }: { track: Track; list: stri
           {track.source === "local" && (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive" onClick={() => p.removeTrack(track.id)}><Trash2 /> Remover do app</DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive" onClick={() => { if (window.confirm(`Remover “${track.title}” do app? O arquivo original no seu aparelho não é apagado.`)) void p.removeTrack(track.id); }}><Trash2 /> Remover do app</DropdownMenuItem>
             </>
           )}
         </DropdownMenuContent>

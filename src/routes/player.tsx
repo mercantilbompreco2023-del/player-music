@@ -88,7 +88,7 @@ function PlayerPage() {
       <p className="text-xs text-muted-foreground">No Android, o volume físico do aparelho também controla o som.</p>
 
       <section>
-        <h2 className="mb-2 text-lg font-bold">A seguir na fila</h2>
+        <div className="mb-2 flex items-center justify-between"><h2 className="text-lg font-bold">A seguir na fila</h2><Link to="/fila" className="text-sm font-semibold text-primary">Editar fila</Link></div>
         {upcoming.length === 0 ? (
           <p className="text-sm text-muted-foreground">{p.prefs.repeat === "all" ? "A fila recomeça do início." : "Fim da fila."}</p>
         ) : (

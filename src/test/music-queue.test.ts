@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { matchesSearch, nextIndex, parseFileName, prevIndex, shuffleQueue } from "@/lib/music/queue";
+import { moveItem, matchesSearch, nextIndex, parseFileName, prevIndex, shuffleQueue } from "@/lib/music/queue";
 
 describe("fila de reprodução", () => {
   it("para no fim quando repetir está desligado", () => expect(nextIndex(3, 2, "off")).toBeNull());
@@ -19,4 +19,10 @@ describe("busca e importação", () => {
   it("busca vazia não retorna nada", () => expect(matchesSearch({ title: "X", artist: "Y" }, " ")).toBe(false));
   it("lê artista e título do nome do arquivo", () =>
     expect(parseFileName("Banda - Minha Música.mp3")).toEqual({ artist: "Banda", title: "Minha Música" }));
+});
+
+describe("reordenar fila", () => {
+  it("move a faixa atual e acompanha o índice", () =>
+    expect(moveItem(["a", "b", "c"], 0, 0, 1)).toEqual({ queue: ["b", "a", "c"], index: 1 }));
+  it("não move além do fim", () => expect(moveItem(["a", "b"], 0, 1, 1).queue).toEqual(["a", "b"]));
 });
