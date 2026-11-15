@@ -30,8 +30,8 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const p = usePlayer();
-  const [homeStyle, setHomeStyle] = useState<"classic" | "showcase">("classic");
-  useEffect(() => { try { setHomeStyle(localStorage.getItem("player-music-home-style") === "showcase" ? "showcase" : "classic"); } catch { /* usa padrão */ } }, []);
+  const [homeStyle, setHomeStyle] = useState<"classic" | "showcase">("showcase");
+  useEffect(() => { try { setHomeStyle(localStorage.getItem("player-music-home-style") === "classic" ? "classic" : "showcase"); } catch { /* usa padrão */ } }, []);
   const toggleHomeStyle = () => setHomeStyle((current) => { const next = current === "showcase" ? "classic" : "showcase"; try { localStorage.setItem("player-music-home-style", next); } catch { /* preferência opcional */ } return next; });
   const { user } = useSession();
   const admin = useIsAdmin(user?.id);
