@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ChevronDown, FolderOpen, Heart, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, Volume1, Volume2, VolumeX, X } from "lucide-react";
+import { ChevronDown, FolderOpen, Heart, ListMusic, Music2, Pause, Play, Plus, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Cover } from "@/components/music/Cover";
 import { CustomFolderCover } from "@/components/music/CustomFolderCover";
@@ -38,61 +38,35 @@ function PlayerPage() {
   const upcoming = p.queue.map((id, pos) => ({ pos, track: p.byId(id) })).filter((x) => x.pos > p.index && x.track);
 
   return (
-    <div className="relative mx-auto max-w-3xl space-y-6 pb-8">
-      <div className="flex items-center justify-between gap-2">
-        <button onClick={() => router.history.back()} aria-label="Voltar à tela anterior" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
-        <p className="rounded-full border border-primary/50 bg-primary/15 px-4 py-2 text-xs font-extrabold uppercase tracking-widest text-primary shadow-glow">♫ Tocando agora</p>
-        <Link to="/pastas" aria-label="Voltar à pasta de músicas" title="Voltar à pasta de músicas" className="inline-flex items-center gap-1 rounded-full border border-primary/40 px-3 py-2 text-xs font-semibold text-primary"><FolderOpen className="size-4" /> Pastas</Link>
+    <div className="relative mx-auto max-w-xl space-y-5 pb-8 text-foreground">
+      <style>{"@keyframes pm-wave { 0%,100% { transform:scaleY(.28); opacity:.62 } 50% { transform:scaleY(1); opacity:1 } }"}</style>
+      <div className="flex items-center justify-between gap-2 px-1">
+        <button onClick={() => router.history.back()} aria-label="Voltar" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
+        <p className="text-lg font-extrabold tracking-tight">♫ Player <span className="text-primary">Music</span></p>
+        <Link to="/biblioteca" aria-label="Buscar músicas" title="Buscar músicas" className="rounded-full p-2"><Music2 className="size-5" /></Link>
       </div>
-
-      <div className="rounded-[2rem] border border-primary/70 bg-[linear-gradient(135deg,oklch(0.2_0.055_292),oklch(0.105_0.025_285)_58%,oklch(0.17_0.06_310))] p-4 shadow-[0_0_35px_-8px_oklch(0.62_0.24_292_/_0.65)] ring-1 ring-primary/20 sm:p-6"><CustomFolderCover artistName={t.artist} editable fallbackSeed={t.id} /></div>
-
-      <div className="flex items-center gap-3 rounded-2xl border border-primary/25 bg-card/70 p-3 shadow-glow">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-2xl font-bold">{t.title}</h1>
-          <p className="truncate text-muted-foreground">{t.artist}</p>
-          {t.license && <p className="mt-1 text-xs text-muted-foreground">{t.license}</p>}
-        </div>
-        <button onClick={() => p.toggleFavorite(t.id)} aria-label={fav ? "Remover dos favoritos" : "Favoritar"} className="p-2">
-          <Heart className={cn("size-7", fav && "fill-primary text-primary")} />
-        </button>
+      <div className="flex items-center gap-4 px-1">
+        <div className="w-[38%] max-w-36 shrink-0"><CustomFolderCover artistName={t.artist} editable fallbackSeed={t.id} className="w-full rounded-2xl border border-primary/50 shadow-[0_8px_28px_-12px_hsl(var(--primary))]" /></div>
+        <div className="min-w-0 flex-1"><h1 className="text-xl font-extrabold leading-tight">{t.title}</h1><p className="mt-1 truncate text-base text-muted-foreground">{t.artist}</p>{t.license && <p className="mt-1 truncate text-xs text-muted-foreground">{t.license}</p>}</div>
+        <button onClick={() => p.toggleFavorite(t.id)} aria-label={fav ? "Remover dos favoritos" : "Favoritar"} className="p-2"><Heart className={cn("size-7", fav && "fill-primary text-primary")} /></button>
       </div>
-
-      <div>
-        <Slider aria-label="Progresso" value={[p.currentTime]} max={p.duration || 1} step={0.5} onValueChange={([v]) => p.seek(v ?? 0)} />
-        <div className="mt-2 flex justify-between text-xs tabular-nums text-muted-foreground">
-          <span>{formatTime(p.currentTime)}</span>
-          <span>{formatTime(p.duration || t.duration)}</span>
-        </div>
+      <div aria-label="Visualização animada da música" className="flex h-9 items-center justify-center gap-[3px] overflow-hidden px-4">
+        {Array.from({ length: 32 }, (_, i) => <span key={i} className="w-[5px] max-w-[2.2%] rounded-full bg-gradient-to-t from-fuchsia-500 via-primary to-cyan-400 shadow-[0_0_9px_hsl(var(--primary)/.65)]" style={{ height: `${8 + ((i * 17 + 13) % 25)}px`, transformOrigin: "center", animation: `pm-wave ${0.55 + (i % 7) * 0.13}s ease-in-out ${i * 0.035}s infinite` }} />)}
       </div>
-
-      <div className="flex items-center justify-between">
-        <button onClick={p.toggleShuffle} aria-label="Aleatório" title="Ativar ou desativar a ordem aleatória" aria-pressed={p.prefs.shuffle} className={cn("flex min-w-14 flex-col items-center gap-1 p-2 text-xs", p.prefs.shuffle ? "text-primary" : "text-muted-foreground")}>
-          <Shuffle className="size-6" />
-          <span> aleatório </span>
-        </button>
-        <button onClick={p.prev} aria-label="Anterior" className="p-2"><SkipBack className="size-8 fill-current" /></button>
-        <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className="flex size-18 items-center justify-center rounded-full border border-fuchsia-300/50 bg-gradient-to-br from-fuchsia-500 to-violet-700 text-white shadow-[0_0_28px_oklch(0.65_0.24_292_/_0.75)]">
-          {p.isPlaying ? <Pause className="size-8 fill-current" /> : <Play className="ml-1 size-8 fill-current" />}
-        </button>
-        <button onClick={p.next} aria-label="Próxima" className="p-2"><SkipForward className="size-8 fill-current" /></button>
-        <button
-          onClick={p.cycleRepeat}
-          aria-label={`Repetir: ${{ off: "desligado", all: "todas", one: "uma" }[p.prefs.repeat]}`}
-          title="Alternar repetição: desligada, repetir fila ou repetir música"
-          className={cn("flex min-w-14 flex-col items-center gap-1 p-2 text-xs", p.prefs.repeat !== "off" ? "text-primary" : "text-muted-foreground")}
-        >
-          {p.prefs.repeat === "one" ? <Repeat1 className="size-6" /> : <Repeat className="size-6" />}
-          <span>{p.prefs.repeat === "one" ? "1 música" : p.prefs.repeat === "all" ? "repetir fila" : "repetir"}</span>
-        </button>
+      <div className="px-1"><Slider aria-label="Progresso" value={[p.currentTime]} max={p.duration || 1} step={0.5} onValueChange={([v]) => p.seek(v ?? 0)} /><div className="mt-2 flex justify-between text-xs tabular-nums text-muted-foreground"><span>{formatTime(p.currentTime)}</span><span>{formatTime(p.duration || t.duration)}</span></div></div>
+      <div className="flex items-center justify-between px-1">
+        <button onClick={p.toggleShuffle} aria-label="Aleatório" title="Embaralhar músicas" aria-pressed={p.prefs.shuffle} className={cn("rounded-full p-2", p.prefs.shuffle ? "text-primary" : "text-muted-foreground")}><Shuffle className="size-6" /></button>
+        <button onClick={p.prev} aria-label="Anterior" className="p-2"><SkipBack className="size-7 fill-current" /></button>
+        <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className="flex size-16 items-center justify-center rounded-full border border-fuchsia-300/60 bg-primary text-primary-foreground shadow-[0_0_24px_hsl(var(--primary)/.7)]">{p.isPlaying ? <Pause className="size-7 fill-current" /> : <Play className="ml-1 size-7 fill-current" />}</button>
+        <button onClick={p.next} aria-label="Próxima" className="p-2"><SkipForward className="size-7 fill-current" /></button>
+        <button onClick={p.cycleRepeat} aria-label={`Repetir: ${{ off: "desligado", all: "fila", one: "uma música" }[p.prefs.repeat]}`} title="Alternar repetição" className={cn("p-2", p.prefs.repeat !== "off" ? "text-primary" : "text-muted-foreground")}>{p.prefs.repeat === "one" ? <Repeat1 className="size-6" /> : <Repeat className="size-6" />}</button>
       </div>
-
-      <div className="flex items-center gap-3">
-        <button onClick={() => p.setVolume(p.prefs.volume === 0 ? 0.8 : 0)} aria-label="Silenciar" className="text-muted-foreground"><VolIcon className="size-5" /></button>
-        <Slider aria-label="Volume" value={[p.prefs.volume]} max={1} step={0.01} onValueChange={([v]) => p.setVolume(v ?? 0)} />
+      <div className="grid grid-cols-3 gap-2 pt-1">
+        <Link to="/fila" className="inline-flex items-center justify-center gap-1.5 rounded-full border border-primary/70 px-2 py-2.5 text-xs font-semibold"><ListMusic className="size-4" /> Fila ({p.queue.length})</Link>
+        <Link to="/biblioteca" className="inline-flex items-center justify-center gap-1.5 rounded-full border border-primary/70 px-2 py-2.5 text-xs font-semibold"><Plus className="size-4" /> Adicionar</Link>
+        <Link to="/pastas" className="inline-flex items-center justify-center gap-1.5 rounded-full border border-primary/70 px-2 py-2.5 text-xs font-semibold"><FolderOpen className="size-4" /> Adicionar pasta</Link>
       </div>
-      <p className="text-xs text-muted-foreground">No Android, o volume físico do aparelho também controla o som.</p>
-
+      <div className="sr-only"><span>{p.prefs.repeat === "one" ? "Repetindo esta música" : p.prefs.repeat === "all" ? "Repetindo a fila" : "Repetição desligada"}</span></div>
       <section>
         <div className="mb-2 flex items-center justify-between"><h2 className="text-lg font-bold">A seguir na fila</h2><Link to="/fila" className="text-sm font-semibold text-primary">Editar fila</Link></div>
         {upcoming.length === 0 ? (
