@@ -59,9 +59,14 @@ function Index() {
             {artist:"Luan Pereira", songs:["Dentro da Hilux","Ela Pirou na Dodge Ram","Morena"]},
             {artist:"Mari Fernandez", songs:["Comunicação Falhou","Não, Não Vou","Parada Louca"]},
             {artist:"Zé Vaqueiro", songs:["Letícia","Tenho Medo","Volta Comigo BB"]}
-          ].map((group) => <article key={group.artist} className="rounded-2xl border border-primary/20 bg-card/70 p-3">
-            <h3 className="mb-2 font-bold">{group.artist}</h3>
-            <div className="flex flex-wrap gap-2">{group.songs.map((song) => <a key={song} href={`https://www.youtube.com/results?search_query=${encodeURIComponent(group.artist+" "+song+" oficial")}`} target="_blank" rel="noreferrer" className="rounded-full border border-primary/30 px-3 py-2 text-xs font-medium hover:bg-primary/10">{song} ↗</a>)}</div>
+          ].map((group) => <article key={group.artist} className="flex gap-3 rounded-2xl border border-primary/20 bg-card/70 p-3">
+            <div className="w-24 shrink-0 overflow-hidden rounded-xl border border-primary/20">
+              <ArtistPhoto artist={group.artist} fallbackSeed={`artist-${group.artist}`} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="mb-2 font-bold">{group.artist}</h3>
+              <div className="flex flex-wrap gap-2">{group.songs.map((song) => <a key={song} href={`https://www.youtube.com/results?search_query=${encodeURIComponent(group.artist+" "+song+" oficial")}`} target="_blank" rel="noreferrer" className="rounded-full border border-primary/30 px-3 py-2 text-xs font-medium hover:bg-primary/10">{song} ↗</a>)}</div>
+            </div>
           </article>)}
         </div>
         <p className="text-[11px] text-muted-foreground">Os links abrem resultados de músicas oficiais no YouTube. Para tocar dentro do Player Music, importe os arquivos de áudio que você possui ou tem autorização para usar.</p>
@@ -86,7 +91,7 @@ function Index() {
           if (!isFunctionKey(c.function_key)) return null;
           const key = c.function_key;
           const Icon = ICONS[c.icon] ?? Music;
-          return <Button asChild variant="outline" key={c.id} className="neon-tile h-auto min-h-28 flex-col gap-2 whitespace-normal px-1 py-3 text-center sm:px-3"><Link to={FUNCTIONS[key].route} aria-label={`${c.title}: ${c.description}`}><Icon className="size-7! text-primary" /><span className="w-full break-words text-[11px] font-bold leading-snug sm:text-sm">{c.title}</span></Link></Button>;
+          return <Button asChild variant="outline" key={c.id} className="neon-tile h-auto min-h-28 flex-col gap-2 whitespace-normal px-1 py-3 text-center sm:px-3"><Link preload="intent" to={FUNCTIONS[key].route} aria-label={`${c.title}: ${c.description}`}><Icon className="size-7! text-primary" /><span className="w-full break-words text-[11px] font-bold leading-snug sm:text-sm">{c.title}</span></Link></Button>;
         })}
         <Button asChild variant="outline" className="neon-tile h-auto min-h-28 flex-col gap-2 whitespace-normal px-1 py-3 text-center"><Link to="/pastas"><FolderOpen className="size-7! text-primary" /><span className="text-[11px] font-bold sm:text-sm">Pastas</span><span className="text-[10px] text-muted-foreground">{folders.length} salvas</span></Link></Button>
       </nav>
