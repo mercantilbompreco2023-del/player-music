@@ -66,29 +66,35 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
     const cached = artistPhotoCache.get(name.toLocaleLowerCase("pt-BR"));
     if (cached !== undefined) { setPhoto(cached); return () => { active = false; }; }
     setPhoto(null);
-    const params = new URLSearchParams({
-      action: "query",
-      generator: "search",
-      gsrsearch: name,
-      gsrnamespace: "0",
-      gsrlimit: "5",
-      prop: "pageimages",
-      piprop: "thumbnail",
-      pithumbsize: "600",
-      format: "json",
-      origin: "*",
-    });
-    fetch(`https://pt.wikipedia.org/w/api.php?${params.toString()}`)
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Falha ao buscar imagem")))
-      .then((data: { query?: { pages?: Record<string, { title?: string; thumbnail?: { source?: string } }> } }) => {
-        const pages = Object.values(data.query?.pages ?? {});
-        const normalized = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
-        const match = pages.find((page) => page.thumbnail?.source && page.title?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").includes(normalized.split(" ")[0] ?? normalized));
-        const url = match?.thumbnail?.source ?? null;
-        artistPhotoCache.set(name.toLocaleLowerCase("pt-BR"), url);
-        if (active) setPhoto(url);
-      })
-      .catch(() => { artistPhotoCache.set(name.toLocaleLowerCase("pt-BR"), null); if (active) setPhoto(null); });
+    const normalize = (value: string) => value.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLocaleLowerCase("pt-BR").replace(/[^a-z0-9 ]/g, " ").replace(/\\s+/g, " ").trim();
+    const findPhoto = async () => {
+      let url: string | null = null;
+      try {
+        const params = new URLSearchParams({ action: "query", generator: "search", gsrsearch: name, gsrnamespace: "0", gsrlimit: "8", prop: "pageimages", piprop: "thumbnail", pithumbsize: "600", format: "json", origin: "*" });
+        const response = await fetch(`https://pt.wikipedia.org/w/api.php?${params.toString()}`);
+        if (!response.ok) throw new Error("Falha ao buscar foto na Wikipédia");
+        const data = await response.json() as { query?: { pages?: Record<string, { title?: string; thumbnail?: { source?: string } }> } };
+        const pages = Object.values(data.query?.pages ?? {}).filter((page) => page.title && page.thumbnail?.source);
+        const wanted = normalize(name);
+        const match = pages.find((page) => normalize(page.title!) === wanted) ?? pages.find((page) => normalize(page.title!).includes(wanted) || wanted.includes(normalize(page.title!)));
+        url = match?.thumbnail?.source ?? null;
+      } catch { /* tenta o Wikimedia Commons */ }
+      if (!url) {
+        try {
+          const params = new URLSearchParams({ action: "query", generator: "search", gsrsearch: `filetype:bitmap "${name}"`, gsrnamespace: "6", gsrlimit: "12", prop: "imageinfo", iiprop: "url", iiurlwidth: "600", format: "json", origin: "*" });
+          const response = await fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`);
+          if (!response.ok) throw new Error("Falha ao buscar foto no Commons");
+          const data = await response.json() as { query?: { pages?: Record<string, { title?: string; imageinfo?: Array<{ thumburl?: string; url?: string }> }> } };
+          const wanted = normalize(name);
+          const pages = Object.values(data.query?.pages ?? []).filter((page) => page.title && page.imageinfo?.length);
+          const exact = pages.find((page) => normalize(page.title!.replace(/^File:/i, "").replace(/\\.[^.]+$/, "")).includes(wanted));
+          url = exact?.imageinfo?.[0]?.thumburl ?? exact?.imageinfo?.[0]?.url ?? null;
+        } catch { /* usa a capa neutra se não houver foto identificável */ }
+      }
+      artistPhotoCache.set(name.toLocaleLowerCase("pt-BR"), url);
+      if (active) setPhoto(url);
+    };
+    void findPhoto();
     return () => { active = false; };
   }, [artist, enabled, searchArtist]);
   const findWithAi = async () => {
