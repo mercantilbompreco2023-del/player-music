@@ -67,8 +67,9 @@ function PlayerPage() {
       </div>
 
       <div className="flex items-center justify-between">
-        <button onClick={p.toggleShuffle} aria-label="Aleatório" aria-pressed={p.prefs.shuffle} className={cn("p-2", p.prefs.shuffle ? "text-primary" : "text-muted-foreground")}>
+        <button onClick={p.toggleShuffle} aria-label="Aleatório" title="Ativar ou desativar a ordem aleatória" aria-pressed={p.prefs.shuffle} className={cn("flex min-w-14 flex-col items-center gap-1 p-2 text-xs", p.prefs.shuffle ? "text-primary" : "text-muted-foreground")}>
           <Shuffle className="size-6" />
+          <span> aleatório </span>
         </button>
         <button onClick={p.prev} aria-label="Anterior" className="p-2"><SkipBack className="size-8 fill-current" /></button>
         <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className="flex size-18 items-center justify-center rounded-full border border-fuchsia-300/50 bg-gradient-to-br from-fuchsia-500 to-violet-700 text-white shadow-[0_0_28px_oklch(0.65_0.24_292_/_0.75)]">
@@ -78,9 +79,11 @@ function PlayerPage() {
         <button
           onClick={p.cycleRepeat}
           aria-label={`Repetir: ${{ off: "desligado", all: "todas", one: "uma" }[p.prefs.repeat]}`}
-          className={cn("p-2", p.prefs.repeat !== "off" ? "text-primary" : "text-muted-foreground")}
+          title="Alternar repetição: desligada, repetir fila ou repetir música"
+          className={cn("flex min-w-14 flex-col items-center gap-1 p-2 text-xs", p.prefs.repeat !== "off" ? "text-primary" : "text-muted-foreground")}
         >
           {p.prefs.repeat === "one" ? <Repeat1 className="size-6" /> : <Repeat className="size-6" />}
+          <span>{p.prefs.repeat === "one" ? "1 música" : p.prefs.repeat === "all" ? "repetir fila" : "repetir"}</span>
         </button>
       </div>
 
