@@ -19,6 +19,7 @@ const ARTIST_PHOTO_PREF = "player-music-show-artist-photo";
 const artistPhotoCache = new Map<string, string | null>();
 
 export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallbackSeed: string }) {
+  const p = usePlayer();
   const [enabled, setEnabled] = useState(true);
   const [photo, setPhoto] = useState<string | null>(null);
   const [loadedArtist, setLoadedArtist] = useState("");
@@ -29,12 +30,17 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
   useEffect(() => {
     let active = true;
     void loadArtistFolderCover(artist).then(async (url) => {
-      const chosen = url ?? await loadFolderCoverForTrack(p.current ?? { id: fallbackSeed, artist });
+      const track = p.tracks.find((item) => item.id === fallbackSeed);
+      const chosen = url ?? await loadFolderCoverForTrack({
+        id: fallbackSeed,
+        ...(track?.folderName ? { folderName: track.folderName } : {}),
+        ...(track?.path ? { path: track.path } : {}),
+      });
       if (active) setFolderPhoto(chosen);
       else if (chosen) URL.revokeObjectURL(chosen);
     });
     return () => { active = false; };
-  }, [artist, fallbackSeed]);
+  }, [artist, fallbackSeed, p.tracks]);
   const uploadArtistPhoto = async (file?: File) => {
     if (!file) return;
     setUploadingPhoto(true);

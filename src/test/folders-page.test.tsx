@@ -31,17 +31,17 @@ const open = () => {
 describe("reprodução das pastas", () => {
   it("toca todas as músicas do artista em sequência explícita", () => {
     open();
-    fireEvent.click(screen.getByRole("button", { name: "Ouvir cantor Cantor A" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ouvir músicas de Cantor A" }));
     expect(player.playList).toHaveBeenCalledExactlyOnceWith(["a", "b"], undefined, "ordered");
   });
   it("toca as músicas do artista em modo aleatório explícito", () => {
     open();
-    fireEvent.click(screen.getByRole("button", { name: "Aleatório do cantor Cantor A" }));
+    fireEvent.click(screen.getByRole("button", { name: "Aleatório de Cantor A" }));
     expect(player.playList).toHaveBeenCalledExactlyOnceWith(["a", "b"], undefined, "shuffle");
   });
   it("abre o artista sem confundir a pasta física de mesmo nome e toca a faixa individual", () => {
     open();
-    fireEvent.click(screen.getByRole("button", { name: "Abrir cantor Cantor A" }));
+    fireEvent.click(screen.getByRole("button", { name: "Abrir pasta de Cantor A" }));
     expect(screen.queryByRole("button", { name: "Tocar Faixa C" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Tocar Faixa B" }));
     expect(player.playList).toHaveBeenCalledExactlyOnceWith(["a", "b"], "b");
