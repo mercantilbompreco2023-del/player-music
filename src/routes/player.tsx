@@ -38,7 +38,7 @@ function PlayerPage() {
   const upcoming = p.queue.map((id, pos) => ({ pos, track: p.byId(id) })).filter((x) => x.pos > p.index && x.track);
 
   return (
-    <div className="relative mx-auto max-w-xl space-y-5 pb-8 text-foreground">
+    <div className="player-purple relative mx-auto max-w-xl space-y-5 pb-8 text-foreground">
       <style>{"@keyframes pm-wave { 0%,100% { transform:scaleY(.28); opacity:.62 } 50% { transform:scaleY(1); opacity:1 } }"}</style>
       <div className="flex items-center justify-between gap-2 px-1">
         <button onClick={() => router.history.back()} aria-label="Voltar" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
