@@ -38,17 +38,18 @@ function PlayerPage() {
   const upcoming = p.queue.map((id, pos) => ({ pos, track: p.byId(id) })).filter((x) => x.pos > p.index && x.track);
 
   return (
-    <div className="player-purple relative mx-auto max-w-xl space-y-5 pb-8 text-foreground">
+    <div className="player-purple relative mx-auto min-h-[calc(100dvh-5rem)] max-w-xl space-y-6 rounded-[2rem] border border-primary/20 bg-gradient-to-b from-primary/10 via-background to-background px-3 pb-8 pt-2 text-foreground">
       <style>{"@keyframes pm-wave { 0%,100% { transform:scaleY(.28); opacity:.62 } 50% { transform:scaleY(1); opacity:1 } }"}</style>
       <div className="flex items-center justify-between gap-2 px-1">
         <button onClick={() => router.history.back()} aria-label="Voltar" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
         <p className="text-lg font-extrabold tracking-tight">♫ Player <span className="text-primary">Music</span></p>
         <Link to="/biblioteca" aria-label="Buscar músicas" title="Buscar músicas" className="rounded-full p-2"><Music2 className="size-5" /></Link>
       </div>
-      <div className="flex items-center gap-4 px-1">
-        <div className="w-[38%] max-w-36 shrink-0"><CustomFolderCover artistName={t.artist} editable fallbackSeed={t.id} className="w-full rounded-2xl border border-primary/50 shadow-[0_8px_28px_-12px_hsl(var(--primary))]" /></div>
-        <div className="min-w-0 flex-1"><h1 className="text-xl font-extrabold leading-tight">{t.title}</h1><p className="mt-1 truncate text-base text-muted-foreground">{t.artist}</p>{t.license && <p className="mt-1 truncate text-xs text-muted-foreground">{t.license}</p>}</div>
-        <button onClick={() => p.toggleFavorite(t.id)} aria-label={fav ? "Remover dos favoritos" : "Favoritar"} className="p-2"><Heart className={cn("size-7", fav && "fill-primary text-primary")} /></button>
+      <div className="flex flex-col items-center gap-6 px-2 pt-5 text-center">
+        <div className="w-[68vw] max-w-[300px] overflow-hidden rounded-full border-[7px] border-primary/25 bg-card shadow-[0_0_42px_-12px_hsl(var(--primary)/.8)] [&_img]:!rounded-full">
+          <CustomFolderCover artistName={t.artist} editable fallbackSeed={t.id} className="w-full rounded-full" />
+        </div>
+        <div className="flex w-full items-center gap-3 text-left"><div className="min-w-0 flex-1"><h1 className="truncate text-2xl font-extrabold leading-tight">{t.title}</h1><p className="mt-1 truncate text-base text-muted-foreground">{t.artist}</p>{t.license && <p className="mt-1 truncate text-xs text-muted-foreground">{t.license}</p>}</div><button onClick={() => p.toggleFavorite(t.id)} aria-label={fav ? "Remover dos favoritos" : "Favoritar"} className="rounded-full border border-primary/30 p-3"><Heart className={cn("size-7", fav && "fill-primary text-primary")} /></button></div>
       </div>
       <div aria-label="Visualização animada da música" className="flex h-9 items-center justify-center gap-[3px] overflow-hidden px-4">
         {Array.from({ length: 32 }, (_, i) => <span key={i} className="w-[5px] max-w-[2.2%] rounded-full bg-gradient-to-t from-fuchsia-500 via-primary to-cyan-400 shadow-[0_0_9px_hsl(var(--primary)/.65)]" style={{ height: `${8 + ((i * 17 + 13) % 25)}px`, transformOrigin: "center", animation: `pm-wave ${0.55 + (i % 7) * 0.13}s ease-in-out ${i * 0.035}s infinite` }} />)}
