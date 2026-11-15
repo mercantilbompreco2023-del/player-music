@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Trash2 } from "lucide-react";
 import { Cover } from "@/components/music/Cover";
-import { saveArtistFolderCover, loadArtistFolderCover, saveCustomFolderCover, loadCustomFolderCover, loadCustomFolderCoverForTrack } from "@/lib/music/folder-covers";
+import { saveArtistFolderCover, loadArtistFolderCover, saveCustomFolderCover, loadCustomFolderCover, loadCustomFolderCoverForTrack, removeArtistFolderCover, removeCustomFolderCover } from "@/lib/music/folder-covers";
 import { toast } from "sonner";
 
 export function CustomFolderCover({ folderName, artistName, editable = false, trackId, fallbackSeed, className = "w-full" }: { folderName?: string; artistName?: string; editable?: boolean; trackId?: string; fallbackSeed?: string; className?: string }) {
@@ -20,11 +20,21 @@ export function CustomFolderCover({ folderName, artistName, editable = false, tr
     setSrc((previous) => { if (previous) URL.revokeObjectURL(previous); return next; });
     toast.success("Foto da pasta atualizada.");
   };
+  const remove = async () => {
+    if (!folderName && !artistName) return;
+    const ok = artistName ? await removeArtistFolderCover(artistName) : await removeCustomFolderCover(folderName!);
+    if (!ok) { toast.error("Não foi possível remover a foto da pasta."); return; }
+    setSrc((previous) => { if (previous) URL.revokeObjectURL(previous); return null; });
+    toast.success("Foto personalizada removida.");
+  };
   return <div className={`relative overflow-hidden rounded-xl border border-primary/30 bg-muted ${className}`}>
     {src ? <img src={src} alt={`Foto da pasta ${artistName ?? folderName ?? "do cantor"}`} className="aspect-square w-full object-cover" /> : fallbackSeed ? <Cover seed={fallbackSeed} className="aspect-square w-full rounded-none" /> : <div className="flex aspect-square w-full items-center justify-center text-muted-foreground"><ImagePlus className="size-10" /></div>}
-    {editable && (folderName || artistName) && <label className="absolute bottom-2 right-2 flex cursor-pointer items-center gap-1 rounded-full bg-black/75 px-3 py-2 text-xs font-semibold text-white">
-      <ImagePlus className="size-4" /> {src ? "Trocar foto" : "Adicionar foto"}
-      <input type="file" accept="image/*" className="sr-only" onChange={(event) => { void upload(event.target.files?.[0]); event.currentTarget.value = ""; }} />
-    </label>}
+    {editable && (folderName || artistName) && <div className="absolute bottom-2 right-2 flex items-center gap-2">
+      {src && <button type="button" onClick={() => void remove()} aria-label="Remover foto da pasta" title="Remover foto" className="flex items-center justify-center rounded-full bg-black/75 p-2 text-white"><Trash2 className="size-4" /></button>}
+      <label className="flex cursor-pointer items-center gap-1 rounded-full bg-black/75 px-3 py-2 text-xs font-semibold text-white">
+        <ImagePlus className="size-4" /> {src ? "Trocar foto" : "Adicionar foto"}
+        <input type="file" accept="image/*" className="sr-only" onChange={(event) => { void upload(event.target.files?.[0]); event.currentTarget.value = ""; }} />
+      </label>
+    </div>}
   </div>;
 }
