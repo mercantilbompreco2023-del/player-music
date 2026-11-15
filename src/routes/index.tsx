@@ -50,6 +50,23 @@ function Index() {
         <div className="relative z-10 max-w-[70%]"><p className="mb-2 text-[10px] font-bold uppercase tracking-[.22em] text-primary">Sua música, seu momento</p><h2 className="text-2xl font-extrabold leading-tight">Descubra suas músicas favoritas</h2><p className="mt-2 text-xs text-muted-foreground">Sua coleção sempre com você.</p><Button asChild size="sm" className="mt-4 rounded-full"><Link to="/biblioteca"><Headphones className="size-4" /> Começar a ouvir</Link></Button></div>
       </section>
       <section className="space-y-3">
+        <div className="flex items-center justify-between"><h2 className="text-lg font-bold">Cantores e sucessos</h2><span className="text-xs text-muted-foreground">Abrir músicas oficiais</span></div>
+        <div className="space-y-3">
+          {[
+            {artist:"Ana Castela", songs:["Nosso Quadro","Pipoco","Solteiro Forçado","Dona de Mim","Bombonzinho"]},
+            {artist:"Nadson O Ferinha", songs:["Cadê Seu Namorado Moça?","Sinal","Não Digita","Ponta do Pé","Só Falta Eu"]},
+            {artist:"João Gomes", songs:["Meu Pedaço de Pecado","Dengo","Se For Amor"]},
+            {artist:"Luan Pereira", songs:["Dentro da Hilux","Ela Pirou na Dodge Ram"," perplexo"]},
+            {artist:"Mari Fernandez", songs:["Comunicação Falhou","Não, Não Vou","Parada Louca"]},
+            {artist:"Zé Vaqueiro", songs:["Letícia","Tenho Medo","Volta Comigo BB"]}
+          ].map((group) => <article key={group.artist} className="rounded-2xl border border-primary/20 bg-card/70 p-3">
+            <h3 className="mb-2 font-bold">{group.artist}</h3>
+            <div className="flex flex-wrap gap-2">{group.songs.map((song) => <a key={song} href={`https://www.youtube.com/results?search_query=${encodeURIComponent(group.artist+" "+song+" oficial")}`} target="_blank" rel="noreferrer" className="rounded-full border border-primary/30 px-3 py-2 text-xs font-medium hover:bg-primary/10">{song} ↗</a>)}</div>
+          </article>)}
+        </div>
+        <p className="text-[11px] text-muted-foreground">Os links abrem resultados de músicas oficiais no YouTube. Para tocar dentro do Player Music, importe os arquivos de áudio que você possui ou tem autorização para usar.</p>
+      </section>
+      <section className="space-y-3">
         <div className="flex items-center justify-between"><h2 className="text-lg font-bold">Categorias</h2><Link to="/biblioteca" className="text-xs font-semibold text-primary">Ver todas</Link></div>
         <div className="flex gap-2 overflow-x-auto pb-1">{["Todas","Favoritas","Recentes","Artistas"].map((item) => <button key={item} onClick={() => setCategory(item)} className={cn("shrink-0 rounded-full border px-4 py-2 text-xs font-semibold transition-colors", category===item ? "border-primary bg-primary text-primary-foreground shadow-glow" : "border-border bg-card/70 text-muted-foreground")}>{item}</button>)}</div>
       </section>
