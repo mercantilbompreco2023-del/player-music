@@ -58,7 +58,10 @@ function Index() {
             {artist:"João Gomes", songs:["Meu Pedaço de Pecado","Dengo","Se For Amor"]},
             {artist:"Luan Pereira", songs:["Dentro da Hilux","Ela Pirou na Dodge Ram","Morena"]},
             {artist:"Mari Fernandez", songs:["Comunicação Falhou","Não, Não Vou","Parada Louca"]},
-            {artist:"Zé Vaqueiro", songs:["Letícia","Tenho Medo","Volta Comigo BB"]}
+            {artist:"Zé Vaqueiro", songs:["Letícia","Tenho Medo","Volta Comigo BB"]},
+            {artist:"Netto Brito", songs:[]},
+            {artist:"Marília Tavares", songs:[]},
+            {artist:"Theuzinho", songs:[]}
           ].map((group) => <article key={group.artist} className="flex gap-3 rounded-2xl border border-primary/20 bg-card/70 p-3">
             <div className="w-24 shrink-0 overflow-hidden rounded-xl border border-primary/20">
               <ArtistPhoto artist={group.artist} fallbackSeed={`artist-${group.artist}`} />
