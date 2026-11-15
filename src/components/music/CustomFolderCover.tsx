@@ -38,7 +38,18 @@ export function CustomFolderCover({ folderName, artistName, editable = false, tr
         const pages = Object.values(data.query?.pages ?? {}).filter((page) => page.title && page.thumbnail?.source);
         const match = pages.find((page) => normalize(page.title!) === wanted)
           ?? pages.find((page) => normalize(page.title!).includes(wanted) || wanted.includes(normalize(page.title!)));
-        if (active) setSrc(match?.thumbnail?.source ?? null);
+        let photo = match?.thumbnail?.source ?? null;
+        if (!photo) {
+          try {
+            const deezer = await fetch(`https://api.deezer.com/search/artist?q=${encodeURIComponent(artistName)}&limit=10`);
+            if (deezer.ok) {
+              const result = await deezer.json() as { data?: Array<{ name?: string; picture_big?: string; picture_xl?: string }> };
+              const exact = (result.data ?? []).find((item) => item.name && normalize(item.name) === wanted);
+              photo = exact?.picture_xl ?? exact?.picture_big ?? null;
+            }
+          } catch { /* mantém a capa padrão se não encontrar foto */ }
+        }
+        if (active) setSrc(photo);
       } catch { if (active) setSrc(null); }
     };
     void load();
