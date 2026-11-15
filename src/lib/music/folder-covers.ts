@@ -12,6 +12,20 @@ function openCoverDb(): Promise<IDBDatabase> {
   });
 }
 
+async function writeCover(key: string, blob: Blob | null): Promise<boolean> {
+  try {
+    const db = await openCoverDb();
+    return await new Promise((resolve) => {
+      const tx = db.transaction(COVER_STORE, "readwrite");
+      const store = tx.objectStore(COVER_STORE);
+      if (blob) store.put(blob, key);
+      else store.delete(key);
+      tx.oncomplete = () => { db.close(); resolve(true); };
+      tx.onerror = tx.onabort = () => { db.close(); resolve(false); };
+    });
+  } catch { return false; }
+}
+
 export async function saveCustomFolderCover(folderName: string, file: File): Promise<boolean> {
   if (!file.type.startsWith("image/")) return false;
   try {
@@ -21,19 +35,16 @@ export async function saveCustomFolderCover(folderName: string, file: File): Pro
     canvas.width = Math.max(1, Math.round(bitmap.width * scale));
     canvas.height = Math.max(1, Math.round(bitmap.height * scale));
     const context = canvas.getContext("2d");
-    if (!context) return false;
+    if (!context) { bitmap.close(); return false; }
     context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     bitmap.close();
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
-    if (!blob) return false;
-    const db = await openCoverDb();
-    return await new Promise((resolve) => {
-      const tx = db.transaction(COVER_STORE, "readwrite");
-      tx.objectStore(COVER_STORE).put(blob, folderName);
-      tx.oncomplete = () => { db.close(); resolve(true); };
-      tx.onerror = tx.onabort = () => { db.close(); resolve(false); };
-    });
+    return blob ? writeCover(folderName, blob) : false;
   } catch { return false; }
+}
+
+export async function removeCustomFolderCover(folderName: string): Promise<boolean> {
+  return writeCover(folderName, null);
 }
 
 export async function loadCustomFolderCover(folderName: string): Promise<string | null> {
@@ -52,7 +63,6 @@ export async function loadCustomFolderCover(folderName: string): Promise<string 
 
 const ARTIST_COVER_PREFIX = "artist:";
 
-/** Guarda a capa escolhida para o cantor no armazenamento local do Android. */
 export async function saveArtistFolderCover(artistName: string, file: File): Promise<boolean> {
   return saveCustomFolderCover(ARTIST_COVER_PREFIX + artistName.trim().toLocaleLowerCase("pt-BR"), file);
 }
@@ -61,7 +71,10 @@ export async function loadArtistFolderCover(artistName: string): Promise<string 
   return loadCustomFolderCover(ARTIST_COVER_PREFIX + artistName.trim().toLocaleLowerCase("pt-BR"));
 }
 
-/** Procura capa associada à pasta física/importada da faixa. */
+export async function removeArtistFolderCover(artistName: string): Promise<boolean> {
+  return removeCustomFolderCover(ARTIST_COVER_PREFIX + artistName.trim().toLocaleLowerCase("pt-BR"));
+}
+
 export async function loadFolderCoverForTrack(track: { id: string; folderName?: string; path?: string }): Promise<string | null> {
   const folderName = track.folderName || track.path?.replace(/\\/g, "/").split("/")[0];
   if (folderName) {
