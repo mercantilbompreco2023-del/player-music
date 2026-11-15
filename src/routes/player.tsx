@@ -45,7 +45,7 @@ function PlayerPage() {
         <Link to="/pastas" aria-label="Voltar à pasta de músicas" title="Voltar à pasta de músicas" className="inline-flex items-center gap-1 rounded-full border border-primary/40 px-3 py-2 text-xs font-semibold text-primary"><FolderOpen className="size-4" /> Pastas</Link>
       </div>
 
-      <div className="rounded-[2rem] border border-primary/70 bg-[linear-gradient(135deg,oklch(0.2_0.055_292),oklch(0.105_0.025_285)_58%,oklch(0.17_0.06_310))] p-4 shadow-[0_0_35px_-8px_oklch(0.62_0.24_292_/_0.65)] ring-1 ring-primary/20 sm:p-6"><CustomFolderCover trackId={t.id} fallbackSeed={t.id} /></div>
+      <div className="rounded-[2rem] border border-primary/70 bg-[linear-gradient(135deg,oklch(0.2_0.055_292),oklch(0.105_0.025_285)_58%,oklch(0.17_0.06_310))] p-4 shadow-[0_0_35px_-8px_oklch(0.62_0.24_292_/_0.65)] ring-1 ring-primary/20 sm:p-6"><CustomFolderCover artistName={t.artist} editable fallbackSeed={t.id} /></div>
 
       <div className="flex items-center gap-3 rounded-2xl border border-primary/25 bg-card/70 p-3 shadow-glow">
         <div className="min-w-0 flex-1">
