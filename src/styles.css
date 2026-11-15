@@ -123,12 +123,12 @@
   border-color: color-mix(in oklab, var(--primary) 32%, var(--border));
 }
 .home-purple, .player-purple {
-  --primary: oklch(0.62 0.22 300);
+  --primary: oklch(0.62 0.13 165);
   --ring: var(--primary);
   --glow: var(--primary);
 }
-.dark .home-purple, .dark .player-purple { --primary: oklch(0.72 0.2 300); }
-.player-purple { --background: oklch(0.11 0.035 285); --card: oklch(0.15 0.045 290); --border: oklch(0.42 0.12 300 / 45%); }
-.dark .player-purple { --background: oklch(0.11 0.035 285); --card: oklch(0.15 0.045 290); --foreground: oklch(0.97 0.01 300); }
+.dark .home-purple, .dark .player-purple { --primary: oklch(0.72 0.13 165); }
+.player-purple { --background: oklch(0.11 0.025 185); --card: oklch(0.15 0.025 185); --border: oklch(0.42 0.08 165 / 45%); }
+.dark .player-purple { --background: oklch(0.11 0.025 185); --card: oklch(0.15 0.025 185); --foreground: oklch(0.97 0.01 185); }
 .section-heading { border-left: 4px solid var(--primary); padding-left: 10px; }
 @media (prefers-reduced-motion: reduce) { .eq-bar { animation: none; } }
