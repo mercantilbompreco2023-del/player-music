@@ -108,17 +108,23 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
     return () => { active = false; };
   }, [artist, enabled, searchArtist]);
   const findWithAi = async () => {
-    if (!artist.trim()) return;
+    if (!artist.trim() || aiBusy) return;
     setAiBusy(true);
+    setEnabled(true);
+    try { localStorage.setItem(ARTIST_PHOTO_PREF, "true"); } catch { /* preferência opcional */ }
     try {
       const result = await identifyArtistForPhoto({ data: { artist } });
-      if (result.error) toast.error(result.error);
-      setSearchArtist(result.canonicalName);
-      setEnabled(true);
-      try { localStorage.setItem(ARTIST_PHOTO_PREF, "true"); } catch { /* preferência opcional */ }
-      toast.success("Artista identificado. Procurando foto…");
-    } catch { toast.error("Entre na sua conta para usar a busca de fotos com IA."); }
-    finally { setAiBusy(false); }
+      const canonicalName = result.canonicalName?.trim() || artist;
+      setSearchArtist(canonicalName);
+      if (result.error) {
+        toast.message("Busca inteligente indisponível; procurando a foto pelo nome do cantor.");
+      } else {
+        toast.success("Cantor identificado. Procurando foto…");
+      }
+    } catch {
+      setSearchArtist(artist);
+      toast.message("Procurando foto pública do cantor pelo nome.");
+    } finally { setAiBusy(false); }
   };
   const toggle = () => setEnabled((current) => {
     const next = !current;
@@ -128,9 +134,9 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
   return (
     <div className="relative">
       {folderPhoto ? <img src={folderPhoto} alt={`Foto da pasta de ${artist}`} className="aspect-square w-full rounded-xl object-cover" /> : enabled && photo && loadedArtist === (searchArtist || artist) ? <img src={photo} alt={`Foto de ${artist}`} className="aspect-square w-full rounded-xl object-cover" loading="lazy" referrerPolicy="no-referrer" /> : <Cover seed={fallbackSeed} className="aspect-square w-full rounded-none" iconClass="size-1/3" />}
-      <div className="absolute bottom-2 right-2 flex gap-1">
-        <button type="button" onClick={findWithAi} disabled={aiBusy} aria-label="Localizar foto do cantor com IA" title="Localizar foto com IA" className="rounded-full border border-white/30 bg-black/70 p-2 text-white backdrop-blur disabled:opacity-50"><Sparkles className={`size-4 ${aiBusy ? "animate-pulse text-primary" : "text-fuchsia-300"}`} /></button>
-        <label aria-label="Adicionar ou trocar foto do cantor" title="Adicionar ou trocar foto do cantor" className={`cursor-pointer rounded-full border border-white/30 bg-black/70 p-2 text-white backdrop-blur ${uploadingPhoto ? "opacity-50" : ""}`}>
+      <div className="absolute bottom-2 right-2 z-10 flex gap-1">
+        <button type="button" onClick={findWithAi} disabled={aiBusy} aria-label="Localizar foto do cantor com IA" title="Localizar foto com IA" className="touch-manipulation rounded-full border border-white/30 bg-black/80 p-2 text-white backdrop-blur disabled:opacity-50"><Sparkles className={`size-4 ${aiBusy ? "animate-pulse text-primary" : "text-fuchsia-300"}`} /></button>
+        <label aria-label="Adicionar ou trocar foto do cantor" title="Adicionar ou trocar foto do cantor" className={`touch-manipulation cursor-pointer rounded-full border border-white/30 bg-black/80 p-2 text-white backdrop-blur ${uploadingPhoto ? "pointer-events-none opacity-50" : ""}`}>
           <Camera className="size-4 text-primary" />
           <input type="file" accept="image/*" disabled={uploadingPhoto} className="sr-only" onChange={(event) => { void uploadArtistPhoto(event.target.files?.[0]); event.currentTarget.value = ""; }} />
         </label>
