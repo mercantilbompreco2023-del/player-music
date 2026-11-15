@@ -15,6 +15,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
   const p = usePlayer();
   const active = p.current?.id === track.id;
   const fav = p.isFavorite(track.id);
+  const folderName = track.folderName || track.path?.replace(/\\/g, "/").split("/")[0];
   return (
     <div className={cn("group flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-accent/60", active && "bg-accent/70")}>
       {selectable && (
@@ -31,7 +32,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
       )}
       <button className="flex min-w-0 flex-1 items-center gap-3 text-left" onClick={() => p.playList(list, track.id)} aria-label={`Tocar ${track.title}`}>
         <div className="relative">
-          <CustomFolderCover folderName={track.folderName || track.path?.replace(/\\/g, "/").split("/")[0]} trackId={track.id} fallbackSeed={track.id} className="size-12" />
+          <CustomFolderCover {...(folderName ? { folderName } : {})} trackId={track.id} fallbackSeed={track.id} className="size-12" />
           {active && p.isPlaying && (
             <div className="absolute inset-0 flex items-end justify-center gap-0.5 rounded-lg bg-background/50 pb-2">
               {[0, 1, 2].map((i) => (
