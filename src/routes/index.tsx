@@ -56,7 +56,7 @@ function Index() {
             {artist:"Ana Castela", songs:["Nosso Quadro","Pipoco","Solteiro Forçado","Dona de Mim","Bombonzinho"]},
             {artist:"Nadson O Ferinha", songs:["Cadê Seu Namorado Moça?","Sinal","Não Digita","Ponta do Pé","Só Falta Eu"]},
             {artist:"João Gomes", songs:["Meu Pedaço de Pecado","Dengo","Se For Amor"]},
-            {artist:"Luan Pereira", songs:["Dentro da Hilux","Ela Pirou na Dodge Ram"," perplexo"]},
+            {artist:"Luan Pereira", songs:["Dentro da Hilux","Ela Pirou na Dodge Ram","Morena"]},
             {artist:"Mari Fernandez", songs:["Comunicação Falhou","Não, Não Vou","Parada Louca"]},
             {artist:"Zé Vaqueiro", songs:["Letícia","Tenho Medo","Volta Comigo BB"]}
           ].map((group) => <article key={group.artist} className="rounded-2xl border border-primary/20 bg-card/70 p-3">
