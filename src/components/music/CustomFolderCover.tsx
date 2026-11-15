@@ -8,9 +8,41 @@ export function CustomFolderCover({ folderName, artistName, editable = false, tr
   const [src, setSrc] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
-    const load = artistName ? loadArtistFolderCover(artistName) : trackId ? loadCustomFolderCoverForTrack(trackId) : folderName ? loadCustomFolderCover(folderName) : Promise.resolve(null);
-    void load.then((url) => { if (active) setSrc(url); else if (url) URL.revokeObjectURL(url); });
-    return () => { active = false; if (src) URL.revokeObjectURL(src); };
+    let localUrl: string | null = null;
+    const load = async () => {
+      const local = artistName
+        ? await loadArtistFolderCover(artistName)
+        : trackId
+          ? await loadCustomFolderCoverForTrack(trackId)
+          : folderName
+            ? await loadCustomFolderCover(folderName)
+            : null;
+      if (!active) { if (local) URL.revokeObjectURL(local); return; }
+      localUrl = local;
+      if (local) { setSrc(local); return; }
+
+      // Quando ainda não existe capa personalizada, busca uma foto pública
+      // do artista para manter a mesma identidade visual na tela Tocando agora.
+      if (!artistName) { setSrc(null); return; }
+      try {
+        const params = new URLSearchParams({
+          action: "query", generator: "search", gsrsearch: artistName,
+          gsrnamespace: "0", gsrlimit: "8", prop: "pageimages",
+          piprop: "thumbnail", pithumbsize: "800", format: "json", origin: "*",
+        });
+        const response = await fetch(`https://pt.wikipedia.org/w/api.php?${params.toString()}`);
+        if (!response.ok) throw new Error("Falha ao buscar foto do artista");
+        const data = await response.json() as { query?: { pages?: Record<string, { title?: string; thumbnail?: { source?: string } }> } };
+        const normalize = (value: string) => value.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLocaleLowerCase("pt-BR").replace(/[^a-z0-9 ]/g, " ").replace(/\\s+/g, " ").trim();
+        const wanted = normalize(artistName);
+        const pages = Object.values(data.query?.pages ?? {}).filter((page) => page.title && page.thumbnail?.source);
+        const match = pages.find((page) => normalize(page.title!) === wanted)
+          ?? pages.find((page) => normalize(page.title!).includes(wanted) || wanted.includes(normalize(page.title!)));
+        if (active) setSrc(match?.thumbnail?.source ?? null);
+      } catch { if (active) setSrc(null); }
+    };
+    void load();
+    return () => { active = false; if (localUrl) URL.revokeObjectURL(localUrl); };
   }, [folderName, artistName, trackId]);
   const upload = async (file?: File) => {
     if (!file || (!folderName && !artistName)) return;
