@@ -31,12 +31,16 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
     let active = true;
     void loadArtistFolderCover(artist).then(async (url) => {
       const track = p.tracks.find((item) => item.id === fallbackSeed);
-      const chosen = url ?? await loadFolderCoverForTrack(track ?? { id: fallbackSeed });
+      const chosen = url ?? await loadFolderCoverForTrack({
+        id: fallbackSeed,
+        ...(track?.folderName ? { folderName: track.folderName } : {}),
+        ...(track?.path ? { path: track.path } : {}),
+      });
       if (active) setFolderPhoto(chosen);
       else if (chosen) URL.revokeObjectURL(chosen);
     });
     return () => { active = false; };
-  }, [artist, fallbackSeed]);
+  }, [artist, fallbackSeed, p.tracks]);
   const uploadArtistPhoto = async (file?: File) => {
     if (!file) return;
     setUploadingPhoto(true);
