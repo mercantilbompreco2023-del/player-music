@@ -81,6 +81,16 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
       } catch { /* tenta o Wikimedia Commons */ }
       if (!url) {
         try {
+          const response = await fetch(`https://api.deezer.com/search/artist?q=${encodeURIComponent(name)}&limit=10`);
+          if (!response.ok) throw new Error("Falha ao buscar artista no Deezer");
+          const data = await response.json() as { data?: Array<{ name?: string; picture_big?: string; picture_xl?: string }> };
+          const wanted = normalize(name);
+          const exact = (data.data ?? []).find((artist) => artist.name && normalize(artist.name) === wanted);
+          url = exact?.picture_xl ?? exact?.picture_big ?? null;
+        } catch { /* tenta o Wikimedia Commons */ }
+      }
+      if (!url) {
+        try {
           const params = new URLSearchParams({ action: "query", generator: "search", gsrsearch: `filetype:bitmap "${name}"`, gsrnamespace: "6", gsrlimit: "12", prop: "imageinfo", iiprop: "url", iiurlwidth: "600", format: "json", origin: "*" });
           const response = await fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`);
           if (!response.ok) throw new Error("Falha ao buscar foto no Commons");
