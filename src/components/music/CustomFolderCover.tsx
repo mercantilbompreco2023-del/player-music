@@ -33,7 +33,7 @@ export function CustomFolderCover({ folderName, artistName, editable = false, tr
         const response = await fetch(`https://pt.wikipedia.org/w/api.php?${params.toString()}`);
         if (!response.ok) throw new Error("Falha ao buscar foto do artista");
         const data = await response.json() as { query?: { pages?: Record<string, { title?: string; thumbnail?: { source?: string } }> } };
-        const normalize = (value: string) => value.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLocaleLowerCase("pt-BR").replace(/[^a-z0-9 ]/g, " ").replace(/\\s+/g, " ").trim();
+        const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
         const wanted = normalize(artistName);
         const pages = Object.values(data.query?.pages ?? {}).filter((page) => page.title && page.thumbnail?.source);
         const match = pages.find((page) => normalize(page.title!) === wanted)
