@@ -66,7 +66,7 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
     const cached = artistPhotoCache.get(name.toLocaleLowerCase("pt-BR"));
     if (cached !== undefined) { setPhoto(cached); return () => { active = false; }; }
     setPhoto(null);
-    const normalize = (value: string) => value.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLocaleLowerCase("pt-BR").replace(/[^a-z0-9 ]/g, " ").replace(/\\s+/g, " ").trim();
+    const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
     const findPhoto = async () => {
       let url: string | null = null;
       try {
@@ -97,7 +97,7 @@ export function ArtistPhoto({ artist, fallbackSeed }: { artist: string; fallback
           const data = await response.json() as { query?: { pages?: Record<string, { title?: string; imageinfo?: Array<{ thumburl?: string; url?: string }> }> } };
           const wanted = normalize(name);
           const pages = Object.values(data.query?.pages ?? []).filter((page) => page.title && page.imageinfo?.length);
-          const exact = pages.find((page) => normalize(page.title!.replace(/^File:/i, "").replace(/\\.[^.]+$/, "")).includes(wanted));
+          const exact = pages.find((page) => normalize(page.title!.replace(/^File:/i, "").replace(/\.[^.]+$/, "")).includes(wanted));
           url = exact?.imageinfo?.[0]?.thumburl ?? exact?.imageinfo?.[0]?.url ?? null;
         } catch { /* usa a capa neutra se não houver foto identificável */ }
       }
