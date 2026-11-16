@@ -181,7 +181,7 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
         </div>
       </div>
       <div className={cn("grid items-center gap-3 sm:gap-6", variant === "showcase" ? "grid-cols-[minmax(116px,0.9fr)_minmax(0,1.1fr)] sm:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.1fr)]" : "grid-cols-[112px_minmax(0,1fr)] sm:grid-cols-[220px_minmax(0,1fr)]")}>
-        <div className={cn("overflow-hidden border border-primary/40", variant === "showcase" ? "rounded-2xl shadow-[0_0_22px_-8px_hsl(var(--primary)/0.8)]" : "rounded-xl")}>{t ? <TrackVisual track={t} fallback={<ArtistPhoto artist={t.artist} fallbackSeed={t.id} />} /> : <Link to="/importar" aria-label="Importar músicas"><img src={artwork} alt="Fones de ouvido" width={1024} height={1024} className="aspect-square w-full object-cover" /></Link>}</div>
+        <div className={cn("overflow-hidden border border-primary/40", variant === "showcase" ? "rounded-2xl shadow-lg shadow-black/20" : "rounded-xl")}>{t ? <TrackVisual track={t} fallback={<ArtistPhoto artist={t.artist} fallbackSeed={t.id} />} /> : <Link to="/importar" aria-label="Importar músicas"><img src={artwork} alt="Fones de ouvido" width={1024} height={1024} className="aspect-square w-full object-cover" /></Link>}</div>
         <div className="min-w-0">
           <h2 className={cn("truncate font-bold", variant === "showcase" ? "text-lg sm:text-3xl" : "text-base sm:text-2xl")}>{t?.title ?? "Sua música aqui"}</h2>
           <div className="mt-1 flex items-center gap-1"><p className="min-w-0 flex-1 truncate text-xs text-muted-foreground sm:text-base">{showArtistName ? (t?.artist ?? "Sua biblioteca pessoal") : ""}</p><Button type="button" size="icon" variant="ghost" className="size-7 shrink-0" onClick={toggleArtistName} aria-label={showArtistName ? "Ocultar nome do cantor" : "Mostrar nome do cantor"} aria-pressed={showArtistName} title={showArtistName ? "Nome do cantor visível" : "Nome do cantor oculto"}><UserRound className={cn("size-4", showArtistName && "text-primary")} /></Button></div>
@@ -195,10 +195,10 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
           </div>
         </div>
       </div>
-      <div className="mt-4 flex h-12 items-end justify-center gap-1 overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-r from-fuchsia-950/20 via-primary/10 to-cyan-950/20 px-3 py-2" role="img" aria-label={p.isPlaying ? "Equalizador animado acompanhando a reprodução" : "Equalizador em repouso"}>
+      <div className="mt-4 flex h-12 items-end justify-center gap-1 overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-r from-primary/15 via-primary/5 to-sky-500/10 px-3 py-2" role="img" aria-label={p.isPlaying ? "Equalizador animado acompanhando a reprodução" : "Equalizador em repouso"}>
         {Array.from({ length: 30 }, (_, index) => index).map((index) => {
           const heights = [18, 30, 45, 24, 58, 36, 72, 48, 88, 54, 76, 42, 96, 60, 82, 38, 68, 48, 90, 56, 74, 34, 62, 42, 80, 28, 52, 36, 66, 22];
-          return <span key={index} className={cn("eq-bar w-1 rounded-full bg-gradient-to-t from-fuchsia-600 via-primary to-cyan-300 shadow-[0_0_9px_hsl(var(--primary)/0.7)]", !p.isPlaying && "animate-none opacity-40")} style={{ height: `${heights[index]}%`, animationDelay: `${index * 0.055}s`, animationDuration: `${0.55 + (index % 5) * 0.13}s` }} />;
+          return <span key={index} className={cn("eq-bar w-1 rounded-full bg-gradient-to-t from-primary/70 via-primary to-sky-300 shadow-[0_0_7px_hsl(var(--primary)/0.35)]", !p.isPlaying && "animate-none opacity-40")} style={{ height: `${heights[index]}%`, animationDelay: `${index * 0.055}s`, animationDuration: `${0.55 + (index % 5) * 0.13}s` }} />;
         })}
       </div>
 
