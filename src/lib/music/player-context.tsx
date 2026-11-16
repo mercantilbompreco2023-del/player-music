@@ -303,7 +303,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // Elemento de áudio único
   useEffect(() => {
     const a = new Audio();
-    a.preload = "auto";
+    // Não pré-carrega a faixa inteira ao abrir o app: em bibliotecas grandes isso
+    // disputa memória e rede com a interface. O navegador carrega ao iniciar a reprodução.
+    a.preload = "metadata";
     audioRef.current = a;
     let lastSaved = -1;
     const remember = () => {
@@ -561,27 +563,36 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const localRef = useRef<Track[]>([]);
   localRef.current = localTracks;
+  // Mantém a deduplicação entre lotes de importação (inclusive a sincronização
+  // faixa a faixa do Android), evitando reler toda a biblioteca a cada música.
+  const knownFingerprintsRef = useRef<Set<string> | null>(null);
 
   /** Importa itens um a um. Cada faixa é salva de forma atômica: cancelar nunca deixa registros pela metade. */
   const importItems = useCallback(
     async (items: ImportItem[], opts: { signal?: AbortSignal; onProgress?: (p: ImportProgress) => void; quiet?: boolean } = {}): Promise<ImportReport> => {
       const probe = document.createElement("audio");
       const report: ImportReport = { found: items.length, imported: 0, duplicates: 0, skipped: [], cancelled: false };
-      // impressões digitais já existentes (faixas antigas sem impressão são calculadas agora)
-      const known = new Set<string>();
-      for (const t of localRef.current) {
-        if (t.fingerprint) known.add(t.fingerprint);
+      // Inicializa o índice de duplicados uma única vez por sessão. Antes, a
+      // sincronização Android chamava importItems para cada faixa e relia toda a
+      // biblioteca repetidamente, causando lentidão crescente (O(n²)).
+      if (!knownFingerprintsRef.current) {
+        const known = new Set<string>();
+        for (const t of localRef.current) if (t.fingerprint) known.add(t.fingerprint);
+        if (localRef.current.some((t) => !t.fingerprint)) {
+          try {
+            const stored = await fileStore.all();
+            for (const f of stored) {
+              const fp = f.fingerprint ?? (await fingerprint(f.blob));
+              known.add(fp);
+              if (!f.fingerprint) await fileStore.put({ ...f, fingerprint: fp });
+            }
+          } catch { /* segue com os fingerprints disponíveis */ }
+        }
+        knownFingerprintsRef.current = known;
       }
-      if (localRef.current.some((t) => !t.fingerprint)) {
-        try {
-          const stored = await fileStore.all();
-          for (const f of stored) {
-            const fp = f.fingerprint ?? (await fingerprint(f.blob));
-            known.add(fp);
-            if (!f.fingerprint) await fileStore.put({ ...f, fingerprint: fp });
-          }
-        } catch { /* segue sem a checagem dos antigos */ }
-      }
+      const known = knownFingerprintsRef.current;
+      // Solicita persistência uma vez por lote, não uma vez por faixa.
+      await requestPersistentStorage().catch(() => false);
       let processed = 0;
       for (const { file, path, folderName } of items) {
         if (opts.signal?.aborted) { report.cancelled = true; break; }
@@ -762,6 +773,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         if (error) { toast.error("Não foi possível remover a música da nuvem."); return; }
       } else {
         try { await fileStore.remove(id); } catch { /* pode não estar salvo */ }
+        if (t.fingerprint) knownFingerprintsRef.current?.delete(t.fingerprint);
       }
       URL.revokeObjectURL(t.url);
       setLocalTracks((p) => p.filter((x) => x.id !== id));
