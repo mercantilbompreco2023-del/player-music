@@ -43,6 +43,8 @@ public class MediaPlaybackPlugin extends Plugin {
         i.setAction(MediaPlaybackService.ACTION_UPDATE);
         i.putExtra("title", call.getString("title", "Player Music"));
         i.putExtra("artist", call.getString("artist", ""));
+        i.putExtra("artworkBase64", call.getString("artworkBase64", ""));
+        i.putExtra("artworkMime", call.getString("artworkMime", "image/jpeg"));
         i.putExtra("playing", Boolean.TRUE.equals(call.getBoolean("isPlaying", false)));
         i.putExtra("position", (long) (call.getDouble("position", 0.0) * 1000));
         i.putExtra("duration", (long) (call.getDouble("duration", 0.0) * 1000));
