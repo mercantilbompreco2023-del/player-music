@@ -148,3 +148,58 @@ export function describePickerError(e: unknown): string | null {
   if (name === "NotAllowedError" || name === "SecurityError") return "Permissão negada para ler a pasta.";
   return "Não foi possível abrir a pasta.";
 }
+
+
+/** Lê metadados ID3 (MP3) quando disponíveis, sem depender do nome do arquivo. */
+export async function readAudioTags(blob: Blob): Promise<{ title?: string; artist?: string; album?: string }> {
+  const decodeText = (bytes: Uint8Array): string => {
+    if (!bytes.length) return "";
+    const encoding = bytes[0]!;
+    const payload = bytes.subarray(1);
+    let value = "";
+    try {
+      if (encoding === 0) value = new TextDecoder("windows-1252").decode(payload);
+      else if (encoding === 3) value = new TextDecoder("utf-8").decode(payload);
+      else if (encoding === 2) {
+        const swapped = new Uint8Array(payload.length);
+        for (let i = 0; i + 1 < payload.length; i += 2) { swapped[i] = payload[i + 1]!; swapped[i + 1] = payload[i]!; }
+        value = new TextDecoder("utf-16le").decode(swapped);
+      } else value = new TextDecoder("utf-16").decode(payload);
+    } catch { return ""; }
+    return value.replace(/\u0000/g, "").replace(/^\uFEFF/, "").trim();
+  };
+  const head = new Uint8Array(await blob.slice(0, Math.min(blob.size, 1024 * 1024)).arrayBuffer());
+  const tags: { title?: string; artist?: string; album?: string } = {};
+  if (head.length >= 10 && head[0] === 0x49 && head[1] === 0x44 && head[2] === 0x33) {
+    const version = head[3]!;
+    const size = ((head[6]! & 0x7f) << 21) | ((head[7]! & 0x7f) << 14) | ((head[8]! & 0x7f) << 7) | (head[9]! & 0x7f);
+    let offset = 10;
+    const end = Math.min(head.length, 10 + size);
+    while (offset + 10 <= end) {
+      const id = String.fromCharCode(...head.subarray(offset, offset + 4));
+      if (!/^[A-Z0-9]{4}$/.test(id)) break;
+      let frameSize = version >= 4
+        ? ((head[offset + 4]! & 0x7f) << 21) | ((head[offset + 5]! & 0x7f) << 14) | ((head[offset + 6]! & 0x7f) << 7) | (head[offset + 7]! & 0x7f)
+        : new DataView(head.buffer, head.byteOffset + offset + 4, 4).getUint32(0);
+      if (!frameSize || offset + 10 + frameSize > end) break;
+      const value = decodeText(head.subarray(offset + 10, offset + 10 + frameSize));
+      if (value) {
+        if (id === "TIT2") tags.title = value;
+        if (id === "TPE1") tags.artist = value;
+        if (id === "TALB") tags.album = value;
+      }
+      offset += 10 + frameSize;
+    }
+  }
+  // Fallback para arquivos com tag ID3v1.
+  if (!tags.title && blob.size >= 128) {
+    const tail = new Uint8Array(await blob.slice(blob.size - 128).arrayBuffer());
+    if (String.fromCharCode(...tail.subarray(0, 3)) === "TAG") {
+      const read = (start: number, length: number) => new TextDecoder("windows-1252").decode(tail.subarray(start, start + length)).replace(/\u0000/g, "").trim();
+      tags.title = read(3, 30) || undefined;
+      tags.artist = read(33, 30) || undefined;
+      tags.album = read(63, 30) || undefined;
+    }
+  }
+  return tags;
+}
