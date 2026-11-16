@@ -38,8 +38,11 @@ export function PhoneMusicSync() {
       setFinished(true);
       toast.success(`Biblioteca vinculada: ${imported} música(s) adicionada(s).`);
     } catch (error) {
-      const code = (error as { code?: string })?.code;
-      toast.error(code === "PERMISSION_DENIED" ? "Permita o acesso às músicas do celular para continuar." : "Não foi possível acessar a biblioteca do celular.");
+      const failure = error as { code?: string; message?: string };
+      const message = failure?.code === "PERMISSION_DENIED"
+        ? "A permissão de músicas foi negada. Autorize o acesso nas configurações do Android e tente novamente."
+        : failure?.message || "Falha ao abrir a biblioteca de músicas. Atualize o aplicativo e tente novamente.";
+      toast.error(message, { duration: 8000 });
     } finally { setBusy(false); }
   }
 
