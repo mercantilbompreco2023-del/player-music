@@ -1,4 +1,4 @@
-import { Check, Cloud, CloudUpload, Download, Heart, ListPlus, MoreVertical, Plus, Share2, Trash2, X } from "lucide-react";
+import { Check, Cloud, CloudUpload, Download, FolderOpen, Heart, ListPlus, MoreVertical, Plus, Share2, Trash2, X } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
   DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger,
@@ -10,6 +10,8 @@ import { formatTime } from "@/lib/music/queue";
 import type { Track } from "@/lib/music/types";
 import { Cover } from "./Cover";
 import { CustomFolderCover } from "./CustomFolderCover";
+import { addTracksToCustomFolder, createCustomFolder, readCustomFolders } from "@/lib/music/folders";
+import { toast } from "sonner";
 
 export function TrackRow({ track, list, playlistId, selectable, selected, onToggleSelect }: { track: Track; list: string[]; playlistId?: string; selectable?: boolean; selected?: boolean; onToggleSelect?: () => void }) {
   const p = usePlayer();
@@ -66,6 +68,22 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => p.addToQueue(track.id)}><ListPlus /> Adicionar à fila</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => {
+            const name = window.prompt("Nome da nova pasta");
+            if (!name?.trim()) return;
+            if (!createCustomFolder(name, [track.id])) { toast.error("Já existe uma pasta com esse nome ou não foi possível salvar."); return; }
+            toast.success(`Música adicionada à pasta "${name.trim()}". Pasta salva neste aparelho.`);
+          }}><Plus /> Criar pasta com esta música</DropdownMenuItem>
+          {Object.keys(readCustomFolders()).length > 0 && <DropdownMenuSub>
+            <DropdownMenuSubTrigger><FolderOpen className="mr-2 size-4" /> Adicionar a uma pasta</DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              {Object.keys(readCustomFolders()).map((name) => <DropdownMenuItem key={name} onClick={() => {
+                if (addTracksToCustomFolder(name, [track.id])) toast.success(`Adicionada à pasta "${name}".`);
+                else toast.error("Não foi possível adicionar a música à pasta.");
+              }}>{name}</DropdownMenuItem>)}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>}
+
           {track.source !== "demo" && <DropdownMenuItem onClick={() => void p.shareTrack(track.id).catch(() => {})}><Share2 /> Compartilhar música</DropdownMenuItem>}
           {track.source !== "demo" && <DropdownMenuItem onClick={() => void p.saveTrackLocally(track.id)}><Download /> Salvar no aparelho</DropdownMenuItem>}
           <DropdownMenuSub>
