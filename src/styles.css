@@ -64,28 +64,28 @@
 }
 
 .dark {
-  --background: oklch(0.105 0.005 255);
+  --background: oklch(0.13 0.018 270);
   --foreground: oklch(0.97 0.008 285);
-  --card: oklch(0.16 0.01 255);
+  --card: oklch(0.19 0.018 270);
   --card-foreground: oklch(0.97 0.008 285);
-  --popover: oklch(0.19 0.015 255);
+  --popover: oklch(0.21 0.02 270);
   --popover-foreground: oklch(0.97 0.008 285);
-  --primary: oklch(0.72 0.13 165);
+  --primary: oklch(0.72 0.16 285);
   --primary-foreground: oklch(0.99 0.005 285);
-  --secondary: oklch(0.23 0.025 255);
+  --secondary: oklch(0.25 0.025 270);
   --secondary-foreground: oklch(0.95 0.01 285);
-  --muted: oklch(0.21 0.015 255);
+  --muted: oklch(0.24 0.018 270);
   --muted-foreground: oklch(0.7 0.035 285);
-  --accent: oklch(0.29 0.05 255);
+  --accent: oklch(0.3 0.07 285);
   --accent-foreground: oklch(0.97 0.008 285);
   --destructive: oklch(0.68 0.19 25);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(1 0 0 / 11%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.72 0.13 165);
-  --surface: oklch(0.14 0.01 165 / 0.94);
-  --glow: oklch(0.72 0.13 165);
-  --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.42 0.08 165 / 0.55), transparent 65%);
+  --ring: oklch(0.72 0.16 285);
+  --surface: oklch(0.16 0.02 270 / 0.94);
+  --glow: oklch(0.72 0.16 285);
+  --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.42 0.12 285 / 0.45), transparent 65%);
 }
 
 @layer base {
@@ -115,20 +115,21 @@
 @utility eq-bar { animation: eq 0.9s ease-in-out infinite; transform-origin: bottom; }
 
 @utility neon-panel {
-  background: linear-gradient(120deg, color-mix(in oklab, var(--primary) 12%, var(--background)), var(--background) 55%, color-mix(in oklab, var(--primary) 10%, var(--background)));
-  box-shadow: 0 0 18px -8px var(--primary);
+  background: linear-gradient(145deg, color-mix(in oklab, var(--primary) 12%, var(--card)), var(--card) 58%, color-mix(in oklab, var(--primary) 5%, var(--background)));
+  box-shadow: 0 18px 48px -30px color-mix(in oklab, var(--primary) 45%, transparent);
 }
 @utility neon-tile {
-  background: linear-gradient(140deg, color-mix(in oklab, var(--primary) 14%, var(--card)), var(--card) 70%);
-  border-color: color-mix(in oklab, var(--primary) 32%, var(--border));
+  background: linear-gradient(145deg, color-mix(in oklab, var(--primary) 7%, var(--card)), var(--card) 72%);
+  border-color: var(--border);
 }
 .home-purple, .player-purple {
-  --primary: oklch(0.62 0.13 165);
   --ring: var(--primary);
   --glow: var(--primary);
 }
-.dark .home-purple, .dark .player-purple { --primary: oklch(0.72 0.13 165); }
-.player-purple { --background: oklch(0.11 0.025 185); --card: oklch(0.15 0.025 185); --border: oklch(0.42 0.08 165 / 45%); }
-.dark .player-purple { --background: oklch(0.11 0.025 185); --card: oklch(0.15 0.025 185); --foreground: oklch(0.97 0.01 185); }
-.section-heading { border-left: 4px solid var(--primary); padding-left: 10px; }
+.player-purple { --background: oklch(0.13 0.018 270); --card: oklch(0.19 0.018 270); --border: oklch(1 0 0 / 12%); }
+.section-heading { border-left: 3px solid var(--primary); padding-left: 10px; }
+.home-purple section > h2,
+.home-purple section > div > h2 { letter-spacing: -0.025em; }
+.home-purple article,
+.home-purple .neon-tile { border-radius: 1.15rem; }
 @media (prefers-reduced-motion: reduce) { .eq-bar { animation: none; } }
