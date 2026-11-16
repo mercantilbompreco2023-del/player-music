@@ -39,7 +39,7 @@ function PlayerPage() {
   const upcoming = p.queue.map((id, pos) => ({ pos, track: p.byId(id) })).filter((x) => x.pos > p.index && x.track);
 
   return (
-    <div className="player-purple relative mx-auto min-h-[calc(100dvh-5rem)] max-w-xl space-y-6 rounded-[2rem] border border-border/80 bg-gradient-to-b from-primary/10 via-card to-background px-4 pb-8 pt-3 text-foreground shadow-2xl shadow-black/20">
+    <div className="player-purple relative mx-auto min-h-[calc(100dvh-5rem)] max-w-xl space-y-6 rounded-[2rem] border border-primary/20 bg-gradient-to-b from-primary/12 via-card to-background px-4 pb-8 pt-3 text-foreground shadow-2xl shadow-primary/10 sm:px-6">
       <style>{"@keyframes pm-wave { 0%,100% { transform:scaleY(.28); opacity:.62 } 50% { transform:scaleY(1); opacity:1 } }"}</style>
       <div className="flex items-center justify-between gap-2 px-1">
         <button onClick={() => router.history.back()} aria-label="Voltar" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
@@ -47,7 +47,7 @@ function PlayerPage() {
         <Link to="/biblioteca" aria-label="Buscar músicas" title="Buscar músicas" className="rounded-full p-2"><Music2 className="size-5" /></Link>
       </div>
       <div className="flex flex-col items-center gap-6 px-2 pt-5 text-center">
-        <div className="w-[68vw] max-w-[300px] overflow-hidden rounded-[1.7rem] border border-primary/25 bg-card shadow-2xl shadow-black/30 [&_img]:!rounded-[1.5rem]">
+        <div className="w-[72vw] max-w-[320px] overflow-hidden rounded-[1.8rem] border border-primary/25 bg-card shadow-2xl shadow-primary/15 [&_img]:!rounded-[1.5rem]">
           <TrackVisual track={t} fallback={<CustomFolderCover artistName={t.artist} editable fallbackSeed={t.id} className="w-full rounded-full" />} />
         </div>
         <div className="flex w-full items-center gap-3 text-left"><div className="min-w-0 flex-1"><h1 className="line-clamp-2 break-words text-2xl font-extrabold leading-tight">{t.title?.trim() || t.path?.split("/").pop()?.replace(/\\.[^.]+$/, "") || "Faixa sem nome"}</h1><p className="mt-1 truncate text-base text-muted-foreground">{t.artist}</p>{t.license && <p className="mt-1 truncate text-xs text-muted-foreground">{t.license}</p>}</div><button onClick={() => p.toggleFavorite(t.id)} aria-label={fav ? "Remover dos favoritos" : "Favoritar"} className="rounded-full border border-primary/30 p-3"><Heart className={cn("size-7", fav && "fill-primary text-primary")} /></button></div>
@@ -59,7 +59,7 @@ function PlayerPage() {
       <div className="flex items-center justify-between px-1">
         <button onClick={p.toggleShuffle} aria-label="Aleatório" title="Embaralhar músicas" aria-pressed={p.prefs.shuffle} className={cn("rounded-full p-2", p.prefs.shuffle ? "text-primary" : "text-muted-foreground")}><Shuffle className="size-6" /></button>
         <button onClick={p.prev} aria-label="Anterior" className="p-2"><SkipBack className="size-7 fill-current" /></button>
-        <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className="flex size-16 items-center justify-center rounded-full border border-fuchsia-300/60 bg-primary text-primary-foreground shadow-[0_0_24px_hsl(var(--primary)/.7)]">{p.isPlaying ? <Pause className="size-7 fill-current" /> : <Play className="ml-1 size-7 fill-current" />}</button>
+        <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className="flex size-[4.5rem] items-center justify-center rounded-full border border-primary/50 bg-primary text-primary-foreground shadow-[0_0_28px_hsl(var(--primary)/.45)]">{p.isPlaying ? <Pause className="size-7 fill-current" /> : <Play className="ml-1 size-7 fill-current" />}</button>
         <button onClick={p.next} aria-label="Próxima" className="p-2"><SkipForward className="size-7 fill-current" /></button>
         <button onClick={p.cycleRepeat} aria-label={`Repetir: ${{ off: "desligado", all: "fila", one: "uma música" }[p.prefs.repeat]}`} title="Alternar repetição" className={cn("p-2", p.prefs.repeat !== "off" ? "text-primary" : "text-muted-foreground")}>{p.prefs.repeat === "one" ? <Repeat1 className="size-6" /> : <Repeat className="size-6" />}</button>
       </div>
