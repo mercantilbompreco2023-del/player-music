@@ -1,4 +1,4 @@
-import { Check, Cloud, CloudUpload, Download, Heart, ListPlus, MoreVertical, Plus, Trash2, X } from "lucide-react";
+import { Check, Cloud, CloudUpload, Download, Heart, ListPlus, MoreVertical, Plus, Share2, Trash2, X } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
   DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger,
@@ -65,6 +65,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => p.addToQueue(track.id)}><ListPlus /> Adicionar à fila</DropdownMenuItem>
+          {track.source !== "demo" && <DropdownMenuItem onClick={() => void p.shareTrack(track.id).catch(() => {})}><Share2 /> Compartilhar música</DropdownMenuItem>}
           {track.source !== "demo" && <DropdownMenuItem onClick={() => void p.saveTrackLocally(track.id)}><Download /> Salvar no aparelho</DropdownMenuItem>}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger><Plus className="mr-2 size-4" /> Adicionar à playlist</DropdownMenuSubTrigger>
