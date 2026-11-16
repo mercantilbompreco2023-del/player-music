@@ -76,6 +76,7 @@ export interface StoredFile {
   id: string;
   title: string;
   artist: string;
+  album?: string | undefined;
   duration?: number | undefined;
   fingerprint?: string | undefined;
   path?: string | undefined;
