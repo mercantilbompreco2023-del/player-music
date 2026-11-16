@@ -24,6 +24,10 @@ describe("busca e importação", () => {
   it("busca vazia não retorna nada", () => expect(matchesSearch({ title: "X", artist: "Y" }, " ")).toBe(false));
   it("lê artista e título do nome do arquivo", () =>
     expect(parseFileName("Banda - Minha Música.mp3")).toEqual({ artist: "Banda", title: "Minha Música" }));
+  it("remove o número da faixa antes de identificar artista e título", () =>
+    expect(parseFileName("01 - Banda - Minha Música.mp3")).toEqual({ artist: "Banda", title: "Minha Música" }));
+  it("usa o nome do arquivo como título quando o artista não está informado", () =>
+    expect(parseFileName("Minha Música.mp3")).toEqual({ artist: "Artista desconhecido", title: "Minha Música" }));
 });
 
 describe("reordenar fila", () => {
