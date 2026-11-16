@@ -43,74 +43,81 @@ function Index() {
   const list = cards.data ? visibleCards(cards.data.cards, admin.data === true).filter(c => c.function_key !== "descobrir" && c.function_key !== "buscar") : [];
   const ownTracks = p.tracks.filter(t => t.source !== "demo");
   return (
-    <div className="home-purple space-y-7 pb-3">
-      <header className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/70 px-3 py-3 shadow-sm backdrop-blur">
-        <div className="flex min-w-0 items-center gap-3"><img src={playerIcon} alt="" width={44} height={44} className="size-11 rounded-2xl ring-1 ring-primary/20" /><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Seu som. Seu espaço.</p><h1 className="truncate text-xl font-extrabold tracking-tight">Player <span className="text-primary">Music</span></h1></div></div>
-        <div className="flex shrink-0 items-center gap-1"><Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button><Button asChild size="icon" variant="ghost"><Link to="/configuracoes" aria-label="Configurações"><Settings /></Link></Button></div>
-      </header>
-      <section className="space-y-3"><div className="flex items-end justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Experiência de áudio</p><h2 className="text-xl font-extrabold tracking-tight">Tocando agora</h2></div><Link to="/player" className="text-xs font-semibold text-primary">Abrir player ↗</Link></div><HomePlayer variant="showcase" /></section>
-      <section className="grid gap-3 sm:grid-cols-2" aria-label="Opções de reprodução">
-        <article className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
-          <div className="mb-3 flex items-center gap-3"><div className="flex size-11 items-center justify-center rounded-xl bg-primary/15 text-primary"><FolderOpen className="size-6" /></div><div><h2 className="font-bold">Reproduzir por pasta</h2><p className="text-xs text-muted-foreground">{folders.length} pasta(s) disponível(is)</p></div></div>
-          <p className="mb-3 text-sm text-muted-foreground">Escolha uma pasta e toque todas as músicas em sequência ou aleatoriamente.</p>
-          <Button asChild className="w-full rounded-full"><Link to="/pastas"><FolderOpen /> Abrir pastas</Link></Button>
-        </article>
-        <article className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
-          <div className="mb-3 flex items-center gap-3"><div className="flex size-11 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400"><Smartphone className="size-6" /></div><div><h2 className="font-bold">Músicas do celular</h2><p className="text-xs text-muted-foreground">{phoneTracks.length} música(s) vinculada(s)</p></div></div>
-          <p className="mb-3 text-sm text-muted-foreground">Reproduza a coleção importada do armazenamento do seu aparelho.</p>
-          {phoneTracks.length > 0 ? <div className="grid grid-cols-2 gap-2"><Button className="rounded-full" onClick={() => p.playList(phoneTracks.map(t => t.id), undefined, "ordered")}><Play /> Reproduzir</Button><Button variant="secondary" className="rounded-full" onClick={() => p.playList(phoneTracks.map(t => t.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button></div> : <Button asChild variant="outline" className="w-full rounded-full"><Link to="/importar"><Smartphone /> Vincular músicas</Link></Button>}
-        </article>
-      </section>
-      <section id="gerenciar-musicas" className="space-y-4 rounded-3xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
-        <div>
-          <h2 className="text-xl font-extrabold">Gerenciar músicas</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Faça tudo por aqui, sem precisar entrar em uma conta. Suas músicas ficam salvas neste aparelho.</p>
+    <div className="home-streaming space-y-8 pb-5">
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <img src={playerIcon} alt="" width={46} height={46} className="size-11 rounded-2xl object-cover shadow-lg ring-1 ring-primary/25" />
+          <div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Sua trilha sonora</p><h1 className="truncate text-2xl font-extrabold tracking-tight">Player Music</h1></div>
         </div>
+        <div className="flex shrink-0 items-center gap-1">
+          <Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button>
+          <Button asChild size="icon" variant="ghost"><Link to="/configuracoes" aria-label="Configurações"><Settings /></Link></Button>
+        </div>
+      </header>
+
+      <section className="streaming-feature relative overflow-hidden rounded-[1.8rem] border border-primary/25 bg-card shadow-2xl shadow-black/20">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-transparent" />
+        <div className="relative space-y-4 p-4 sm:p-6">
+          <div className="flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Destaque</p><h2 className="mt-1 text-xl font-extrabold sm:text-2xl">Sua música em primeiro lugar</h2></div><Link to="/player" className="rounded-full border border-primary/30 bg-background/60 px-3 py-2 text-xs font-semibold text-primary">Abrir player ↗</Link></div>
+          <HomePlayer variant="showcase" />
+        </div>
+      </section>
+
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Acesso rápido">
+        <Link to="/biblioteca" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Headphones /></span><span><b>Biblioteca</b><small>{ownTracks.length} músicas</small></span></Link>
+        <Link to="/pastas" className="streaming-shortcut"><span className="streaming-shortcut-icon"><FolderOpen /></span><span><b>Pastas</b><small>{folders.length} pastas</small></span></Link>
+        <Link to="/favoritos" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Heart /></span><span><b>Favoritos</b><small>Suas preferidas</small></span></Link>
+        <Link to="/playlists" className="streaming-shortcut"><span className="streaming-shortcut-icon"><ListMusic /></span><span><b>Playlists</b><small>{p.prefs.playlists.length} listas</small></span></Link>
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex items-end justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-primary">Sua coleção</p><h2 className="text-xl font-extrabold">Ouça novamente</h2></div><Link to="/biblioteca" className="text-xs font-semibold text-primary">Ver biblioteca ›</Link></div>
+        <div className="flex gap-3 overflow-x-auto pb-2">
+          {(category==="Favoritas" ? ownTracks.filter(t=>p.isFavorite(t.id)) : category==="Recentes" ? [...ownTracks].reverse() : category==="Artistas" ? ownTracks.filter((t,i)=>ownTracks.findIndex(x=>x.artist===t.artist)===i) : ownTracks).slice(0,10).map(track => (
+            <button key={track.id} onClick={() => p.playList(ownTracks.map(t=>t.id),track.id)} className="streaming-track-card group w-36 shrink-0 text-left sm:w-40">
+              <div className="relative overflow-hidden rounded-2xl"><Cover seed={track.id} className="aspect-square w-full rounded-none" /><span className="absolute bottom-2 right-2 flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground opacity-100 shadow-lg"><Play className="size-4 fill-current" /></span></div>
+              <p className="mt-2 truncate text-sm font-bold">{track.title}</p><p className="truncate text-xs text-muted-foreground">{track.artist}</p>
+            </button>
+          ))}
+          {!ownTracks.length && <Link to="/importar" className="flex min-h-44 min-w-full items-center justify-center rounded-2xl border border-dashed border-primary/35 bg-card/60 p-5 text-center text-sm text-muted-foreground">Adicione músicas para montar sua coleção.</Link>}
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-1">{["Todas","Favoritas","Recentes","Artistas"].map(item => <button key={item} onClick={() => setCategory(item)} className={cn("shrink-0 rounded-full border px-4 py-2 text-xs font-semibold",category===item?"border-primary bg-primary text-primary-foreground":"border-border bg-card text-muted-foreground")}>{item}</button>)}</div>
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex items-end justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-primary">Feitas por você</p><h2 className="text-xl font-extrabold">Suas playlists</h2></div><Link to="/playlists" className="text-xs font-semibold text-primary">Ver todas ›</Link></div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {p.prefs.playlists.slice(0,6).map(pl => <article key={pl.id} className="streaming-playlist-card">
+            <Link to="/playlists/$id" params={{id:pl.id}} className="block min-w-0"><img src={artwork} alt="" loading="lazy" className="aspect-square w-full rounded-xl object-cover"/><h3 className="mt-2 truncate text-sm font-bold">{pl.name}</h3><p className="text-xs text-muted-foreground">{pl.trackIds.length} músicas</p></Link>
+            <Button size="icon" disabled={!pl.trackIds.some(id=>p.byId(id))} onClick={()=>p.playList(pl.trackIds.filter(id=>p.byId(id)))} aria-label={`Ouvir playlist ${pl.name}`} className="absolute bottom-3 right-3 size-9 rounded-full"><Play className="size-4 fill-current"/></Button>
+          </article>)}
+          <Link to="/playlists" className="flex aspect-square flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-primary/35 bg-card/50 p-4 text-center"><span className="flex size-12 items-center justify-center rounded-full bg-primary/15 text-primary"><Plus/></span><b className="text-sm">Criar playlist</b><small className="text-xs text-muted-foreground">Organize suas músicas</small></Link>
+        </div>
+      </section>
+
+      <section id="gerenciar-musicas" className="streaming-manage space-y-4 rounded-3xl border border-border bg-card p-4 shadow-lg sm:p-5">
+        <div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-primary">Organize sua coleção</p><h2 className="text-xl font-extrabold">Gerenciar músicas</h2><p className="mt-1 text-xs text-muted-foreground">Importe arquivos ou conecte músicas do celular.</p></div><Smartphone className="size-7 text-primary"/></div>
         <PhoneMusicSync />
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-sky-500/40 bg-sky-500/5 p-4 text-center">
-            <div><h3 className="font-bold">Adicionar músicas</h3><p className="mt-1 text-xs text-muted-foreground">Escolha uma ou várias músicas do celular.</p></div>
-            <ImportButton />
-          </div>
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-primary/25 bg-primary/5 p-4 text-center"><div className="flex size-11 items-center justify-center rounded-xl bg-primary/15 text-primary"><Plus/></div><div><h3 className="font-bold">Adicionar músicas</h3><p className="mt-1 text-xs text-muted-foreground">Escolha arquivos do aparelho.</p></div><ImportButton/></div>
           <FolderImport />
         </div>
+        <div className="flex flex-wrap gap-2"><Button asChild variant="outline" className="flex-1"><Link to="/importar"><Smartphone/> Central de importação</Link></Button><Button asChild variant="outline" className="flex-1"><Link to="/armazenamento"><FolderOpen/> Armazenamento</Link></Button></div>
       </section>
-      <section className="relative min-h-40 overflow-hidden rounded-[1.7rem] border border-primary/25 bg-gradient-to-br from-primary/15 via-card to-card p-5 shadow-sm">
-        <img src={artwork} alt="" className="absolute inset-y-0 right-0 h-full w-2/3 object-cover opacity-25 [mask-image:linear-gradient(to_right,transparent,black)]" />
-        <div className="relative z-10 max-w-[70%]"><p className="mb-2 text-[10px] font-bold uppercase tracking-[.22em] text-primary">Sua música, seu momento</p><h2 className="text-2xl font-extrabold leading-tight">Descubra suas músicas favoritas</h2><p className="mt-2 text-xs text-muted-foreground">Sua coleção sempre com você.</p><Button asChild size="sm" className="mt-4 rounded-full"><Link to="/biblioteca"><Headphones className="size-4" /> Começar a ouvir</Link></Button></div>
-      </section>
+
       <section className="space-y-3">
-        <div className="flex items-center justify-between"><h2 className="text-lg font-bold">Categorias</h2><Link to="/biblioteca" className="text-xs font-semibold text-primary">Ver todas</Link></div>
-        <div className="flex gap-2 overflow-x-auto pb-1">{["Todas","Favoritas","Recentes","Artistas"].map((item) => <button key={item} onClick={() => setCategory(item)} className={cn("shrink-0 rounded-full border px-4 py-2 text-xs font-semibold transition-colors", category===item ? "border-primary bg-primary text-primary-foreground shadow-glow" : "border-border bg-card/70 text-muted-foreground")}>{item}</button>)}</div>
+        <div className="flex items-end justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-primary">Explore o aplicativo</p><h2 className="text-xl font-extrabold">Todas as ferramentas</h2></div></div>
+        <nav aria-label="Funções do app" className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+          {cards.isPending ? Array.from({length:4},(_,i)=><Skeleton key={i} className="h-20"/>) : list.map(c=>{
+            if(!isFunctionKey(c.function_key)) return null;
+            const key=c.function_key; const Icon=ICONS[c.icon]??Music;
+            return <Button asChild variant="outline" key={c.id} className="h-auto min-h-20 justify-start gap-3 rounded-2xl border-border bg-card px-3 py-3 text-left shadow-sm hover:border-primary/45"><Link preload="intent" to={FUNCTIONS[key].route} aria-label={`${c.title}: ${c.description}`}><span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary"><Icon className="size-5"/></span><span className="min-w-0 whitespace-normal text-xs font-bold leading-snug">{c.title}</span></Link></Button>;
+          })}
+          <Button asChild variant="outline" className="h-auto min-h-20 justify-start gap-3 rounded-2xl border-border bg-card px-3 py-3"><Link to="/pastas"><span className="flex size-10 items-center justify-center rounded-xl bg-primary/12 text-primary"><FolderOpen/></span><span className="text-xs font-bold">Pastas salvas</span></Link></Button>
+        </nav>
       </section>
-      <section className="space-y-3">
-        <div className="flex items-center justify-between"><h2 className="text-lg font-bold">Músicas populares</h2><Link to="/biblioteca" className="text-xs font-semibold text-primary">Ver todas ›</Link></div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {(category==="Favoritas" ? ownTracks.filter(t=>p.isFavorite(t.id)) : category==="Recentes" ? [...ownTracks].reverse() : category==="Artistas" ? ownTracks.filter((t,i)=>ownTracks.findIndex(x=>x.artist===t.artist)===i) : ownTracks).slice(0,6).map((track) => <button key={track.id} onClick={() => p.playList(ownTracks.map(t=>t.id),track.id)} className="group min-w-0 text-left">
-            <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-card shadow-sm"><Cover seed={track.id} className="aspect-square w-full rounded-none" /><span className="absolute bottom-2 right-2 flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground opacity-95 shadow-glow"><Play className="size-4 fill-current" /></span></div>
-            <p className="mt-2 truncate text-sm font-bold">{track.title}</p><p className="truncate text-xs text-muted-foreground">{track.artist}</p>
-          </button>)}
-          {!ownTracks.length && <Link to="/importar" className="col-span-2 rounded-2xl border border-dashed border-primary/40 p-5 text-sm text-muted-foreground">Adicione suas músicas para montar sua coleção.</Link>}
-        </div>
-      </section>
-      {cards.data && cards.data.source !== "servidor" && <p role="status" className="flex items-center gap-2 text-xs text-muted-foreground"><AlertTriangle className="size-4 shrink-0" /> Cartões salvos no aparelho.</p>}
-      <nav aria-label="Funções do app" className="grid grid-cols-4 gap-2 sm:gap-3">
-        {cards.isPending ? Array.from({length: 4}, (_, i) => <Skeleton key={i} className="h-28" />) : list.map(c => {
-          if (!isFunctionKey(c.function_key)) return null;
-          const key = c.function_key;
-          const Icon = ICONS[c.icon] ?? Music;
-          return <Button asChild variant="outline" key={c.id} className="h-auto min-h-28 flex-col gap-2 whitespace-normal rounded-2xl border border-border/80 bg-card px-1 py-3 text-center shadow-sm transition-all hover:border-primary/50 hover:bg-accent/40 sm:px-3"><Link preload="intent" to={FUNCTIONS[key].route} aria-label={`${c.title}: ${c.description}`}><Icon className="size-7! text-primary" /><span className="w-full break-words text-[11px] font-bold leading-snug sm:text-sm">{c.title}</span></Link></Button>;
-        })}
-        <Button asChild variant="outline" className="neon-tile h-auto min-h-28 flex-col gap-2 whitespace-normal px-1 py-3 text-center"><Link to="/pastas"><FolderOpen className="size-7! text-primary" /><span className="text-[11px] font-bold sm:text-sm">Pastas</span><span className="text-[10px] text-muted-foreground">{folders.length} salvas</span></Link></Button>
-      </nav>
-      <section>
-        <div className="mb-4 flex items-center justify-between gap-2"><h2 className="section-heading text-lg font-bold">Playlists favoritas</h2><Link to="/playlists" className="flex items-center gap-1 text-xs text-primary"><Plus className="size-4" /> Nova playlist</Link></div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {p.prefs.playlists.map(pl => <article key={pl.id} className="flex items-center gap-3 rounded-2xl border border-border/80 bg-card p-3 shadow-sm"><Link to="/playlists/$id" params={{id: pl.id}} className="flex min-w-0 flex-1 items-center gap-3"><img src={artwork} alt="" width={1024} height={1024} loading="lazy" className="size-18 rounded-lg object-cover" /><div className="min-w-0"><h3 className="truncate text-sm font-bold">{pl.name}</h3><p className="mt-1 text-xs text-muted-foreground">{pl.trackIds.length} músicas</p></div></Link><Button size="icon" disabled={!pl.trackIds.some(id => p.byId(id))} className="shrink-0 rounded-full" onClick={() => p.playList(pl.trackIds.filter(id => p.byId(id)))} aria-label={`Ouvir playlist ${pl.name}`}><Play className="fill-current" /></Button></article>)}
-          {!p.prefs.playlists.length && <Link to="/playlists" className="neon-tile flex items-center gap-4 rounded-lg border p-3"><img src={artwork} alt="" width={1024} height={1024} loading="lazy" className="size-20 rounded-lg object-cover" /><div><h3 className="font-bold">Minha primeira playlist</h3><span className="text-xs text-primary">Criar playlist ›</span></div></Link>}
-        </div>
-      </section>
-      <p className="pb-2 text-center text-xs font-semibold text-primary">Feito por Adevaldo Marques</p>
+      {cards.data && cards.data.source!=="servidor" && <p role="status" className="flex items-center gap-2 text-xs text-muted-foreground"><AlertTriangle className="size-4 shrink-0"/> Cartões salvos no aparelho.</p>}
+      <p className="pb-2 text-center text-xs font-semibold text-muted-foreground">Player Music · Feito por Adevaldo Marques</p>
     </div>
   );
 }
