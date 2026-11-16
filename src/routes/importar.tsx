@@ -4,6 +4,7 @@ import { FileMusic, FolderOpen, HardDrive, Layers3, Music2, Search, Zap } from "
 import { PageHeader } from "@/components/music/AppShell";
 import { ImportButton } from "@/components/music/ImportButton";
 import { FolderImport } from "@/components/music/FolderImport";
+import { PhoneMusicSync } from "@/components/music/PhoneMusicSync";
 import { TrackRow } from "@/components/music/TrackRow";
 import { usePlayer } from "@/lib/music/player-context";
 
@@ -50,6 +51,8 @@ function ImportarPage() {
           </div>
         </div>
       </section>
+
+      <PhoneMusicSync />
 
       <section className="grid gap-4 xl:grid-cols-2" aria-label="Métodos de importação">
         <div className="flex min-h-[330px] flex-col items-center justify-center rounded-3xl border border-sky-500/60 bg-gradient-to-br from-sky-500/10 via-card to-card p-6 text-center shadow-lg">
