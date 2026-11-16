@@ -5,6 +5,9 @@ import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArtistPhoto, HomePlayer } from "@/components/music/HomePlayer";
+import { PhoneMusicSync } from "@/components/music/PhoneMusicSync";
+import { ImportButton } from "@/components/music/ImportButton";
+import { FolderImport } from "@/components/music/FolderImport";
 import { Cover } from "@/components/music/Cover";
 import { cardsQuery } from "@/lib/cards-query";
 import { FUNCTIONS, ICONS, isFunctionKey, visibleCards } from "@/lib/cards";
@@ -46,6 +49,20 @@ function Index() {
         <div className="flex shrink-0 items-center gap-1"><Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button><Button asChild size="icon" variant="ghost"><Link to="/configuracoes" aria-label="Configurações"><Settings /></Link></Button></div>
       </header>
       <section className="space-y-2"><h2 className="text-lg font-bold">Tocando agora</h2><HomePlayer variant="classic" /></section>
+      <section id="gerenciar-musicas" className="space-y-4 rounded-3xl border border-primary/40 bg-card/70 p-4 shadow-lg sm:p-5">
+        <div>
+          <h2 className="text-xl font-extrabold">Gerenciar músicas</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Faça tudo por aqui, sem precisar entrar em uma conta. Suas músicas ficam salvas neste aparelho.</p>
+        </div>
+        <PhoneMusicSync />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-sky-500/40 bg-sky-500/5 p-4 text-center">
+            <div><h3 className="font-bold">Adicionar músicas</h3><p className="mt-1 text-xs text-muted-foreground">Escolha uma ou várias músicas do celular.</p></div>
+            <ImportButton />
+          </div>
+          <FolderImport />
+        </div>
+      </section>
       <section className="relative min-h-40 overflow-hidden rounded-[1.7rem] border border-primary/30 bg-gradient-to-r from-primary/25 via-card to-background p-5 shadow-[0_12px_36px_-18px_hsl(var(--primary)/.65)]">
         <img src={artwork} alt="" className="absolute inset-y-0 right-0 h-full w-2/3 object-cover opacity-45 [mask-image:linear-gradient(to_right,transparent,black)]" />
         <div className="relative z-10 max-w-[70%]"><p className="mb-2 text-[10px] font-bold uppercase tracking-[.22em] text-primary">Sua música, seu momento</p><h2 className="text-2xl font-extrabold leading-tight">Descubra suas músicas favoritas</h2><p className="mt-2 text-xs text-muted-foreground">Sua coleção sempre com você.</p><Button asChild size="sm" className="mt-4 rounded-full"><Link to="/biblioteca"><Headphones className="size-4" /> Começar a ouvir</Link></Button></div>
