@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
-import { ArrowLeft, Moon, Smartphone, SkipForward, History } from "lucide-react";
+import { ArrowLeft, Moon, Smartphone, SkipForward, History, Database, FolderOpen } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { usePlayer } from "@/lib/music/player-context";
@@ -37,6 +37,12 @@ function ConfigPage() {
         <p className="text-muted-foreground">
           Use o Player Music sem criar conta e sem fazer login. Importe suas músicas, organize por pastas e cantores, escolha capas, monte playlists e salve favoritos. Os arquivos e as preferências ficam neste aparelho; mantenha as músicas importadas localmente para ouvir sem internet.
         </p>
+      </section>
+
+      <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
+        <div className="flex items-center gap-2"><Database className="size-5 text-primary" /><h2 className="text-lg font-bold">Armazenamento de músicas</h2></div>
+        <p className="text-muted-foreground">Veja o espaço realmente usado pelos arquivos importados e encontre todas as suas pastas em um só lugar.</p>
+        <Link to="/armazenamento" className="flex items-center justify-between rounded-xl border border-primary/30 p-3 font-semibold hover:bg-accent/50"><span className="flex items-center gap-2"><FolderOpen className="size-5 text-primary" /> Abrir armazenamento e pastas</span><span className="text-primary">›</span></Link>
       </section>
 
       <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4 text-sm">
