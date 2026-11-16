@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, Headphones, Smartphone, ListMusic, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArtistPhoto, HomePlayer } from "@/components/music/HomePlayer";
+import { HomePlayer } from "@/components/music/HomePlayer";
 import { PhoneMusicSync } from "@/components/music/PhoneMusicSync";
 import { ImportButton } from "@/components/music/ImportButton";
 import { FolderImport } from "@/components/music/FolderImport";
@@ -42,7 +42,6 @@ function Index() {
   const phoneTracks = p.tracks.filter(t => t.source !== "demo" && (t.folderName === "Músicas do celular" || t.path?.startsWith("Músicas do celular/")));
   const list = cards.data ? visibleCards(cards.data.cards, admin.data === true).filter(c => c.function_key !== "descobrir" && c.function_key !== "buscar") : [];
   const ownTracks = p.tracks.filter(t => t.source !== "demo");
-  const artists = [...new Set(ownTracks.map(t => t.artist))];
   return (
     <div className="home-purple space-y-6">
       <header className="flex items-center justify-between gap-2">
@@ -129,10 +128,6 @@ function Index() {
         })}
         <Button asChild variant="outline" className="neon-tile h-auto min-h-28 flex-col gap-2 whitespace-normal px-1 py-3 text-center"><Link to="/pastas"><FolderOpen className="size-7! text-primary" /><span className="text-[11px] font-bold sm:text-sm">Pastas</span><span className="text-[10px] text-muted-foreground">{folders.length} salvas</span></Link></Button>
       </nav>
-      <section className="space-y-3">
-        <div className="mb-4 flex items-center justify-between gap-2"><h2 className="section-heading text-lg font-bold">Seus artistas</h2><Link to="/buscar" className="text-xs text-primary">Ver todos ›</Link></div>
-        {artists.length ? <div className="flex gap-4 overflow-x-auto pb-2">{artists.map(artist => { const tracks = ownTracks.filter(t => t.artist === artist); const first = tracks[0]; return <Button key={artist} variant="ghost" className="h-auto w-20 shrink-0 flex-col gap-2 whitespace-normal p-0 hover:bg-transparent" onClick={() => first && p.playList(tracks.map(t => t.id), first.id)} aria-label={`Ouvir ${artist}`}><div className="w-18 overflow-hidden rounded-full border-2 border-primary shadow-[0_0_14px_-5px_hsl(var(--primary)/0.8)]"><ArtistPhoto artist={artist} fallbackSeed={artist} /></div><span className="w-full break-words text-center text-xs">{artist}</span></Button>; })}</div> : <Button asChild variant="outline" className="w-full justify-start gap-3"><Link to="/importar"><Plus /> Adicionar minhas músicas</Link></Button>}
-      </section>
       <section>
         <div className="mb-4 flex items-center justify-between gap-2"><h2 className="section-heading text-lg font-bold">Playlists favoritas</h2><Link to="/playlists" className="flex items-center gap-1 text-xs text-primary"><Plus className="size-4" /> Nova playlist</Link></div>
         <div className="grid gap-3 sm:grid-cols-2">
