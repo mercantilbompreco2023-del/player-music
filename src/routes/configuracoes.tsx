@@ -3,9 +3,6 @@ import { ArrowLeft, Moon, Smartphone, SkipForward, History } from "lucide-react"
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { usePlayer } from "@/lib/music/player-context";
-import { LibraryBackup } from "@/components/music/LibraryBackup";
-import { useSession } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/configuracoes")({
   head: () => ({
@@ -23,7 +20,6 @@ export const Route = createFileRoute("/configuracoes")({
 
 function ConfigPage() {
   const p = usePlayer();
-  const { user } = useSession();
   const hydrated = useHydrated();
   const hasMediaSession = hydrated && "mediaSession" in navigator;
   return (
@@ -92,7 +88,6 @@ function ConfigPage() {
         <p className="text-muted-foreground">O Player Music não exige login para ouvir arquivos locais. Recursos de administração e armazenamento privado na nuvem não fazem parte do uso offline.</p>
       </section>
 
-      <section className="space-y-3"><h2 className="text-lg font-bold">Músicas na minha conta</h2>{user ? <LibraryBackup /> : <Button asChild variant="outline"><Link to="/auth">Entrar para salvar minhas músicas na conta</Link></Button>}</section>
       <p className="text-center text-xs text-muted-foreground">Player Music · aplicativo Android</p>
       <p className="pb-2 text-center text-xs font-semibold tracking-wide text-primary">Feito por Adevaldo Marques</p>
     </div>
