@@ -102,7 +102,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-white/5 p-5 shadow-2xl shadow-black/10 lg:flex">
+      <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border/70 p-5 shadow-2xl shadow-black/15 lg:flex">
         <Link to="/" className="mb-10 flex items-center gap-3 rounded-2xl border border-border/70 bg-card/60 px-3 py-3 pt-3 shadow-sm">
           <img src={playerMusicIcon} alt="" width={44} height={44} className="size-11 rounded-lg" />
           <span className="font-display text-xl font-bold tracking-tight">Player <span className="text-primary">Music</span></span>
@@ -141,11 +141,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-2xl pb-safe lg:hidden">
         {!onPlayer && <MiniPlayer />}
-        <nav className="glass mx-2 mb-2 grid grid-cols-5 rounded-2xl border border-border/80 shadow-2xl shadow-black/20">
+        <nav className="glass mx-2 mb-2 grid grid-cols-5 rounded-[1.4rem] border border-border/80 p-1.5 shadow-2xl shadow-black/25">
           {MOBILE_NAV.map(({ to, label, icon: Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
             return (
-              <Link key={to} to={to} className={cn("flex min-w-0 flex-col items-center gap-1 rounded-xl py-2.5 text-[10px] font-semibold transition-colors", active ? "bg-primary/12 text-primary" : "text-muted-foreground")}>
+              <Link key={to} to={to} className={cn("flex min-w-0 flex-col items-center gap-1 rounded-xl py-2.5 text-[10px] font-semibold transition-all", active ? "bg-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-muted")}>
                 <Icon className="size-5" />
                 {label}
               </Link>
@@ -162,12 +162,12 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 export function PageHeader({ title, action, description }: { title: string; action?: ReactNode; description?: string }) {
   return (
-    <header className="mb-5 space-y-2">
+    <header className="mb-6 space-y-3 rounded-2xl border border-border/60 bg-card/45 p-4 shadow-sm backdrop-blur-sm sm:p-5">
       <Link to="/" className="inline-flex items-center gap-1 rounded-full py-1 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" /> Início
       </Link>
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold">{title}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
         {action}
       </div>
       {description && <p className="text-sm text-muted-foreground">{description}</p>}
