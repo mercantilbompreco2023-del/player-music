@@ -1,4 +1,5 @@
 import { readCustomFolders } from "./folders";
+import { requestPersistentStorage } from "./storage";
 
 const COVER_DB = "player-music-folder-covers";
 const COVER_STORE = "covers";
@@ -28,6 +29,8 @@ async function writeCover(key: string, blob: Blob | null): Promise<boolean> {
 
 export async function saveCustomFolderCover(folderName: string, file: File): Promise<boolean> {
   if (!file.type.startsWith("image/")) return false;
+  // Solicita ao Android/WebView que mantenha as capas locais entre reinicializações.
+  await requestPersistentStorage();
   try {
     const bitmap = await createImageBitmap(file);
     const canvas = document.createElement("canvas");
