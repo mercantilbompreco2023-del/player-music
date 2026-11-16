@@ -210,9 +210,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setResumePlaybackState(resumeEnabled.current);
     setPrefs(loadPrefs());
     const localPromise = fileStore.all()
-      .then((files) => files
+      .then(async (files) => Promise.all(files
         .sort((a, b) => b.addedAt - a.addedAt)
-        .map((f) => ({ id: f.id, title: f.title, artist: f.artist, album: f.album, duration: f.duration, fingerprint: f.fingerprint, path: f.path, folderName: f.folderName, storagePath: f.storagePath, url: URL.createObjectURL(f.blob), source: "local" as const })))
+        .map(async (f) => {
+          const tags = await readAudioTags(f.blob).catch(() => ({}));
+          const fileMeta = parseFileName(f.path?.split("/").pop() || f.title || "");
+          const title = tags.title || fileMeta.title || f.title;
+          const artist = tags.artist || (fileMeta.artist !== "Artista desconhecido" ? fileMeta.artist : f.artist || "Artista desconhecido");
+          const album = tags.album || f.album;
+          if (title !== f.title || artist !== f.artist || album !== f.album) {
+            await fileStore.put({ ...f, title, artist, album });
+          }
+          return { id: f.id, title, artist, album, duration: f.duration, fingerprint: f.fingerprint, path: f.path, folderName: f.folderName, storagePath: f.storagePath, url: URL.createObjectURL(f.blob), source: "local" as const };
+        })))
       .catch(() => {
         toast.error("Não foi possível abrir os arquivos salvos neste aparelho.");
         return [] as Track[];
