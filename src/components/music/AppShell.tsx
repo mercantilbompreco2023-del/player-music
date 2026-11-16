@@ -102,8 +102,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r p-5 lg:flex">
-        <Link to="/" className="mb-10 flex items-center gap-3 px-2 pt-2">
+      <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-white/5 p-5 shadow-2xl shadow-black/10 lg:flex">
+        <Link to="/" className="mb-10 flex items-center gap-3 rounded-2xl border border-border/70 bg-card/60 px-3 py-3 pt-3 shadow-sm">
           <img src={playerMusicIcon} alt="" width={44} height={44} className="size-11 rounded-lg" />
           <span className="font-display text-xl font-bold tracking-tight">Player <span className="text-primary">Music</span></span>
         </Link>
@@ -141,11 +141,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-2xl pb-safe lg:hidden">
         {!onPlayer && <MiniPlayer />}
-        <nav className="glass mx-2 mb-2 grid grid-cols-5 rounded-2xl border border-primary/30">
+        <nav className="glass mx-2 mb-2 grid grid-cols-5 rounded-2xl border border-border/80 shadow-2xl shadow-black/20">
           {MOBILE_NAV.map(({ to, label, icon: Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
             return (
-              <Link key={to} to={to} className={cn("flex min-w-0 flex-col items-center gap-1 py-2.5 text-[10px] font-medium", active ? "text-primary" : "text-muted-foreground")}>
+              <Link key={to} to={to} className={cn("flex min-w-0 flex-col items-center gap-1 rounded-xl py-2.5 text-[10px] font-semibold transition-colors", active ? "bg-primary/12 text-primary" : "text-muted-foreground")}>
                 <Icon className="size-5" />
                 {label}
               </Link>
