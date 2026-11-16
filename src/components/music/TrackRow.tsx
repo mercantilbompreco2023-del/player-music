@@ -53,8 +53,19 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
         </div>
       </button>
       <span className="hidden text-xs tabular-nums text-muted-foreground sm:block">{formatTime(track.duration)}</span>
+      {track.source !== "demo" && (
+        <button
+          onClick={() => track.source === "local" ? void p.saveTrackLocally(track.id) : void p.saveTrackLocally(track.id)}
+          aria-label={track.source === "local" ? `${track.title} já está salva no aplicativo` : `Salvar ${track.title} no aplicativo para ouvir offline`}
+          title={track.source === "local" ? "Salva no aplicativo — funciona sem login" : "Salvar no aplicativo para ouvir sem internet"}
+          className={cn("flex items-center gap-1 rounded-full px-2 py-2 text-xs font-semibold", track.source === "local" ? "bg-primary/10 text-primary" : "bg-primary text-primary-foreground hover:opacity-90")}
+        >
+          {track.source === "local" ? <Check className="size-4" /> : <Download className="size-4" />}
+          <span className="hidden sm:inline">{track.source === "local" ? "Salva no app" : "Salvar no app"}</span>
+        </button>
+      )}
       {track.source === "local" && (
-        <button onClick={() => void p.saveTrackToCloud(track.id).catch(() => {})} aria-label={`Salvar ${track.title} na nuvem`} title="Salvar na nuvem" className="rounded-full p-2 text-primary hover:bg-primary/10">
+        <button onClick={() => void p.saveTrackToCloud(track.id).catch(() => {})} aria-label={`Fazer backup de ${track.title} na nuvem (opcional)`} title="Backup na nuvem (opcional; exige conta)" className="rounded-full p-2 text-muted-foreground hover:bg-primary/10 hover:text-primary">
           <CloudUpload className="size-5" />
         </button>
       )}
@@ -85,7 +96,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
           </DropdownMenuSub>}
 
           {track.source !== "demo" && <DropdownMenuItem onClick={() => void p.shareTrack(track.id).catch(() => {})}><Share2 /> Compartilhar música</DropdownMenuItem>}
-          {track.source !== "demo" && <DropdownMenuItem onClick={() => void p.saveTrackLocally(track.id)}><Download /> Salvar no aparelho</DropdownMenuItem>}
+          {track.source !== "demo" && <DropdownMenuItem onClick={() => void p.saveTrackLocally(track.id)}><Download /> Salvar no aplicativo para ouvir offline</DropdownMenuItem>}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger><Plus className="mr-2 size-4" /> Adicionar à playlist</DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -107,7 +118,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
             <DropdownMenuItem onClick={() => p.removeFromPlaylist(playlistId, track.id)}><X /> Remover da playlist</DropdownMenuItem>
           )}
           {track.source === "local" && (
-            <DropdownMenuItem onClick={() => void p.saveTrackToCloud(track.id).catch(() => {})}><CloudUpload /> Salvar na conta e manter no aparelho</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void p.saveTrackToCloud(track.id).catch(() => {})}><CloudUpload /> Fazer backup na nuvem (opcional; exige conta)</DropdownMenuItem>
           )}
           {(track.source === "local" || track.source === "cloud") && (
             <>
