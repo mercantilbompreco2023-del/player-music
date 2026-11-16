@@ -19,7 +19,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
   const fav = p.isFavorite(track.id);
   const folderName = track.folderName || track.path?.replace(/\\/g, "/").split("/")[0];
   return (
-    <div className={cn("group flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-accent/60", active && "bg-accent/70")}>
+    <div className={cn("group flex items-center gap-3 rounded-2xl border border-border/60 bg-card/65 px-3 py-3 shadow-sm transition-all hover:border-primary/35 hover:bg-accent/45 hover:shadow-md", active && "border-primary/50 bg-primary/8 shadow-md")}>
       {selectable && (
         <button
           type="button"
