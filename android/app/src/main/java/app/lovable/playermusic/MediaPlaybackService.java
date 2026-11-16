@@ -52,6 +52,10 @@ public class MediaPlaybackService extends Service {
         String a = intent.getAction();
         if ("play".equals(a) || "pause".equals(a) || "next".equals(a) || "previous".equals(a)) {
             MediaPlaybackPlugin.emit(a);
+            if ("play".equals(a) || "pause".equals(a)) {
+                android.content.SharedPreferences prefs = getSharedPreferences(PlayerMusicWidgetProvider.PREFS, MODE_PRIVATE);
+                PlayerMusicWidgetProvider.refresh(this, prefs.getString(PlayerMusicWidgetProvider.TITLE, "Player Music"), prefs.getString(PlayerMusicWidgetProvider.ARTIST, ""), "play".equals(a));
+            }
             return START_NOT_STICKY;
         }
         String title = intent.getStringExtra("title");
@@ -70,6 +74,7 @@ public class MediaPlaybackService extends Service {
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, dur)
             .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, artwork).build());
+        PlayerMusicWidgetProvider.refresh(this, title, artist, playing);
         session.setPlaybackState(new PlaybackStateCompat.Builder()
             .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_PLAY_PAUSE
                 | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
