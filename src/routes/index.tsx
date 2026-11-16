@@ -45,6 +45,7 @@ function Index() {
         <div className="flex min-w-0 items-center gap-3"><img src={playerIcon} alt="" width={44} height={44} className="size-10 rounded-xl" /><div className="min-w-0"><p className="text-xs text-muted-foreground">Bom dia!</p><h1 className="truncate text-xl font-extrabold">Player <span className="text-primary">Music</span></h1></div></div>
         <div className="flex shrink-0 items-center gap-1"><Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button><Button asChild size="icon" variant="ghost"><Link to="/configuracoes" aria-label="Configurações"><Settings /></Link></Button></div>
       </header>
+      <section className="space-y-2"><h2 className="text-lg font-bold">Tocando agora</h2><HomePlayer variant="classic" /></section>
       <section className="relative min-h-40 overflow-hidden rounded-[1.7rem] border border-primary/30 bg-gradient-to-r from-primary/25 via-card to-background p-5 shadow-[0_12px_36px_-18px_hsl(var(--primary)/.65)]">
         <img src={artwork} alt="" className="absolute inset-y-0 right-0 h-full w-2/3 object-cover opacity-45 [mask-image:linear-gradient(to_right,transparent,black)]" />
         <div className="relative z-10 max-w-[70%]"><p className="mb-2 text-[10px] font-bold uppercase tracking-[.22em] text-primary">Sua música, seu momento</p><h2 className="text-2xl font-extrabold leading-tight">Descubra suas músicas favoritas</h2><p className="mt-2 text-xs text-muted-foreground">Sua coleção sempre com você.</p><Button asChild size="sm" className="mt-4 rounded-full"><Link to="/biblioteca"><Headphones className="size-4" /> Começar a ouvir</Link></Button></div>
@@ -109,7 +110,6 @@ function Index() {
           {!p.prefs.playlists.length && <Link to="/playlists" className="neon-tile flex items-center gap-4 rounded-lg border p-3"><img src={artwork} alt="" width={1024} height={1024} loading="lazy" className="size-20 rounded-lg object-cover" /><div><h3 className="font-bold">Minha primeira playlist</h3><span className="text-xs text-primary">Criar playlist ›</span></div></Link>}
         </div>
       </section>
-      <section className="space-y-2"><h2 className="text-lg font-bold">Tocando agora</h2><HomePlayer variant="classic" /></section>
       <p className="pb-2 text-center text-xs font-semibold text-primary">Feito por Adevaldo Marques</p>
     </div>
   );
