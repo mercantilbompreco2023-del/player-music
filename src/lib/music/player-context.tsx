@@ -173,6 +173,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   useEffect(() => { try { setAutoNextState(localStorage.getItem("player-music-auto-next") !== "false"); } catch { /* padrão */ } }, []);
   const setAutoNext = useCallback((enabled: boolean) => { setAutoNextState(enabled); try { localStorage.setItem("player-music-auto-next", String(enabled)); } catch { /* preferência opcional */ } }, []);
   const [backgroundPreferenceReady, setBackgroundPreferenceReady] = useState(false);
+  const [backgroundArtwork, setBackgroundArtwork] = useState<{ base64: string; mime: string } | undefined>();
   useEffect(() => {
     try { setBackgroundPlaybackState(localStorage.getItem("player-music-background-playback") !== "false"); } catch { /* mantém ativado por padrão */ }
     setBackgroundPreferenceReady(true);
@@ -489,7 +490,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }, [isPlaying, duration, Math.floor(currentTime)]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Capa da música enviada à notificação e à tela bloqueada do Android.
-  const [backgroundArtwork, setBackgroundArtwork] = useState<{ base64: string; mime: string } | undefined>();
   useEffect(() => {
     let active = true;
     setBackgroundArtwork(undefined);
