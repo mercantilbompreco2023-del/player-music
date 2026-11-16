@@ -5,6 +5,8 @@ import { DEMO_TRACKS } from "./catalog";
 import { moveItem, nextIndex, parseFileName, prevIndex, shuffleQueue } from "./queue";
 import { nativeMedia } from "./native-media";
 import { nativeFolder } from "./native-folder";
+import { trackVisualStore } from "./track-visual";
+import { loadArtistFolderCover } from "./folder-covers";
 import { supabase } from "@/integrations/supabase/client";
 import { defaultPrefs, fileStore, loadFolderHints, loadPrefs, requestPersistentStorage, saveFolderHints, savePrefs, type Prefs } from "./storage";
 import { trackKey } from "./backup";
@@ -70,6 +72,15 @@ export function usePlayer() {
   const c = useContext(Ctx);
   if (!c) throw new Error("usePlayer fora do PlayerProvider");
   return c;
+}
+
+async function imageBlobToBase64(blob: Blob): Promise<string> {
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let binary = "";
+  for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+  }
+  return btoa(binary);
 }
 
 function probeDuration(url: string, signal?: AbortSignal): Promise<number | undefined> {
@@ -476,6 +487,38 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   }, [isPlaying, duration, Math.floor(currentTime)]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Capa da música enviada à notificação e à tela bloqueada do Android.
+  const [backgroundArtwork, setBackgroundArtwork] = useState<{ base64: string; mime: string } | undefined>();
+  useEffect(() => {
+    let active = true;
+    setBackgroundArtwork(undefined);
+    if (!current) return () => { active = false; };
+    void (async () => {
+      let blob: Blob | undefined;
+      try {
+        const saved = await trackVisualStore.get(current.fingerprint ?? current.id);
+        if (saved?.kind === "image") blob = saved.blob;
+      } catch { /* tenta a foto da pasta do cantor */ }
+      if (!blob) {
+        let coverUrl: string | null = null;
+        try {
+          coverUrl = await loadArtistFolderCover(current.artist);
+          if (coverUrl) {
+            const response = await fetch(coverUrl);
+            if (response.ok) blob = await response.blob();
+          }
+        } catch { /* a capa é opcional */ }
+        finally { if (coverUrl) URL.revokeObjectURL(coverUrl); }
+      }
+      if (!active || !blob || blob.size > 1024 * 1024 || !blob.type.startsWith("image/")) return;
+      try {
+        const base64 = await imageBlobToBase64(blob);
+        if (active) setBackgroundArtwork({ base64, mime: blob.type });
+      } catch { /* a reprodução continua sem capa */ }
+    })();
+    return () => { active = false; };
+  }, [current?.id, current?.artist, current?.fingerprint]);
+
   // Serviço de mídia nativo (somente no APK Android)
   const actionsRef = useRef({ toggle, next, prev, isPlaying });
   actionsRef.current = { toggle, next, prev, isPlaying };
@@ -493,9 +536,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (!nativeMedia || !backgroundPreferenceReady) return;
     if (!backgroundPlayback || !current) { void nativeMedia.stop().catch(() => {}); return; }
     void nativeMedia
-      .update({ title: current.title, artist: current.artist, isPlaying, position: currentTime, duration })
+      .update({ title: current.title, artist: current.artist, isPlaying, position: currentTime, duration, artworkBase64: backgroundArtwork?.base64, artworkMime: backgroundArtwork?.mime })
       .catch(() => {});
-  }, [backgroundPlayback, backgroundPreferenceReady, current?.id, isPlaying, Math.floor(currentTime), Math.floor(duration)]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [backgroundPlayback, backgroundPreferenceReady, current?.id, isPlaying, Math.floor(currentTime), Math.floor(duration), backgroundArtwork]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => { if (nativeMedia) void nativeMedia.stop().catch(() => {}); }, []);
 
   const localRef = useRef<Track[]>([]);
