@@ -4,4 +4,5 @@
     <string name="title_activity_main">Player Music</string>
     <string name="package_name">app.lovable.playermusic</string>
     <string name="custom_url_scheme">app.lovable.playermusic</string>
+    <string name="player_music_widget_description">Controles do Player Music na tela inicial</string>
 </resources>
