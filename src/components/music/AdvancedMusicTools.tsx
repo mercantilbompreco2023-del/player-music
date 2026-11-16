@@ -152,7 +152,7 @@ export function AdvancedMusicTools() {
 
       <section className="space-y-2 rounded-2xl border border-dashed p-4">
         <div className="flex items-center gap-2"><Smartphone className="size-5 text-primary" /><h2 className="font-bold">Widget na tela inicial do Android</h2></div>
-        <p className="text-sm text-muted-foreground">Ainda precisa de um componente nativo Android App Widget e integração com o serviço de reprodução. Não é possível instalar esse widget apenas pela página do player; não vou apresentar um atalho web como se fosse um widget Android.</p>
+        <p className="text-sm text-muted-foreground">O widget nativo já foi adicionado ao projeto Android, com nome da faixa e botões de anterior, tocar/pausar e próxima. Depois de instalar o APK 1.24, mantenha pressionada a tela inicial do celular, abra Widgets e procure Player Music para adicionar. Os controles dependem do aplicativo e da sessão de reprodução estarem ativos.</p>
       </section>
     </div>
   );
