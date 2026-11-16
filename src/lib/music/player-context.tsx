@@ -736,7 +736,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
     try {
       const response = await fetch(track.url);
-      if (!response.ok) throw new Error("Não foi possível baixar a música. Entre novamente na conta e tente outra vez.");
+      if (!response.ok) throw new Error("Não foi possível baixar a música para este aparelho. Confira a conexão e tente novamente.");
       const blob = await response.blob();
       await fileStore.put({ ...track, blob, addedAt: Date.now() });
       const url = URL.createObjectURL(blob);
