@@ -11,7 +11,7 @@ import { trackKey } from "./backup";
 import { mergeSavedTracks } from "./saved-tracks";
 import { availablePlayback, clearPlaybackMemory, loadPlaybackMemory, savePlaybackMemory } from "./playback-memory";
 import type { Playlist, RepeatMode, Track } from "./types";
-import { audioMime, fingerprint, formatProblem, type ImportItem, type ImportProgress, type ImportReport } from "./import";
+import { audioMime, fingerprint, formatProblem, readAudioTags, type ImportItem, type ImportProgress, type ImportReport } from "./import";
 
 interface PlayerCtx {
   ready: boolean;
@@ -113,7 +113,7 @@ async function fetchCloudTracks(userId: string): Promise<Track[]> {
     return [{
       id: typeof meta["fingerprint"] === "string" ? `cloud-${meta["fingerprint"]}` : `cloud-${entry.path}`,
       title: typeof meta["title"] === "string" ? meta["title"] : name.replace(/\.[^.]+$/, ""),
-      artist: typeof meta["artist"] === "string" ? meta["artist"] : "Biblioteca na nuvem",
+      artist: typeof meta["artist"] === "string" ? meta["artist"] : "Biblioteca na nuvem",\n      album: typeof meta["album"] === "string" ? meta["album"] : undefined,
       duration: typeof meta["duration"] === "number" ? meta["duration"] : undefined,
       fingerprint: typeof meta["fingerprint"] === "string" ? meta["fingerprint"] : undefined,
       path: typeof meta["originalPath"] === "string" ? meta["originalPath"] : undefined,
@@ -199,7 +199,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const localPromise = fileStore.all()
       .then((files) => files
         .sort((a, b) => b.addedAt - a.addedAt)
-        .map((f) => ({ id: f.id, title: f.title, artist: f.artist, duration: f.duration, fingerprint: f.fingerprint, path: f.path, folderName: f.folderName, storagePath: f.storagePath, url: URL.createObjectURL(f.blob), source: "local" as const })))
+        .map((f) => ({ id: f.id, title: f.title, artist: f.artist, album: f.album, duration: f.duration, fingerprint: f.fingerprint, path: f.path, folderName: f.folderName, storagePath: f.storagePath, url: URL.createObjectURL(f.blob), source: "local" as const })))
       .catch(() => {
         toast.error("Não foi possível abrir os arquivos salvos neste aparelho.");
         return [] as Track[];
@@ -597,7 +597,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       const { error: uploadError } = await supabase.storage.from("player-music").upload(storagePath, response, {
         upsert: true,
         contentType: response.type || "application/octet-stream",
-        metadata: { title: track.title, artist: track.artist, duration: track.duration, fingerprint: track.fingerprint, originalPath: track.path },
+        metadata: { title: track.title, artist: track.artist, album: track.album, duration: track.duration, fingerprint: track.fingerprint, originalPath: track.path },
       });
       if (uploadError) throw uploadError;
       if (stored) await fileStore.put({ ...stored, storagePath });
