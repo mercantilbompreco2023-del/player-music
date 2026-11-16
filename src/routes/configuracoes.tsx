@@ -3,6 +3,7 @@ import { ArrowLeft, Moon, Smartphone, SkipForward, History, Database, FolderOpen
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { usePlayer } from "@/lib/music/player-context";
+import { AdvancedMusicTools } from "@/components/music/AdvancedMusicTools";
 
 export const Route = createFileRoute("/configuracoes")({
   head: () => ({
