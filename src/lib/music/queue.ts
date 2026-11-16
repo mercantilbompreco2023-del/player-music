@@ -28,10 +28,16 @@ export function shuffleQueue(ids: string[], currentId: string | null, rand: () =
 
 /** "Artista - Título.mp3" → { artist, title } */
 export function parseFileName(name: string): { title: string; artist: string } {
-  const base = name.replace(/\.[^.]+$/, "").replace(/_/g, " ").trim();
-  const parts = base.split(" - ");
-  if (parts.length >= 2) return { artist: parts[0]!.trim(), title: parts.slice(1).join(" - ").trim() };
-  return { title: base || "Sem título", artist: "Artista desconhecido" };
+  const base = name.replace(/\.[^.]+$/, "").replace(/_/g, " ").replace(/\s+/g, " ").trim();
+  // Remove prefixos comuns de faixa: "01 - ", "01. ", "1_".
+  const cleaned = base.replace(/^\s*\d{1,3}\s*(?:[-._)]\s*|\s+)/, "").trim() || base;
+  const parts = cleaned.split(/\s+-\s+/);
+  if (parts.length >= 2) {
+    const artist = parts[0]!.trim();
+    const title = parts.slice(1).join(" - ").trim();
+    if (artist && title) return { artist, title };
+  }
+  return { title: cleaned || "Faixa sem nome", artist: "Artista desconhecido" };
 }
 
 export function matchesSearch(t: { title: string; artist: string }, q: string): boolean {
