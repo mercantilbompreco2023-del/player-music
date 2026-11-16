@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, Headphones } from "lucide-react";
+import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, Headphones, Smartphone, ListMusic, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArtistPhoto, HomePlayer } from "@/components/music/HomePlayer";
@@ -39,6 +39,7 @@ function Index() {
   const admin = useIsAdmin(user?.id);
   const cards = useQuery(cardsQuery);
   const folders = savedFolders(p.tracks);
+  const phoneTracks = p.tracks.filter(t => t.source !== "demo" && (t.folderName === "Músicas do celular" || t.path?.startsWith("Músicas do celular/")));
   const list = cards.data ? visibleCards(cards.data.cards, admin.data === true).filter(c => c.function_key !== "descobrir" && c.function_key !== "buscar") : [];
   const ownTracks = p.tracks.filter(t => t.source !== "demo");
   const artists = [...new Set(ownTracks.map(t => t.artist))];
@@ -49,6 +50,18 @@ function Index() {
         <div className="flex shrink-0 items-center gap-1"><Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button><Button asChild size="icon" variant="ghost"><Link to="/configuracoes" aria-label="Configurações"><Settings /></Link></Button></div>
       </header>
       <section className="space-y-2"><h2 className="text-lg font-bold">Tocando agora</h2><HomePlayer variant="classic" /></section>
+      <section className="grid gap-3 sm:grid-cols-2" aria-label="Opções de reprodução">
+        <article className="rounded-2xl border border-primary/40 bg-card/80 p-4 shadow-sm">
+          <div className="mb-3 flex items-center gap-3"><div className="flex size-11 items-center justify-center rounded-xl bg-primary/15 text-primary"><FolderOpen className="size-6" /></div><div><h2 className="font-bold">Reproduzir por pasta</h2><p className="text-xs text-muted-foreground">{folders.length} pasta(s) disponível(is)</p></div></div>
+          <p className="mb-3 text-sm text-muted-foreground">Escolha uma pasta e toque todas as músicas em sequência ou aleatoriamente.</p>
+          <Button asChild className="w-full rounded-full"><Link to="/pastas"><FolderOpen /> Abrir pastas</Link></Button>
+        </article>
+        <article className="rounded-2xl border border-emerald-500/40 bg-emerald-500/5 p-4 shadow-sm">
+          <div className="mb-3 flex items-center gap-3"><div className="flex size-11 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400"><Smartphone className="size-6" /></div><div><h2 className="font-bold">Músicas do celular</h2><p className="text-xs text-muted-foreground">{phoneTracks.length} música(s) vinculada(s)</p></div></div>
+          <p className="mb-3 text-sm text-muted-foreground">Reproduza a coleção importada do armazenamento do seu aparelho.</p>
+          {phoneTracks.length > 0 ? <div className="grid grid-cols-2 gap-2"><Button className="rounded-full" onClick={() => p.playList(phoneTracks.map(t => t.id), undefined, "ordered")}><Play /> Reproduzir</Button><Button variant="secondary" className="rounded-full" onClick={() => p.playList(phoneTracks.map(t => t.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button></div> : <Button asChild variant="outline" className="w-full rounded-full"><Link to="/importar"><Smartphone /> Vincular músicas</Link></Button>}
+        </article>
+      </section>
       <section id="gerenciar-musicas" className="space-y-4 rounded-3xl border border-primary/40 bg-card/70 p-4 shadow-lg sm:p-5">
         <div>
           <h2 className="text-xl font-extrabold">Gerenciar músicas</h2>
