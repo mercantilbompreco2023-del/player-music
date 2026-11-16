@@ -590,7 +590,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         }
         knownFingerprintsRef.current = known;
       }
-      const known = knownFingerprintsRef.current;
+      const known = knownFingerprintsRef.current!;
       // Solicita persistência uma vez por lote, não uma vez por faixa.
       await requestPersistentStorage().catch(() => false);
       let processed = 0;
