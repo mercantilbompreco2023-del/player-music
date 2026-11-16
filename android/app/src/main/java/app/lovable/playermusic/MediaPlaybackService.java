@@ -5,6 +5,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
@@ -55,11 +58,18 @@ public class MediaPlaybackService extends Service {
         String artist = intent.getStringExtra("artist");
         boolean playing = intent.getBooleanExtra("playing", false);
         long pos = intent.getLongExtra("position", 0), dur = intent.getLongExtra("duration", 0);
+        Bitmap artwork = null;
+        String artworkBase64 = intent.getStringExtra("artworkBase64");
+        if (artworkBase64 != null && !artworkBase64.isEmpty() && artworkBase64.length() < 1400000) {
+            try { artwork = BitmapFactory.decodeByteArray(Base64.decode(artworkBase64, Base64.DEFAULT), 0, Base64.decode(artworkBase64, Base64.DEFAULT).length); }
+            catch (IllegalArgumentException ignored) { artwork = null; }
+        }
 
         session.setMetadata(new MediaMetadataCompat.Builder()
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, dur).build());
+            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, dur)
+            .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, artwork).build());
         session.setPlaybackState(new PlaybackStateCompat.Builder()
             .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_PLAY_PAUSE
                 | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
@@ -70,6 +80,7 @@ public class MediaPlaybackService extends Service {
         Notification n = new NotificationCompat.Builder(this, CHANNEL)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title).setContentText(artist)
+            .setLargeIcon(artwork)
             .setContentIntent(content)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(playing)
