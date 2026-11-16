@@ -2,7 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ChevronDown, FolderOpen, Heart, ListMusic, Music2, Pause, Play, Plus, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Cover } from "@/components/music/Cover";
-import { CustomFolderCover } from "@/components/music/CustomFolderCover";
+import { CustomFolderCover } from "@/components/music/CustomFolderCover";\nimport { TrackVisual } from "@/components/music/TrackVisual";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/music/player-context";
 import { formatTime } from "@/lib/music/queue";
@@ -47,9 +47,9 @@ function PlayerPage() {
       </div>
       <div className="flex flex-col items-center gap-6 px-2 pt-5 text-center">
         <div className="w-[68vw] max-w-[300px] overflow-hidden rounded-full border-[7px] border-primary/25 bg-card shadow-[0_0_42px_-12px_hsl(var(--primary)/.8)] [&_img]:!rounded-full">
-          <CustomFolderCover artistName={t.artist} editable fallbackSeed={t.id} className="w-full rounded-full" />
+          <TrackVisual track={t} fallback={<CustomFolderCover artistName={t.artist} editable fallbackSeed={t.id} className="w-full rounded-full" />} />
         </div>
-        <div className="flex w-full items-center gap-3 text-left"><div className="min-w-0 flex-1"><h1 className="truncate text-2xl font-extrabold leading-tight">{t.title}</h1><p className="mt-1 truncate text-base text-muted-foreground">{t.artist}</p>{t.license && <p className="mt-1 truncate text-xs text-muted-foreground">{t.license}</p>}</div><button onClick={() => p.toggleFavorite(t.id)} aria-label={fav ? "Remover dos favoritos" : "Favoritar"} className="rounded-full border border-primary/30 p-3"><Heart className={cn("size-7", fav && "fill-primary text-primary")} /></button></div>
+        <div className="flex w-full items-center gap-3 text-left"><div className="min-w-0 flex-1"><h1 className="line-clamp-2 break-words text-2xl font-extrabold leading-tight">{t.title?.trim() || t.path?.split("/").pop()?.replace(/\\.[^.]+$/, "") || "Faixa sem nome"}</h1><p className="mt-1 truncate text-base text-muted-foreground">{t.artist}</p>{t.license && <p className="mt-1 truncate text-xs text-muted-foreground">{t.license}</p>}</div><button onClick={() => p.toggleFavorite(t.id)} aria-label={fav ? "Remover dos favoritos" : "Favoritar"} className="rounded-full border border-primary/30 p-3"><Heart className={cn("size-7", fav && "fill-primary text-primary")} /></button></div>
       </div>
       <div aria-label="Visualização animada da música" className="flex h-9 items-center justify-center gap-[3px] overflow-hidden px-4">
         {Array.from({ length: 32 }, (_, i) => <span key={i} className="w-[5px] max-w-[2.2%] rounded-full bg-gradient-to-t from-fuchsia-500 via-primary to-cyan-400 shadow-[0_0_9px_hsl(var(--primary)/.65)]" style={{ height: `${8 + ((i * 17 + 13) % 25)}px`, transformOrigin: "center", animation: `pm-wave ${0.55 + (i % 7) * 0.13}s ease-in-out ${i * 0.035}s infinite` }} />)}
