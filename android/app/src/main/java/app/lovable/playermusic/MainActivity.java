@@ -10,6 +10,7 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(MediaPlaybackPlugin.class);
         registerPlugin(FolderPickerPlugin.class);
+        registerPlugin(PhoneMusicLibraryPlugin.class);
         registerPlugin(LibraryExportPlugin.class);
         super.onCreate(savedInstanceState);
 
