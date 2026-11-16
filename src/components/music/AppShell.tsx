@@ -117,8 +117,17 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Link>
             );
           })}
+          <Link to="/pastas" className={cn("flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors", pathname.startsWith("/pastas") ? "bg-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
+            <FolderOpen className="size-5" /> Pastas
+          </Link>
+          <Link to="/favoritos" className={cn("flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors", pathname.startsWith("/favoritos") ? "bg-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
+            <Heart className="size-5" /> Favoritos
+          </Link>
           <Link to="/importar" className={cn("flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors", pathname === "/importar" ? "bg-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
             <Library className="size-5" /> Importar músicas
+          </Link>
+          <Link to="/configuracoes" className={cn("flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors", pathname.startsWith("/configuracoes") ? "bg-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
+            <Settings2 className="size-5" /> Configurações
           </Link>
         </nav>
         <div className="mt-auto rounded-2xl border bg-card/70 p-4">
