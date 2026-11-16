@@ -27,7 +27,7 @@ export function ImportButton({ variant = "default" }: { variant?: "default" | "s
       />
       <Button variant={variant} className="rounded-full" disabled={busy} onClick={() => ref.current?.click()}>
         {busy ? <Loader2 className="animate-spin" /> : <Upload />}
-        Importar músicas
+        Importar e salvar no app
       </Button>
     </>
   );
