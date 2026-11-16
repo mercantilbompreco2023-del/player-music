@@ -673,52 +673,42 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }, [updatePrefs]);
 
   const shareTrack = useCallback(async (id: string) => {
-    let track = localRef.current.find((item) => item.id === id);
+    const track = localRef.current.find((item) => item.id === id);
     if (!track || track.source === "demo") {
       toast.error("Só é possível compartilhar músicas adicionadas por você.");
       return;
     }
-    const { data: auth, error: authError } = await supabase.auth.getUser();
-    if (authError || !auth.user) {
-      toast.error("Entre na sua conta para enviar a música à nuvem e gerar o link.");
-      throw new Error("Entre na sua conta para compartilhar músicas.");
-    }
-    if (track.source === "local") {
-      await saveTrackToCloud(id);
-      const stored = (await fileStore.all()).find((item) => item.id === id);
-      const extension = (stored?.path ?? track.path ?? track.title).match(/\\.([a-z0-9]{2,5})$/i)?.[1]?.toLowerCase() ?? "audio";
-      const fingerprintKey = (track.fingerprint ?? id).replace(/[^a-z0-9_-]/gi, "").slice(0, 48);
-      track = { ...track, storagePath: stored?.storagePath ?? `${auth.user.id}/${fingerprintKey}.${extension}` };
-    }
-    if (!track.storagePath) {
-      toast.error("Esta música ainda não está salva na nuvem.");
-      return;
-    }
-    const { data, error } = await supabase.storage.from("player-music").createSignedUrl(track.storagePath, 60 * 60 * 24 * 30, {
-      download: false,
-    });
-    if (error || !data?.signedUrl) {
-      toast.error(error?.message ?? "Não foi possível criar o link da música.");
-      throw error ?? new Error("Link indisponível.");
-    }
-    const shareUrl = data.signedUrl;
-    const shareData = { title: track.title, text: `Ouça "${track.title}" — ${track.artist} no Player Music`, url: shareUrl };
     try {
-      if (typeof navigator !== "undefined" && navigator.share && (!navigator.canShare || navigator.canShare({ url: shareUrl }))) {
-        await navigator.share(shareData);
-      } else if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success("Link da música copiado. Envie pelo WhatsApp!");
-      } else {
-        window.prompt("Copie o link para compartilhar a música:", shareUrl);
+      const stored = (await fileStore.all()).find((item) => item.id === id);
+      let blob: Blob;
+      if (stored?.blob) blob = stored.blob;
+      else {
+        const response = await fetch(track.url);
+        if (!response.ok) throw new Error("Não foi possível abrir o arquivo de áudio.");
+        blob = await response.blob();
       }
+      const cleanName = (track.title || "musica").replace(/[\\/:*?"<>|]/g, "_").slice(0, 90);
+      const extension = (stored?.path ?? track.path ?? track.title).match(/\\.([a-z0-9]{2,5})$/i)?.[1]?.toLowerCase() ?? (blob.type.includes("mpeg") ? "mp3" : "audio");
+      const file = new File([blob], `${cleanName}.${extension}`, { type: blob.type || "audio/mpeg" });
+      if (typeof navigator !== "undefined" && navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+        await navigator.share({ title: track.title, text: `Compartilhando "${track.title}" — ${track.artist}`, files: [file] });
+        toast.success("Música compartilhada. Não precisa entrar em uma conta.");
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = file.name;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      toast.info("O arquivo foi baixado. Anexe-o à conversa para compartilhar.");
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") return;
-      toast.error("Não foi possível compartilhar o link.");
+      const message = error instanceof Error ? error.message : "Falha ao compartilhar música.";
+      toast.error(message);
       throw error;
     }
-  }, [saveTrackToCloud]);
-
+  }, []);
   const saveTrackLocally = useCallback(async (id: string) => {
     const track = localRef.current.find((t) => t.id === id);
     if (!track || track.source === "demo") return;
