@@ -20,14 +20,15 @@ import java.io.InputStream;
 
 /** Acesso somente leitura à biblioteca de áudio indexada pelo Android. */
 @CapacitorPlugin(name = "PhoneMusicLibrary", permissions = {
-    @Permission(alias = "audio", strings = { Manifest.permission.READ_MEDIA_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE })
+    @Permission(alias = "audio", strings = { Manifest.permission.READ_MEDIA_AUDIO }),
+    @Permission(alias = "legacyAudio", strings = { Manifest.permission.READ_EXTERNAL_STORAGE })
 })
 public class PhoneMusicLibraryPlugin extends Plugin {
     @PluginMethod
     public void list(PluginCall call) {
         String permission = Build.VERSION.SDK_INT >= 33 ? Manifest.permission.READ_MEDIA_AUDIO : Manifest.permission.READ_EXTERNAL_STORAGE;
         if (ContextCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissionForAlias("audio", call, "afterAudioPermission");
+            requestPermissionForAlias(Build.VERSION.SDK_INT >= 33 ? "audio" : "legacyAudio", call, "afterAudioPermission");
             return;
         }
         listGranted(call);
@@ -75,7 +76,7 @@ public class PhoneMusicLibraryPlugin extends Plugin {
                 byte[] buffer = new byte[65536]; int count;
                 while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
                 JSObject result = new JSObject(); result.put("data", Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)); call.resolve(result);
-            } catch (Exception e) { call.reject("Não foi possível ler esta música.", e); }
+            } catch (Exception e) { call.reject("Falha ao ler o arquivo de áudio: " + (e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()), "AUDIO_FILE_READ_FAILED", e); }
         }).start();
     }
 }
