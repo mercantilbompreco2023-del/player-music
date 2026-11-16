@@ -370,3 +370,27 @@ body {
 [class*="from-violet-"], [class*="from-purple-"], [class*="from-fuchsia-"] { --tw-gradient-from: rgb(27 105 76 / 28%) var(--tw-gradient-from-position) !important; }
 [class*="via-violet-"], [class*="via-purple-"], [class*="via-fuchsia-"] { --tw-gradient-to: rgb(27 105 76 / 0%) var(--tw-gradient-to-position) !important; --tw-gradient-stops: var(--tw-gradient-from), rgb(20 55 43 / 18%) var(--tw-gradient-via-position), var(--tw-gradient-to) !important; }
 [class*="to-violet-"], [class*="to-purple-"], [class*="to-fuchsia-"] { --tw-gradient-to: #101815 var(--tw-gradient-to-position) !important; }
+
+
+/* Streaming-style home dashboard layout */
+.home-streaming { --stream-border: color-mix(in oklab, var(--border) 78%, var(--primary) 22%); }
+.home-streaming .streaming-feature { background: linear-gradient(145deg, color-mix(in oklab, var(--card) 92%, var(--primary) 8%), var(--card) 72%); }
+.home-streaming .streaming-shortcut {
+  display:flex; min-width:0; align-items:center; gap:.7rem; padding:.85rem .7rem;
+  border:1px solid var(--stream-border); border-radius:1.15rem;
+  background:linear-gradient(145deg,color-mix(in oklab,var(--card) 94%,var(--primary) 6%),var(--card));
+  box-shadow:0 10px 24px -24px #000; transition:transform .18s ease,border-color .18s ease;
+}
+.home-streaming .streaming-shortcut:active { transform:scale(.97); }
+.home-streaming .streaming-shortcut-icon { display:flex; width:2.6rem;height:2.6rem;flex:none;align-items:center;justify-content:center;border-radius:.9rem;background:color-mix(in oklab,var(--primary) 14%,var(--card));color:var(--primary); }
+.home-streaming .streaming-shortcut b,.home-streaming .streaming-shortcut small { display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.home-streaming .streaming-shortcut b { font-size:.78rem; }
+.home-streaming .streaming-shortcut small { margin-top:.15rem;color:var(--muted-foreground);font-size:.65rem; }
+.home-streaming .streaming-track-card { min-width:0; }
+.home-streaming .streaming-track-card > div { box-shadow:0 12px 28px -22px #000; }
+.home-streaming .streaming-playlist-card { position:relative;min-width:0;border:1px solid var(--stream-border);border-radius:1.1rem;padding:.55rem .55rem 3.1rem;background:color-mix(in oklab,var(--card) 94%,var(--primary) 6%); }
+.home-streaming .streaming-manage { background:linear-gradient(145deg,color-mix(in oklab,var(--card) 95%,var(--primary) 5%),var(--card)); }
+@media (min-width: 1024px) {
+  .home-streaming { gap:2.1rem; }
+  .home-streaming .streaming-feature { padding:.35rem; }
+}
