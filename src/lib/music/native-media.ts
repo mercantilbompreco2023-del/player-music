@@ -3,7 +3,7 @@ import { Capacitor, registerPlugin, type PluginListenerHandle } from "@capacitor
 export type NativeAction = "play" | "pause" | "next" | "previous";
 
 interface MediaPlaybackPlugin {
-  update(o: { title: string; artist: string; isPlaying: boolean; position: number; duration: number }): Promise<void>;
+  update(o: { title: string; artist: string; isPlaying: boolean; position: number; duration: number; artworkBase64?: string; artworkMime?: string }): Promise<void>;
   stop(): Promise<void>;
   addListener(e: "action", cb: (d: { action: NativeAction }) => void): Promise<PluginListenerHandle>;
 }
