@@ -103,7 +103,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       )}
 
       <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border/70 p-5 shadow-2xl shadow-black/15 lg:flex">
-        <Link to="/" className="mb-10 flex items-center gap-3 rounded-2xl border border-border/70 bg-card/60 px-3 py-3 pt-3 shadow-sm">
+        <Link to="/" className="mb-8 flex items-center gap-3 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-card px-3 py-3 shadow-lg shadow-black/10">
           <img src={playerMusicIcon} alt="" width={44} height={44} className="size-11 rounded-lg" />
           <span className="font-display text-xl font-bold tracking-tight">Player <span className="text-primary">Music</span></span>
         </Link>
