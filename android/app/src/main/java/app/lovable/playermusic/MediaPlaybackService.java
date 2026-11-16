@@ -61,7 +61,7 @@ public class MediaPlaybackService extends Service {
         Bitmap artwork = null;
         String artworkBase64 = intent.getStringExtra("artworkBase64");
         if (artworkBase64 != null && !artworkBase64.isEmpty() && artworkBase64.length() < 1400000) {
-            try { artwork = BitmapFactory.decodeByteArray(Base64.decode(artworkBase64, Base64.DEFAULT), 0, Base64.decode(artworkBase64, Base64.DEFAULT).length); }
+            try { byte[] imageBytes = Base64.decode(artworkBase64, Base64.DEFAULT); artwork = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length); }
             catch (IllegalArgumentException ignored) { artwork = null; }
         }
 
