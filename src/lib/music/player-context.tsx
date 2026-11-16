@@ -124,7 +124,8 @@ async function fetchCloudTracks(userId: string): Promise<Track[]> {
     return [{
       id: typeof meta["fingerprint"] === "string" ? `cloud-${meta["fingerprint"]}` : `cloud-${entry.path}`,
       title: typeof meta["title"] === "string" ? meta["title"] : name.replace(/\.[^.]+$/, ""),
-      artist: typeof meta["artist"] === "string" ? meta["artist"] : "Biblioteca na nuvem",\n      album: typeof meta["album"] === "string" ? meta["album"] : undefined,
+      artist: typeof meta["artist"] === "string" ? meta["artist"] : "Biblioteca na nuvem",
+      album: typeof meta["album"] === "string" ? meta["album"] : undefined,
       duration: typeof meta["duration"] === "number" ? meta["duration"] : undefined,
       fingerprint: typeof meta["fingerprint"] === "string" ? meta["fingerprint"] : undefined,
       path: typeof meta["originalPath"] === "string" ? meta["originalPath"] : undefined,
@@ -460,7 +461,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
     const ms = navigator.mediaSession;
-    ms.metadata = current ? new MediaMetadata({ title: current.title, artist: current.artist, album: "Player Music" }) : null;
+    ms.metadata = current ? new MediaMetadata({ title: current.title, artist: current.artist, album: "Player Music", artwork: backgroundArtwork ? [{ src: `data:${backgroundArtwork.mime};base64,${backgroundArtwork.base64}`, sizes: "512x512", type: backgroundArtwork.mime }] : [] }) : null;
     const set = (a: MediaSessionAction, h: MediaSessionActionHandler | null) => {
       try {
         ms.setActionHandler(a, h);
@@ -473,7 +474,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     set("nexttrack", () => next());
     set("previoustrack", () => prev());
     set("seekto", (d) => d.seekTime !== undefined && seek(d.seekTime));
-  }, [current, toggle, next, prev, seek]);
+  }, [current, backgroundArtwork, toggle, next, prev, seek]);
 
   useEffect(() => {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
