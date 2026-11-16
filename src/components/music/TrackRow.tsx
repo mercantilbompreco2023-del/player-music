@@ -56,6 +56,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
           <CloudUpload className="size-5" />
         </button>
       )}
+      {track.source !== "demo" && <button onClick={() => void p.shareTrack(track.id).catch(() => {})} aria-label={`Compartilhar ${track.title}`} title="Compartilhar música" className="rounded-full p-2 text-primary hover:bg-primary/10"><Share2 className="size-5" /></button>}
       <button onClick={() => p.toggleFavorite(track.id)} aria-label={fav ? "Remover dos favoritos" : "Favoritar"} className="rounded-full p-2 text-muted-foreground hover:text-foreground">
         <Heart className={cn("size-5", fav && "fill-primary text-primary")} />
       </button>
