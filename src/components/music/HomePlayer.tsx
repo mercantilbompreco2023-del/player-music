@@ -168,6 +168,11 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
   };
   return (
     <section aria-label="Tocando agora" className={cn("neon-panel rounded-2xl border border-primary/60 p-3 sm:p-5", variant === "showcase" && "rounded-[2rem] bg-gradient-to-br from-fuchsia-950/50 via-card to-background p-4 shadow-[0_0_32px_-8px_hsl(var(--primary)/0.65)] sm:p-6")}>
+      {!!libraryTracks.length && <div className="mb-3 flex flex-wrap gap-2">
+        <Button size="sm" variant={p.autoNext ? "default" : "outline"} aria-pressed={p.autoNext} onClick={() => p.setAutoNext(!p.autoNext)} title="Avançar automaticamente quando a música terminar">
+          <SkipForward /> {p.autoNext ? "Próxima automática: ligada" : "Próxima automática: desligada"}
+        </Button>
+      </div>}
       <div className="mb-3 flex items-center justify-between gap-2">
         <span className="flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1.5 text-xs font-bold text-primary"><AudioLines className="size-4" /> {p.isPlaying ? "TOCANDO AGORA" : hasCurrent ? "REPRODUÇÃO PAUSADA" : previewTrack ? "MÚSICA DISPONÍVEL" : "SEU PLAYER"}</span>
         <div className="flex gap-1">
@@ -196,20 +201,7 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
           return <span key={index} className={cn("eq-bar w-1 rounded-full bg-gradient-to-t from-fuchsia-600 via-primary to-cyan-300 shadow-[0_0_9px_hsl(var(--primary)/0.7)]", !p.isPlaying && "animate-none opacity-40")} style={{ height: `${heights[index]}%`, animationDelay: `${index * 0.055}s`, animationDuration: `${0.55 + (index % 5) * 0.13}s` }} />;
         })}
       </div>
-      {!!libraryTracks.length && <div className="mt-3 flex flex-wrap gap-2">
-        <Button
-          size="sm"
-          variant={p.autoNext ? "default" : "outline"}
-          aria-pressed={p.autoNext}
-          onClick={() => p.setAutoNext(!p.autoNext)}
-          title="Avançar automaticamente quando a música terminar"
-        >
-          <SkipForward /> {p.autoNext ? "Próxima automática: ligada" : "Próxima automática: desligada"}
-        </Button>
-        <Button size="sm" variant="outline" onClick={() => { p.setAutoNext(true); p.playList(libraryTracks.map((track) => track.id), t?.id, "ordered"); }}><ListOrdered /> Tocar em sequência</Button>
-        {t && t.source !== "demo" && <Button size="sm" variant="outline" onClick={() => void p.saveTrackLocally(t.id)}><Download /> Salvar no aparelho</Button>}
-        {t && t.source === "local" && (user ? <Button size="sm" variant="outline" disabled={saving} onClick={() => { setSaving(true); void p.saveTrackToCloud(t.id).catch(() => {}).finally(() => setSaving(false)); }}><CloudUpload /> {saving ? "Salvando…" : "Salvar na conta"}</Button> : <Button size="sm" variant="outline" asChild><Link to="/auth"><CloudUpload /> Entrar para salvar na conta</Link></Button>)}
-      </div>}
+
       {t?.license && <p className="mt-3 text-[10px] text-muted-foreground">{t.license}</p>}
     </section>
   );
