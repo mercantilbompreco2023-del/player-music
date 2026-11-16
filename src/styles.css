@@ -213,3 +213,95 @@ main .sticky { backdrop-filter: blur(18px); }
 @media (prefers-reduced-motion: reduce) {
   main > div, main button, main section, main article { animation: none !important; transition: none !important; }
 }
+
+
+/* PREMIUM MODERN — complete interface system */
+:root { --radius: 1.1rem; }
+.dark {
+  --background: oklch(0.105 0.018 270);
+  --foreground: oklch(0.97 0.008 285);
+  --card: oklch(0.16 0.02 270);
+  --card-foreground: oklch(0.97 0.008 285);
+  --popover: oklch(0.18 0.022 270);
+  --popover-foreground: oklch(0.97 0.008 285);
+  --primary: oklch(0.75 0.15 285);
+  --primary-foreground: oklch(0.12 0.02 275);
+  --secondary: oklch(0.22 0.025 275);
+  --secondary-foreground: oklch(0.95 0.01 285);
+  --muted: oklch(0.2 0.02 275);
+  --muted-foreground: oklch(0.72 0.025 280);
+  --accent: oklch(0.25 0.05 285);
+  --accent-foreground: oklch(0.98 0.01 285);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 13%);
+  --ring: oklch(0.75 0.15 285);
+  --surface: oklch(0.14 0.02 275 / 0.92);
+  --glow: oklch(0.75 0.15 285);
+}
+body {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse 90% 36% at 50% -8%, color-mix(in oklab, var(--primary) 13%, transparent), transparent 72%),
+    linear-gradient(180deg, color-mix(in oklab, var(--background) 96%, #171326), var(--background) 45%);
+  background-attachment: fixed;
+}
+main { padding-bottom: max(9.5rem, calc(env(safe-area-inset-bottom) + 8.5rem)); }
+main h1 { letter-spacing: -.05em; }
+main h2 { letter-spacing: -.035em; }
+main section, main article {
+  border-color: color-mix(in oklab, var(--border) 72%, var(--primary) 28%);
+}
+main section[class*="bg-card"], main article[class*="bg-card"] {
+  box-shadow: 0 12px 34px -28px #000, inset 0 1px 0 color-mix(in oklab, white 4%, transparent);
+}
+main input, main textarea, main select {
+  min-height: 2.85rem;
+  border: 1px solid var(--border);
+  border-radius: .95rem;
+  background: color-mix(in oklab, var(--card) 86%, var(--background));
+}
+main input:focus, main textarea:focus, main select:focus {
+  border-color: var(--primary);
+  outline: 3px solid color-mix(in oklab, var(--primary) 18%, transparent);
+}
+main button:not(:disabled), main a { -webkit-tap-highlight-color: transparent; }
+main button:not(:disabled) { transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease; }
+main button:active:not(:disabled) { transform: scale(.975); }
+main button:focus-visible, main a:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+main .border-dashed { background: color-mix(in oklab, var(--card) 66%, transparent); }
+.home-purple { --glow: var(--primary); }
+.home-purple > header:first-child {
+  border-radius: 1.35rem;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--primary) 11%, var(--card)), var(--card) 68%);
+  box-shadow: 0 16px 38px -30px var(--primary);
+}
+.home-purple > section > article,
+.home-purple #gerenciar-musicas {
+  border-radius: 1.45rem;
+}
+.home-purple nav[aria-label="Funções do app"] > a,
+.home-purple nav[aria-label="Funções do app"] > button {
+  min-height: 6.5rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, color-mix(in oklab, var(--primary) 8%, var(--card)), var(--card));
+}
+.player-purple {
+  background:
+    radial-gradient(ellipse 85% 35% at 50% 0%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 80%),
+    linear-gradient(180deg, var(--card), var(--background));
+}
+.glass {
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  border-color: var(--border);
+  backdrop-filter: blur(24px) saturate(1.35);
+}
+@media (max-width: 640px) {
+  main { padding-top: 1rem; padding-left: 1rem; padding-right: 1rem; }
+  main h1.text-3xl { font-size: 1.8rem; line-height: 1.12; }
+  main section + section { margin-top: 1.15rem; }
+  .home-purple { gap: 1.35rem; }
+  .home-purple #gerenciar-musicas { padding: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  main *, .glass { animation: none !important; transition: none !important; }
+}
