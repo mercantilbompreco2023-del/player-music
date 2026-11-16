@@ -27,13 +27,13 @@ function ImportarPage() {
   const local = p.tracks.filter((t) => t.source === "local");
 
   return (
-    <div className="space-y-7">
+    <div className="import-page space-y-6">
       <PageHeader
         title="Importar músicas"
         description="Adicione suas músicas à biblioteca de forma rápida e segura."
       />
 
-      <section className="grid gap-4 xl:grid-cols-[1fr_auto] xl:items-center">
+      <section className="grid gap-4 rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card p-4 shadow-lg shadow-black/10 sm:p-6 xl:grid-cols-[1fr_auto] xl:items-center">
         <div className="flex items-center gap-4">
           <div className="hidden size-20 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-sky-500/25 to-violet-600/30 text-primary shadow-glow sm:flex">
             <FolderOpen className="size-11" />
@@ -43,7 +43,7 @@ function ImportarPage() {
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground sm:text-base">Escolha arquivos individuais ou uma pasta inteira, incluindo subpastas.</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 rounded-2xl border border-primary/50 bg-card px-5 py-3 shadow-glow">
+        <div className="flex items-center gap-4 rounded-2xl border border-primary/35 bg-background/60 px-5 py-3 shadow-sm">
           <Music2 className="size-9 text-primary" />
           <div>
             <p className="text-xs text-muted-foreground">Músicas importadas</p>
@@ -55,8 +55,8 @@ function ImportarPage() {
       <PhoneMusicSync />
 
       <section className="grid gap-4 xl:grid-cols-2" aria-label="Métodos de importação">
-        <div className="flex min-h-[330px] flex-col items-center justify-center rounded-3xl border border-sky-500/60 bg-gradient-to-br from-sky-500/10 via-card to-card p-6 text-center shadow-lg">
-          <div className="mb-4 flex size-20 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-400">
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/12 via-card to-card p-5 text-center shadow-xl shadow-black/10 sm:p-7">
+          <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-primary/15 text-primary ring-1 ring-primary/15">
             <FileMusic className="size-12" />
           </div>
           <h2 className="font-display text-xl font-bold">Importar músicas</h2>
@@ -65,12 +65,12 @@ function ImportarPage() {
             <ImportButton />
           </div>
         </div>
-        <div className="rounded-3xl border border-violet-500/60 bg-gradient-to-br from-violet-500/15 via-card to-card p-1 shadow-lg">
+        <div className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/12 via-card to-card p-1 shadow-xl shadow-black/10">
           <FolderImport />
         </div>
       </section>
 
-      <section className="grid gap-3 rounded-2xl border bg-card/80 p-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-3 rounded-3xl border border-border/80 bg-card/80 p-4 shadow-sm sm:grid-cols-2 xl:grid-cols-4">
         <Feature icon={<Search className="size-6 text-sky-400" />} title="Escaneia subpastas" text="Encontra músicas dentro das pastas selecionadas." />
         <Feature icon={<Layers3 className="size-6 text-sky-400" />} title="Evita duplicatas" text="Não adiciona novamente arquivos que já estão na biblioteca." />
         <Feature icon={<HardDrive className="size-6 text-sky-400" />} title="Biblioteca salva" text="Os arquivos importados ficam armazenados neste navegador." />
@@ -88,7 +88,7 @@ function ImportarPage() {
         {!p.ready ? (
           <p className="rounded-2xl border bg-card p-4 text-sm text-muted-foreground">Carregando biblioteca…</p>
         ) : local.length === 0 ? (
-          <div className="rounded-2xl border border-dashed bg-card/50 p-8 text-center">
+          <div className="rounded-3xl border border-dashed border-primary/35 bg-card/60 p-8 text-center">
             <Music2 className="mx-auto size-9 text-muted-foreground" />
             <p className="mt-3 font-semibold">Nenhuma música importada ainda</p>
             <p className="mt-1 text-sm text-muted-foreground">Escolha arquivos ou uma pasta para começar sua biblioteca.</p>
