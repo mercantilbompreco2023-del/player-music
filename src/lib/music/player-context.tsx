@@ -47,6 +47,7 @@ interface PlayerCtx {
   importFiles: (files: FileList | File[]) => Promise<ImportReport>;
   importItems: (items: ImportItem[], opts?: { signal?: AbortSignal; onProgress?: (p: ImportProgress) => void; quiet?: boolean }) => Promise<ImportReport>;
   saveTrackToCloud: (id: string) => Promise<void>;
+  shareTrack: (id: string) => Promise<void>;
   saveTrackLocally: (id: string) => Promise<void>;
   removeTrack: (id: string) => Promise<void>;
   toggleFavorite: (id: string) => void;
@@ -671,6 +672,53 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   }, [updatePrefs]);
 
+  const shareTrack = useCallback(async (id: string) => {
+    let track = localRef.current.find((item) => item.id === id);
+    if (!track || track.source === "demo") {
+      toast.error("Só é possível compartilhar músicas adicionadas por você.");
+      return;
+    }
+    const { data: auth, error: authError } = await supabase.auth.getUser();
+    if (authError || !auth.user) {
+      toast.error("Entre na sua conta para enviar a música à nuvem e gerar o link.");
+      throw new Error("Entre na sua conta para compartilhar músicas.");
+    }
+    if (track.source === "local") {
+      await saveTrackToCloud(id);
+      const stored = (await fileStore.all()).find((item) => item.id === id);
+      const extension = (stored?.path ?? track.path ?? track.title).match(/\\.([a-z0-9]{2,5})$/i)?.[1]?.toLowerCase() ?? "audio";
+      const fingerprintKey = (track.fingerprint ?? id).replace(/[^a-z0-9_-]/gi, "").slice(0, 48);
+      track = { ...track, storagePath: stored?.storagePath ?? `${auth.user.id}/${fingerprintKey}.${extension}` };
+    }
+    if (!track.storagePath) {
+      toast.error("Esta música ainda não está salva na nuvem.");
+      return;
+    }
+    const { data, error } = await supabase.storage.from("player-music").createSignedUrl(track.storagePath, 60 * 60 * 24 * 30, {
+      download: false,
+    });
+    if (error || !data?.signedUrl) {
+      toast.error(error?.message ?? "Não foi possível criar o link da música.");
+      throw error ?? new Error("Link indisponível.");
+    }
+    const shareUrl = data.signedUrl;
+    const shareData = { title: track.title, text: `Ouça "${track.title}" — ${track.artist} no Player Music`, url: shareUrl };
+    try {
+      if (typeof navigator !== "undefined" && navigator.share && (!navigator.canShare || navigator.canShare({ url: shareUrl }))) {
+        await navigator.share(shareData);
+      } else if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Link da música copiado. Envie pelo WhatsApp!");
+      } else {
+        window.prompt("Copie o link para compartilhar a música:", shareUrl);
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return;
+      toast.error("Não foi possível compartilhar o link.");
+      throw error;
+    }
+  }, [saveTrackToCloud]);
+
   const saveTrackLocally = useCallback(async (id: string) => {
     const track = localRef.current.find((t) => t.id === id);
     if (!track || track.source === "demo") return;
@@ -779,7 +827,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       wantPlay.current = true;
       setIndex(pos);
     },
-    importFiles, importItems, saveTrackToCloud, saveTrackLocally, removeTrack,
+    importFiles, importItems, saveTrackToCloud, shareTrack, saveTrackLocally, removeTrack,
     toggleFavorite: (id) =>
       updatePrefs((p) => ({ ...p, favorites: p.favorites.includes(id) ? p.favorites.filter((f) => f !== id) : [id, ...p.favorites] })),
     isFavorite: (id) => prefs.favorites.includes(id),
