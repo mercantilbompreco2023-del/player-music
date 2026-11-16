@@ -210,30 +210,36 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     try { resumeEnabled.current = localStorage.getItem("player-music-resume-playback") !== "false"; } catch { /* padrão */ }
     setResumePlaybackState(resumeEnabled.current);
     setPrefs(loadPrefs());
-    const localPromise = fileStore.all()
-      .then(async (files) => Promise.all(files
-        .sort((a, b) => b.addedAt - a.addedAt)
-        .map(async (f) => {
-          const tags = await readAudioTags(f.blob).catch(() => ({}));
-          const fileMeta = parseFileName(f.path?.split("/").pop() || f.title || "");
-          const title = tags.title || fileMeta.title || f.title;
-          const artist = tags.artist || (fileMeta.artist !== "Artista desconhecido" ? fileMeta.artist : f.artist || "Artista desconhecido");
-          const album = tags.album || f.album;
-          if (title !== f.title || artist !== f.artist || album !== f.album) {
-            await fileStore.put({ ...f, title, artist, album });
-          }
-          return { id: f.id, title, artist, album, duration: f.duration, fingerprint: f.fingerprint, path: f.path, folderName: f.folderName, storagePath: f.storagePath, url: URL.createObjectURL(f.blob), source: "local" as const };
-        })))
-      .catch(() => {
-        toast.error("Não foi possível abrir os arquivos salvos neste aparelho.");
-        return [] as Track[];
-      });
-    const cloudPromise = supabase.auth.getUser()
+    // Os metadados já são extraídos na importação. Reprocessar cada MP3 e
+    // regravar o IndexedDB a cada abertura bloqueava aparelhos com bibliotecas grandes.
+    // Carregue as cópias locais primeiro, sem aguardar rede/login.
+    let active = true;
+    void fileStore.all()
+      .then((files) => {
+        if (!active) return;
+        const local: Track[] = files
+          .sort((a, b) => b.addedAt - a.addedAt)
+          .map((f) => ({
+            id: f.id, title: f.title, artist: f.artist, album: f.album,
+            duration: f.duration, fingerprint: f.fingerprint, path: f.path,
+            folderName: f.folderName, storagePath: f.storagePath,
+            url: URL.createObjectURL(f.blob), source: "local" as const,
+          }));
+        setLocalTracks((current) => mergeSavedTracks(withFolderHints(local), current));
+      })
+      .catch(() => { if (active) toast.error("Não foi possível abrir os arquivos salvos neste aparelho."); })
+      .finally(() => { if (active) setReady(true); });
+
+    // Sincronização da nuvem não deve atrasar o acesso às músicas offline.
+    void supabase.auth.getUser()
       .then(({ data }) => data.user ? fetchCloudTracks(data.user.id) : [])
-      .catch(() => [] as Track[]);
-    Promise.all([localPromise, cloudPromise])
-      .then(([local, cloud]) => setLocalTracks(mergeSavedTracks(withFolderHints(local), withFolderHints(cloud))))
-      .finally(() => setReady(true));
+      .then((cloud) => {
+        if (active && cloud.length) {
+          setLocalTracks((current) => mergeSavedTracks(current, withFolderHints(cloud)));
+        }
+      })
+      .catch(() => {});
+    return () => { active = false; };
   }, []);
 
   useEffect(() => {
