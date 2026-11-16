@@ -547,7 +547,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         }
         if (opts.signal?.aborted) { URL.revokeObjectURL(url); report.cancelled = true; break; }
         const id = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-        const meta = parseFileName(file.name);
+        const fileMeta = parseFileName(file.name);
+        const tags = await readAudioTags(file).catch(() => ({}));
+        const meta = {
+          ...fileMeta,
+          ...(tags.title ? { title: tags.title } : {}),
+          ...(tags.artist ? { artist: tags.artist } : {}),
+          ...(tags.album ? { album: tags.album } : {}),
+        };
         const t: Track = { id, ...meta, duration, url, source: "local", fingerprint: fp, path, folderName };
         try {
           // Solicita armazenamento persistente antes de gravar para reduzir a limpeza
