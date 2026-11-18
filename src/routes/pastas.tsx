@@ -88,7 +88,7 @@ function FoldersPage() {
         {artistGroups.length ? (
           <div className="grid gap-4 sm:grid-cols-2">
             {artistGroups.map((artist) => (
-              <article key={artist.name} className="overflow-hidden rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card p-4 shadow-[0_0_22px_-14px_hsl(var(--primary))]">
+              <article key={artist.name} className="folder-color-card overflow-hidden rounded-2xl border p-4 shadow-lg">
                 <Button variant="ghost" aria-label={`Abrir pasta de ${artist.name}`} className="h-auto min-h-24 w-full justify-start gap-3 whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "artist", name: artist.name })}>
                   <CustomFolderCover artistName={artist.name} className="w-20 shrink-0" />
                   <span className="min-w-0 flex-1"><span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.18em] text-primary">Pasta do cantor</span><span className="block break-words text-lg font-bold">{artist.name}</span><span className="text-sm text-muted-foreground">{artist.tracks.length} música(s)</span></span>
@@ -107,7 +107,7 @@ function FoldersPage() {
       {manualFolders.length > 0 && <section>
         <h2 className="mb-3 text-base font-semibold">Pastas criadas por você</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          {manualFolders.map((folder) => <article key={folder.name} className="rounded-lg border bg-card p-4">
+          {manualFolders.map((folder) => <article key={folder.name} className="folder-color-card overflow-hidden rounded-2xl border p-4 shadow-lg">
             <Button variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "custom", name: folder.name })}>
               <CustomFolderCover folderName={folder.name} className="w-16 shrink-0" />
               <span className="min-w-0"><span className="block break-words text-base font-semibold">{folder.name}</span><span className="text-sm text-muted-foreground">{folder.tracks.length} música(s)</span></span>
