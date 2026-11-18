@@ -34,5 +34,32 @@ function AccountPage() {
   }
   async function signOut() { await queryClient.cancelQueries(); queryClient.clear(); await supabase.auth.signOut(); await navigate({ to: "/auth", replace: true }); }
   async function resetPassword() { if (!email.trim()) { toast.error("Digite seu e-mail primeiro."); return; } const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` }); toast[error ? "error" : "success"](error ? "Não foi possível enviar o link." : "Confira seu e-mail para trocar a senha."); }
-  return <div className="mx-auto max-w-md space-y-5"><Link to="/">← Início</Link><h1 className="text-2xl font-bold">Minha conta</h1>{user ? <><p>Conta conectada</p><Button asChild><Link to="/configuracoes">Músicas e cópia da biblioteca</Link></Button><Button variant="outline" onClick={() => void signOut()}>Sair</Button></> : <form onSubmit={(e) => void submit(e)} className="space-y-4"><div><Label htmlFor="email">E-mail</Label><Input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>{!easy && <div><Label htmlFor="password">Senha</Label><Input id="password" type="password" required minLength={6} autoComplete={signup ? "new-password" : "current-password"} value={password} onChange={(e) => setPassword(e.target.value)} /></div>}<Button type="submit" disabled={busy}>{busy ? "Aguarde…" : easy ? "Entrar sem senha" : signup ? "Criar conta" : "Entrar"}</Button><Button type="button" variant="outline" onClick={() => { setEasy((s) => !s); setSent(false); }}>{easy ? "Usar senha" : "Entrar sem senha"}</Button>{sent && <p role="status" className="text-sm text-muted-foreground">Link enviado. Confira seu e-mail para entrar.</p>}{!easy && <><Button type="button" variant="ghost" onClick={() => setSignup((s) => !s)}>{signup ? "Já tenho conta" : "Criar uma conta"}</Button><Button type="button" variant="link" onClick={() => void resetPassword()}>Esqueci minha senha</Button></>}</form>}</div>;
+  return (
+    <main className="admin-login-shell relative flex min-h-[calc(100vh-2rem)] items-center justify-center overflow-hidden rounded-[2rem] bg-[#070914] px-4 py-8 text-white">
+      <div className="pointer-events-none absolute -left-20 top-0 size-72 rounded-full bg-violet-700/20 blur-[100px]" />
+      <div className="pointer-events-none absolute -right-20 bottom-0 size-72 rounded-full bg-amber-500/10 blur-[100px]" />
+      <section className="relative grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-amber-300/25 bg-[#0b1020] shadow-2xl shadow-black/50 md:grid-cols-[.9fr_1.1fr]">
+        <div className="flex flex-col items-center justify-center border-b border-amber-300/15 bg-gradient-to-br from-[#17112b] via-[#0b1020] to-[#080b16] p-8 text-center md:border-b-0 md:border-r">
+          <div className="mb-6 flex size-28 items-center justify-center rounded-full border-2 border-amber-300/70 bg-black text-5xl text-amber-300 shadow-[0_0_45px_rgba(212,175,55,.18)]">♫</div>
+          <p className="text-xs font-black uppercase tracking-[.35em] text-amber-300">PLAYER MUSIC PRO</p>
+          <h1 className="mt-3 text-3xl font-black">Painel do Administrador</h1>
+          <p className="mt-3 max-w-xs text-sm text-slate-300">Acesso protegido para gerenciar músicas e configurações do aplicativo.</p>
+          <div className="mt-8 text-xs text-slate-400">♛ Acesso restrito ao administrador</div>
+        </div>
+        <div className="p-6 sm:p-10">
+          <Link to="/" className="text-sm text-slate-400 hover:text-white">← Voltar ao aplicativo</Link>
+          <h2 className="mt-8 text-2xl font-black sm:text-3xl">{user ? "Conta conectada" : "Entrar no Painel"}</h2>
+          <p className="mt-2 text-sm text-slate-400">Use sua conta cadastrada. A permissão administrativa é verificada pelo sistema.</p>
+          {user ? <div className="mt-8 space-y-4"><p className="rounded-xl border border-white/10 bg-black/30 p-4 text-sm">{user.email}</p><Button asChild className="h-12 w-full bg-gradient-to-r from-amber-300 to-yellow-600 font-black text-black hover:brightness-110"><Link to="/admin">Abrir Painel do Administrador</Link></Button><Button variant="outline" className="w-full border-red-400/40 text-red-200" onClick={() => void signOut()}>Sair da conta</Button></div> : <form onSubmit={(e) => void submit(e)} className="mt-8 space-y-5">
+            <div className="space-y-2"><Label htmlFor="email" className="text-slate-200">Usuário / E-mail</Label><Input id="email" type="email" required autoComplete="email" placeholder="Digite seu e-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 border-white/15 bg-black/40 text-white placeholder:text-slate-500" /></div>
+            {!easy && <div className="space-y-2"><Label htmlFor="password" className="text-slate-200">Senha</Label><Input id="password" type="password" required minLength={6} autoComplete={signup ? "new-password" : "current-password"} placeholder="Digite sua senha" value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 border-white/15 bg-black/40 text-white placeholder:text-slate-500" /></div>}
+            <Button type="submit" disabled={busy} className="h-13 w-full bg-gradient-to-r from-amber-300 to-yellow-600 text-base font-black text-black shadow-lg shadow-amber-950/30 hover:brightness-110">{busy ? "Aguarde…" : easy ? "ENTRAR SEM SENHA" : signup ? "CRIAR CONTA" : "ENTRAR NO PAINEL"}</Button>
+            <Button type="button" variant="outline" className="w-full border-amber-300/35 bg-amber-300/5 text-amber-100 hover:bg-amber-300/10" onClick={() => { setEasy((s) => !s); setSent(false); }}>{easy ? "Entrar com senha" : "Entrar sem senha"}</Button>
+            {sent && <p role="status" className="text-sm text-emerald-300">Link enviado. Confira seu e-mail para entrar.</p>}
+            {!easy && <div className="flex flex-wrap justify-between gap-2"><Button type="button" variant="ghost" className="px-0 text-slate-300" onClick={() => setSignup((s) => !s)}>{signup ? "Já tenho conta" : "Criar uma conta"}</Button><Button type="button" variant="link" className="px-0 text-amber-300" onClick={() => void resetPassword()}>Esqueci minha senha</Button></div>}
+          </form>}
+        </div>
+      </section>
+    </main>
+  );
 }
