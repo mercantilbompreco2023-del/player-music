@@ -123,7 +123,7 @@ async function fetchOfficialTracks(): Promise<Track[]> {
 
 async function fetchCloudTracks(userId: string): Promise<Track[]> {
   const bucket = supabase.storage.from("player-music");
-  const paths: string[] = [];
+  const files: Array<{ path: string; metadata?: Record<string, unknown> | null }> = [];
   const walk = async (prefix: string, depth = 0): Promise<void> => {
     if (depth > 12) return;
     const { data: objects, error } = await bucket.list(prefix, { limit: 1000, sortBy: { column: "name", order: "asc" } });
@@ -132,19 +132,18 @@ async function fetchCloudTracks(userId: string): Promise<Track[]> {
       if (!object.name) continue;
       const fullPath = `${prefix}/${object.name}`;
       if (object.id === null) await walk(fullPath, depth + 1);
-      else paths.push(fullPath);
+      else files.push({ path: fullPath, metadata: object.metadata as Record<string, unknown> | null });
     }
   };
   await walk(userId);
-  if (!paths.length) return [];
-  const { data: signed, error: signedError } = await bucket.createSignedUrls(paths, 60 * 60 * 24);
+  if (!files.length) return [];
+  const { data: signed, error: signedError } = await bucket.createSignedUrls(files.map((file) => file.path), 60 * 60 * 24);
   if (signedError || !signed) return [];
-  return signed.flatMap((entry) => {
+  return signed.flatMap((entry, i) => {
     if (!entry.signedUrl || !entry.path) return [];
+    const meta = (files[i]?.metadata ?? {}) as Record<string, unknown>;
     const fileName = entry.path.split("/").pop() ?? "Música";
     const folderFromPath = entry.path.split("/").slice(-2, -1)[0];
-    const { data: object } = { data: undefined as { metadata?: Record<string, unknown> } | undefined };
-    const meta = (object?.metadata ?? {}) as Record<string, unknown>;
     return [{
       id: typeof meta["fingerprint"] === "string" ? `cloud-${meta["fingerprint"]}` : `cloud-${entry.path}`,
       title: typeof meta["title"] === "string" ? meta["title"] : fileName.replace(/\.[^.]+$/, ""),
@@ -152,8 +151,8 @@ async function fetchCloudTracks(userId: string): Promise<Track[]> {
       album: typeof meta["album"] === "string" ? meta["album"] : undefined,
       duration: typeof meta["duration"] === "number" ? meta["duration"] : undefined,
       fingerprint: typeof meta["fingerprint"] === "string" ? meta["fingerprint"] : undefined,
-      path: entry.path.split("/").slice(2).join("/"),
-      folderName: folderFromPath,
+      path: typeof meta["originalPath"] === "string" ? meta["originalPath"] : entry.path.split("/").slice(2).join("/"),
+      folderName: typeof meta["folderName"] === "string" ? meta["folderName"] : folderFromPath,
       storagePath: entry.path,
       url: entry.signedUrl,
       source: "cloud" as const,
