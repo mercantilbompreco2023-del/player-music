@@ -46,14 +46,24 @@ function AdminPage() {
     enabled: !!user?.id && admin.data === true,
     queryFn: async () => {
       const [music, profiles, cards] = await Promise.all([
-        supabase.from("public_music").select("id,title,artist,created_at,file_size", { count: "exact" }).order("created_at", { ascending: false }).limit(4),
+        supabase.from("public_music").select("id,title,artist,created_at,file_size", { count: "exact" }).order("created_at", { ascending: false }),
         supabase.from("profiles").select("id", { count: "exact", head: true }),
         supabase.from("app_cards").select("id", { count: "exact", head: true }),
       ]);
       if (music.error) throw music.error;
       if (profiles.error) throw profiles.error;
       if (cards.error) throw cards.error;
-      return { music: music.data, musicCount: music.count ?? 0, userCount: profiles.count ?? 0, cardCount: cards.count ?? 0 };
+      const allTracks = music.data ?? [];
+      const artistCounts = new Map<string, number>();
+      for (const track of allTracks) artistCounts.set(track.artist || "Artista não informado", (artistCounts.get(track.artist || "Artista não informado") ?? 0) + 1);
+      return {
+        music: allTracks.slice(0, 4),
+        artists: [...artistCounts.entries()].sort((a, b) => b[1] - a[1]),
+        musicCount: music.count ?? allTracks.length,
+        totalBytes: allTracks.reduce((sum, track) => sum + (track.file_size ?? 0), 0),
+        userCount: profiles.count ?? 0,
+        cardCount: cards.count ?? 0,
+      };
     },
   });
 
@@ -129,9 +139,28 @@ function AdminPage() {
               <div className="flex items-center gap-3"><UploadCloud className="size-10 text-[#e6c45f]"/><div><h3 className="font-extrabold text-white">Adicionar músicas oficiais</h3><p className="text-xs text-white/65">Publique faixas autorizadas para todos os usuários</p></div></div>
               <Button onClick={()=>setTab("musicas")} className="bg-gradient-to-r from-[#f0d477] to-[#b68b27] font-black text-black hover:brightness-110"><Plus className="mr-1 size-4"/> Enviar músicas</Button>
             </div>
+            <div className="rounded-2xl border border-[#d6b34a]/30 bg-[#101010] p-4">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                <h3 className="flex items-center gap-2 font-extrabold text-white"><FolderOpen className="size-5 text-[#e6c45f]"/> Pastas / Artistas</h3>
+                <button onClick={()=>setTab("musicas")} className="rounded-lg border border-[#d6b34a]/40 bg-[#d6b34a]/10 px-3 py-2 text-xs font-bold text-[#e6c45f]">+ Adicionar músicas</button>
+              </div>
+              {overview.isPending ? <p className="text-sm text-white/55">Carregando artistas…</p> : overview.data?.artists.length ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">{overview.data.artists.slice(0,10).map(([artist,count])=><button key={artist} onClick={()=>setTab("musicas")} className="flex min-h-28 flex-col items-start justify-between rounded-xl border border-[#d6b34a]/40 bg-gradient-to-br from-[#201b10] to-[#111] p-3 text-left transition hover:border-[#e6c45f]"><FolderOpen className="size-7 text-[#e6c45f]"/><span className="line-clamp-2 text-sm font-bold text-white">{artist}</span><span className="text-xs text-white/55">{count} {count===1?"música":"músicas"}</span></button>)}</div> : <p className="rounded-xl border border-dashed border-[#d6b34a]/25 p-4 text-sm text-white/55">As pastas dos artistas aparecerão aqui quando houver músicas oficiais publicadas.</p>}
+            </div>
             <div className="rounded-2xl border border-[#d6b34a]/30 bg-[#111] p-4">
               <div className="mb-3 flex items-center justify-between"><h3 className="flex items-center gap-2 font-extrabold"><FolderOpen className="size-5 text-[#e6c45f]"/> Últimas músicas publicadas</h3><button onClick={()=>setTab("musicas")} className="text-xs font-bold text-[#e6c45f]">Ver todas</button></div>
               {overview.isPending ? <p className="text-sm text-white/55">Carregando catálogo…</p> : overview.isError ? <p className="text-sm text-white/55">Não foi possível carregar o catálogo. Verifique a configuração do banco.</p> : overview.data?.music.length ? <div className="divide-y divide-white/10">{overview.data.music.map(track=><div key={track.id} className="flex items-center gap-3 py-3"><div className="rounded-lg bg-[#d6b34a]/15 p-2"><Music2 className="size-5 text-[#e6c45f]"/></div><div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-white">{track.title}</p><p className="truncate text-xs text-white/55">{track.artist} · {((track.file_size ?? 0)/1048576).toFixed(1)} MB</p></div></div>)}</div> : <p className="rounded-xl border border-dashed border-[#d6b34a]/25 p-4 text-sm text-white/55">Nenhuma música oficial publicada ainda.</p>}
+            </div>
+            <div className="grid gap-3 lg:grid-cols-2">
+              <div className="rounded-2xl border border-[#d6b34a]/30 bg-[#101010] p-4">
+                <h3 className="mb-3 flex items-center gap-2 font-extrabold"><HardDrive className="size-5 text-[#e6c45f]"/> Armazenamento</h3>
+                <div className="flex items-center justify-between gap-2 text-sm"><span className="text-white/65">Espaço ocupado pelos arquivos oficiais</span><b className="text-[#e6c45f]">{((overview.data?.totalBytes ?? 0)/1073741824).toFixed(2)} GB</b></div>
+                <p className="mt-2 text-xs text-white/45">Calculado pelos tamanhos cadastrados. Limite do provedor não informado.</p>
+              </div>
+              <div className="rounded-2xl border border-[#d6b34a]/30 bg-[#101010] p-4">
+                <h3 className="mb-2 flex items-center gap-2 font-extrabold"><span className="size-2.5 rounded-full bg-[#d6b34a]"/> Serviço do catálogo</h3>
+                <p className="text-sm font-bold text-[#e6c45f]">{overview.isSuccess ? "Conectado" : overview.isError ? "Verificar conexão" : "Verificando…"}</p>
+                <p className="mt-1 text-xs text-white/50">Status da consulta ao catálogo de músicas.</p>
+              </div>
             </div>
           </div>
           {tab === "cartoes" && <><h2 className="text-xl font-black text-[#e6c45f]">Cartões e atalhos</h2><CardsAdmin /></>}
