@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, Headphones, Smartphone, ListMusic, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { HomePlayer } from "@/components/music/HomePlayer";
+import { HomePlayer, ArtistPhoto } from "@/components/music/HomePlayer";
 import { PhoneMusicSync } from "@/components/music/PhoneMusicSync";
 import { ImportButton } from "@/components/music/ImportButton";
 import { FolderImport } from "@/components/music/FolderImport";
@@ -55,12 +55,26 @@ function Index() {
         </div>
       </header>
 
-      <section className="streaming-feature relative overflow-hidden rounded-[1.8rem] border border-primary/25 bg-card shadow-2xl shadow-black/20">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-transparent" />
-        <div className="relative space-y-4 p-4 sm:p-6">
-          <div className="flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Destaque</p><h2 className="mt-1 text-xl font-extrabold sm:text-2xl">Sua música em primeiro lugar</h2></div><Link to="/player" className="rounded-full border border-primary/30 bg-background/60 px-3 py-2 text-xs font-semibold text-primary">Abrir player ↗</Link></div>
-          <HomePlayer variant="showcase" />
+      <section className="streaming-feature relative isolate overflow-hidden rounded-[1.8rem] border border-primary/35 bg-[#07110b] shadow-2xl shadow-primary/10">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-black/10"/>
+        <div className="relative grid min-h-[230px] grid-cols-[minmax(0,1fr)_42%] items-center gap-2 p-4 sm:min-h-[290px] sm:p-6">
+          <div className="z-10 min-w-0 space-y-3">
+            <p className="text-[10px] font-black uppercase tracking-[.24em] text-primary">Artista em destaque</p>
+            <h2 className="text-3xl font-black leading-[.95] tracking-tight sm:text-5xl">{ownTracks[0]?.artist || "Sua música"}</h2>
+            <p className="text-xs font-bold uppercase tracking-wider text-white/80 sm:text-sm">Biblioteca atualizada</p>
+            <p className="line-clamp-2 text-xs text-white/70 sm:text-sm">{ownTracks[0]?.title || "Suas músicas favoritas em um só lugar"}</p>
+            <Button disabled={!ownTracks.length} onClick={()=>p.playList(ownTracks.map(track=>track.id),ownTracks[0]?.id)} className="rounded-full bg-primary px-5 font-extrabold text-primary-foreground shadow-[0_0_24px_-6px_var(--primary)]"><Play className="mr-1 size-4 fill-current"/> Ouvir agora</Button>
+          </div>
+          <div className="relative -mr-3 aspect-[4/5] overflow-hidden rounded-2xl border border-primary/35 shadow-xl sm:-mr-4">
+            {ownTracks[0] ? <ArtistPhoto artist={ownTracks[0].artist} fallbackSeed={ownTracks[0].id}/> : <img src={artwork} alt="Player Music" className="size-full object-cover"/>}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 to-transparent"/>
+          </div>
         </div>
+      </section>
+
+      <section className="streaming-feature rounded-[1.8rem] border border-primary/25 bg-card p-3 shadow-xl shadow-black/20 sm:p-5">
+        <div className="mb-3 flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Reprodução rápida</p><h2 className="text-lg font-extrabold">Seu player</h2></div><Link to="/player" className="rounded-full border border-primary/30 px-3 py-2 text-xs font-semibold text-primary">Tela completa ↗</Link></div>
+        <HomePlayer variant="showcase" />
       </section>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Acesso rápido">
@@ -76,7 +90,7 @@ function Index() {
           {ownTracks.filter((track,index,all)=>all.findIndex(item=>item.artist.trim().toLocaleLowerCase("pt-BR")===track.artist.trim().toLocaleLowerCase("pt-BR"))===index).slice(0,10).map(artist=>{
             const artistTracks=ownTracks.filter(track=>track.artist.trim().toLocaleLowerCase("pt-BR")===artist.artist.trim().toLocaleLowerCase("pt-BR"));
             return <button key={artist.artist} onClick={()=>p.playList(artistTracks.map(track=>track.id),artistTracks[0]?.id)} className="flex w-24 shrink-0 flex-col items-center gap-2 text-center">
-              <span className="block size-20 overflow-hidden rounded-full border-2 border-primary/60 p-1 shadow-[0_0_18px_-8px_var(--primary)]"><Cover seed={artist.id} className="size-full rounded-full"/></span>
+              <span className="block size-20 overflow-hidden rounded-full border-2 border-primary/60 p-1 shadow-[0_0_18px_-8px_var(--primary)]"><ArtistPhoto artist={artist.artist} fallbackSeed={artist.id}/></span>
               <span className="w-full truncate text-xs font-bold">{artist.artist}</span><span className="text-[10px] text-muted-foreground">{artistTracks.length} músicas</span>
             </button>;
           })}
