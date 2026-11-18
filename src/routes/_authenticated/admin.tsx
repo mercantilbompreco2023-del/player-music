@@ -94,6 +94,7 @@ function AdminPage() {
 
   const NAV = [
     { key: "inicio", label: "Início", icon: Home },
+    { key: "cartoes", label: "Cartões / Atalhos", icon: FolderOpen },
     { key: "musicas", label: "Músicas Oficiais", icon: Music2 },
     { key: "artistas", label: "Pastas / Artistas", icon: FolderOpen },
     { key: "uploads", label: "Uploads (Adicionar)", icon: UploadCloud },
@@ -163,7 +164,7 @@ function AdminPage() {
                 <p className="mt-1 text-xs text-white/50">Status da consulta ao catálogo de músicas.</p>
               </div>
             </div>
-          </div>
+          </div>}
           {tab === "cartoes" && <><h2 className="text-xl font-black text-[#e6c45f]">Cartões e atalhos</h2><CardsAdmin /></>}
           {tab === "artistas" && <div className="space-y-4"><div><h2 className="text-xl font-black text-[#e6c45f]">Pastas / Artistas</h2><p className="text-sm text-white/60">Artistas agrupados automaticamente pelas músicas oficiais publicadas.</p></div>{overview.isPending ? <p className="text-sm text-white/60">Carregando artistas…</p> : overview.isError ? <p className="text-sm text-red-300">Não foi possível carregar os artistas. Verifique a conexão e a migração do catálogo.</p> : overview.data?.artists.length ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">{overview.data.artists.map(([artist,count])=><button type="button" key={artist} onClick={()=>setTab("musicas")} className="flex min-h-32 flex-col items-start justify-between rounded-2xl border border-[#d6b34a]/40 bg-gradient-to-br from-[#201b10] to-[#101010] p-4 text-left hover:border-[#e6c45f]"><FolderOpen className="size-8 text-[#e6c45f]"/><span className="font-bold text-white">{artist}</span><span className="text-xs text-white/55">{count} {count===1?"música":"músicas"} · Ver catálogo</span></button>)}</div> : <p className="rounded-xl border border-dashed border-[#d6b34a]/30 p-5 text-sm text-white/60">Nenhuma música oficial publicada ainda. Publique músicas na aba Uploads para criar as pastas dos artistas.</p>}</div>}
           {tab === "usuarios" && <><h2 className="text-xl font-black text-amber-200">Usuários</h2><UsersAdmin selfId={user!.id} /></>}
