@@ -90,7 +90,7 @@ function FoldersPage() {
             {artistGroups.map((artist) => (
               <article key={artist.name} className="folder-color-card overflow-hidden rounded-2xl border p-4 shadow-lg">
                 <Button variant="ghost" aria-label={`Abrir pasta de ${artist.name}`} className="h-auto min-h-24 w-full justify-start gap-3 whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "artist", name: artist.name })}>
-                  <CustomFolderCover artistName={artist.name} className="w-20 shrink-0" />
+                  <CustomFolderCover artistName={artist.name} editable className="w-20 shrink-0" />
                   <span className="min-w-0 flex-1"><span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.18em] text-primary">Pasta do cantor</span><span className="block break-words text-lg font-bold">{artist.name}</span><span className="text-sm text-muted-foreground">{artist.tracks.length} música(s)</span></span>
                 </Button>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -109,7 +109,7 @@ function FoldersPage() {
         <div className="grid gap-3 sm:grid-cols-2">
           {manualFolders.map((folder) => <article key={folder.name} className="folder-color-card overflow-hidden rounded-2xl border p-4 shadow-lg">
             <Button variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "custom", name: folder.name })}>
-              <CustomFolderCover folderName={folder.name} className="w-16 shrink-0" />
+              <CustomFolderCover folderName={folder.name} editable className="w-16 shrink-0" />
               <span className="min-w-0"><span className="block break-words text-base font-semibold">{folder.name}</span><span className="text-sm text-muted-foreground">{folder.tracks.length} música(s)</span></span>
             </Button>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -125,7 +125,7 @@ function FoldersPage() {
         <div className="grid gap-3 sm:grid-cols-2">
           {folders.map((f) => <article key={f.name} className="rounded-lg border bg-card p-4">
             <Button variant="ghost" aria-label={`Abrir pasta ${f.name}`} className="h-auto min-h-20 w-full justify-start whitespace-normal p-0 text-left" onClick={() => setSelected({ kind: "physical", name: f.name })}>
-              <FolderOpen className="shrink-0 text-primary" />
+              <CustomFolderCover folderName={f.name} editable className="w-16 shrink-0" />
               <span className="min-w-0"><span className="block break-words text-lg font-semibold">{f.name}</span><span className="text-sm text-muted-foreground">{f.tracks.length} música(s)</span></span>
             </Button>
             <div className="mt-3 flex flex-wrap gap-2">
