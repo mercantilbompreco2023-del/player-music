@@ -3,7 +3,7 @@ import { ChevronDown, Play, Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Cover } from "@/components/music/Cover";
+import { CustomFolderCover } from "@/components/music/CustomFolderCover";
 import { PageHeader } from "@/components/music/AppShell";
 import { usePlayer } from "@/lib/music/player-context";
 import { AiPlaylist } from "@/components/music/AiPlaylist";
@@ -54,7 +54,7 @@ function PlaylistsPage() {
               <section key={pl.id} className="overflow-hidden rounded-2xl border border-primary/20 bg-card/70">
                 <div className="flex items-center gap-3 p-3">
                   <Link to="/playlists/$id" params={{ id: pl.id }} className="flex min-w-0 flex-1 items-center gap-3">
-                    <Cover seed={pl.id} className="size-14 rounded-xl" />
+                    <CustomFolderCover folderName={`playlist-cover:${pl.id}`} editable className="size-14 shrink-0" />
                     <div className="min-w-0">
                       <p className="truncate font-semibold">{pl.name}</p>
                       <p className="text-sm text-muted-foreground">{tracks.length} músicas disponíveis</p>
