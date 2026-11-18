@@ -36,6 +36,7 @@ function PlayerPage() {
   }
   const fav = p.isFavorite(t.id);
   const upcoming = p.queue.map((id, pos) => ({ pos, track: p.byId(id) })).filter((x) => x.pos > p.index && x.track);
+  const netoTracks = p.tracks.filter((track) => track.source !== "demo" && track.artist.trim().toLocaleLowerCase("pt-BR").includes("neto brito"));
 
   return (
     <div className="player-purple player-immersive player-reworked player-exclusive relative mx-auto min-h-screen w-full max-w-none space-y-5 overflow-hidden rounded-none border-0 px-4 pb-10 pt-3 text-foreground shadow-none sm:px-6">
@@ -68,6 +69,24 @@ function PlayerPage() {
         <Link to="/pastas" className="inline-flex items-center justify-center gap-1.5 rounded-full border border-primary/70 px-2 py-2.5 text-xs font-semibold"><FolderOpen className="size-4" /> Pastas</Link>
       </div>
       <div className="sr-only"><span>{p.prefs.repeat === "one" ? "Repetindo esta música" : p.prefs.repeat === "all" ? "Repetindo a fila" : "Repetição desligada"}</span></div>
+      <section className="rounded-3xl border border-primary/35 bg-gradient-to-br from-primary/15 via-card to-card p-4">
+        <div className="mb-3 flex items-center gap-3">
+          <CustomFolderCover artistName="Neto Brito" className="w-20 shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-black uppercase tracking-[.18em] text-primary">Pasta do cantor</p>
+            <h2 className="text-xl font-extrabold">Neto Brito</h2>
+            <p className="text-xs text-muted-foreground">{netoTracks.length} música(s) na biblioteca deste aparelho</p>
+          </div>
+        </div>
+        {netoTracks.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => p.playList(netoTracks.map((track) => track.id), netoTracks[0]?.id, "ordered")} className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"><Play className="size-4 fill-current" /> Ouvir Neto Brito</button>
+            <button onClick={() => p.addManyToQueue(netoTracks.map((track) => track.id))} className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/50 px-4 py-2.5 text-sm font-semibold"><ListMusic className="size-4" /> Adicionar à fila</button>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">As músicas de Neto Brito aparecerão nesta pasta assim que forem publicadas pelo ADM ou importadas para a biblioteca.</p>
+        )}
+      </section>
       <section>
         <div className="mb-2 flex items-center justify-between"><h2 className="text-lg font-bold">A seguir na fila</h2><Link to="/fila" className="text-sm font-semibold text-primary">Editar fila</Link></div>
         {upcoming.length === 0 ? (
