@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, AudioLines, Crown, Headphones, LockKeyhole, Mail, Music2, Play, SkipBack, SkipForward, UserRoundPlus, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Crown, Headphones } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
