@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff, Volume2, Settings2, Image, AudioLines, FolderOpen, Heart, CirclePlay } from "lucide-react";
+import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff, Volume2, Settings2, Image, AudioLines, FolderOpen, Heart, CirclePlay, HardDrive } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/music/player-context";
@@ -16,9 +16,9 @@ const NAV = [
 const MOBILE_NAV = [
   { to: "/", label: "Início", icon: Home },
   { to: "/biblioteca", label: "Músicas", icon: Library },
-  { to: "/playlists", label: "Playlists", icon: ListMusic },
+  { to: "/player", label: "Reproduzir", icon: CirclePlay },
   { to: "/pastas", label: "Pastas", icon: FolderOpen },
-  { to: "/favoritos", label: "Favoritos", icon: Heart },
+  { to: "/armazenamento", label: "Salvar", icon: HardDrive },
 ] as const;
 
 type NowPlayingPrefs = { style: "compact" | "highlighted"; showCover: boolean; showArtist: boolean; showProgress: boolean };
@@ -126,6 +126,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Link to="/importar" className={cn("flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors", pathname === "/importar" ? "bg-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
             <Library className="size-5" /> Importar músicas
           </Link>
+          <Link to="/armazenamento" className={cn("flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors", pathname.startsWith("/armazenamento") ? "bg-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
+            <HardDrive className="size-5" /> Pastas e salvamento
+          </Link>
           <Link to="/configuracoes" className={cn("flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors", pathname.startsWith("/configuracoes") ? "bg-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
             <Settings2 className="size-5" /> Configurações
           </Link>
@@ -144,8 +147,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Link to="/configuracoes" className="rounded-full border p-3 text-muted-foreground hover:text-primary" aria-label="Configurações">⚙</Link>
       </header> )}
 
-      <div className="lg:pl-64">
-        <main className={cn("mx-auto w-full max-w-7xl px-4 pt-6 lg:px-8 lg:pt-28", onPlayer ? "pb-24" : "pb-44 lg:pb-32")}>{children}</main>
+      <div className={onPlayer ? "min-h-screen w-full" : "lg:pl-64"}>
+        <main className={cn("mx-auto w-full", onPlayer ? "max-w-none px-0 pb-0 pt-0" : "max-w-7xl px-4 pb-44 pt-6 lg:px-8 lg:pb-32 lg:pt-28")}>{children}</main>
       </div>
 
       {!onPlayer && (      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-2xl pb-safe lg:hidden">
@@ -162,9 +165,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
       </div> )}
-      <div className="fixed bottom-0 left-64 right-0 z-40 hidden pb-safe lg:block">
+      {!onPlayer && <div className="fixed bottom-0 left-64 right-0 z-40 hidden pb-safe lg:block">
         <MiniPlayer />
-      </div>
+      </div>}
     </div>
   );
 }
