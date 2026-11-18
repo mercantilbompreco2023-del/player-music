@@ -136,6 +136,15 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useEffect(() => {
+    // Na abertura inicial do aplicativo, mostrar primeiro o painel de reprodução.
+    // A marca de sessão evita redirecionar quando a pessoa volta ao Início pelo menu.
+    if (window.location.pathname === "/" && sessionStorage.getItem("pm:initial-player-opened") !== "1") {
+      sessionStorage.setItem("pm:initial-player-opened", "1");
+      void router.navigate({ to: "/player" });
+    }
+  }, [router]);
+
+  useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
