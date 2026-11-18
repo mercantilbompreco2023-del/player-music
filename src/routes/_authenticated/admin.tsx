@@ -40,7 +40,7 @@ function AdminPage() {
   const admin = useIsAdmin(user?.id);
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"inicio" | "cartoes" | "artistas" | "uploads" | "usuarios" | "musicas" | "config" | "registros">("inicio");
+  const [tab, setTab] = useState<"inicio" | "cartoes" | "artistas" | "uploads" | "usuarios" | "cadastros" | "musicas" | "config" | "registros">("inicio");
   const overview = useQuery({
     queryKey: ["admin-overview"],
     enabled: !!user?.id && admin.data === true,
@@ -98,6 +98,7 @@ function AdminPage() {
     { key: "artistas", label: "Pastas / Artistas", icon: FolderOpen },
     { key: "uploads", label: "Uploads (Adicionar)", icon: UploadCloud },
     { key: "usuarios", label: "Usuários", icon: Users },
+    { key: "cadastros", label: "Cadastros", icon: Users },
     { key: "registros", label: "Estatísticas / Registros", icon: BarChart3 },
     { key: "config", label: "Configurações", icon: Settings },
   ] as const;
@@ -166,6 +167,7 @@ function AdminPage() {
           {tab === "cartoes" && <><h2 className="text-xl font-black text-[#e6c45f]">Cartões e atalhos</h2><CardsAdmin /></>}
           {tab === "artistas" && <div className="space-y-4"><div><h2 className="text-xl font-black text-[#e6c45f]">Pastas / Artistas</h2><p className="text-sm text-white/60">Artistas agrupados automaticamente pelas músicas oficiais publicadas.</p></div>{overview.isPending ? <p className="text-sm text-white/60">Carregando artistas…</p> : overview.isError ? <p className="text-sm text-red-300">Não foi possível carregar os artistas. Verifique a conexão e a migração do catálogo.</p> : overview.data?.artists.length ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">{overview.data.artists.map(([artist,count])=><button type="button" key={artist} onClick={()=>setTab("musicas")} className="flex min-h-32 flex-col items-start justify-between rounded-2xl border border-[#d6b34a]/40 bg-gradient-to-br from-[#201b10] to-[#101010] p-4 text-left hover:border-[#e6c45f]"><FolderOpen className="size-8 text-[#e6c45f]"/><span className="font-bold text-white">{artist}</span><span className="text-xs text-white/55">{count} {count===1?"música":"músicas"} · Ver catálogo</span></button>)}</div> : <p className="rounded-xl border border-dashed border-[#d6b34a]/30 p-5 text-sm text-white/60">Nenhuma música oficial publicada ainda. Publique músicas na aba Uploads para criar as pastas dos artistas.</p>}</div>}
           {tab === "usuarios" && <><h2 className="text-xl font-black text-amber-200">Usuários</h2><UsersAdmin selfId={user!.id} /></>}
+          {tab === "cadastros" && <><h2 className="text-xl font-black text-[#e6c45f]">Painel de Cadastros</h2><p className="text-sm text-white/60">Acompanhe as contas criadas no Música Player Pro.</p><RegistrationsAdmin /></>}
           {tab === "musicas" && <><div className="rounded-2xl border border-[#d6b34a]/35 bg-gradient-to-r from-[#211b0d] to-[#111] p-4"><h2 className="text-xl font-black text-white">Músicas Oficiais</h2><p className="text-sm text-white/65">Consulte e gerencie o catálogo oficial do aplicativo.</p></div><AdminMusicLibrary /></>}
           {tab === "uploads" && <><div className="rounded-2xl border border-[#d6b34a]/35 bg-gradient-to-r from-[#211b0d] to-[#111] p-4"><h2 className="text-xl font-black text-white">Uploads · Adicionar músicas</h2><p className="text-sm text-white/65">Publique faixas autorizadas para todos os usuários.</p></div><AdminMusicLibrary /></>}
           {tab === "config" && <><h2 className="text-xl font-black text-amber-200">Configurações</h2><SettingsAdmin /></>}
@@ -315,6 +317,39 @@ function UsersAdmin({ selfId }: { selfId: string }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function RegistrationsAdmin() {
+  const q = useQuery({
+    queryKey: ["admin-registrations"],
+    queryFn: async () => {
+      const [profiles, roles] = await Promise.all([
+        supabase.from("profiles").select("id,email,display_name,created_at").order("created_at", { ascending: false }),
+        supabase.from("user_roles").select("user_id,role"),
+      ]);
+      if (profiles.error || roles.error) throw profiles.error ?? roles.error;
+      const admins = new Set(roles.data.filter((item) => item.role === "admin").map((item) => item.user_id));
+      return profiles.data.map((profile) => ({ ...profile, isAdmin: admins.has(profile.id) }));
+    },
+  });
+  if (q.isPending) return <p className="text-sm text-white/60">Carregando cadastros…</p>;
+  if (q.isError) return <p className="rounded-xl border border-red-400/30 bg-red-950/20 p-4 text-sm text-red-200">Não foi possível carregar os cadastros. Verifique a conexão com o banco.</p>;
+  const total = q.data.length;
+  const admins = q.data.filter((profile) => profile.isAdmin).length;
+  const recent = q.data.filter((profile) => profile.created_at && Date.now() - new Date(profile.created_at).getTime() <= 7 * 86400000).length;
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="rounded-2xl border border-[#d6b34a]/40 bg-gradient-to-br from-[#211b0d] to-[#101010] p-4"><p className="text-xs text-white/60">Contas cadastradas</p><p className="mt-1 text-3xl font-black text-[#e6c45f]">{total}</p></div>
+        <div className="rounded-2xl border border-[#d6b34a]/30 bg-[#111] p-4"><p className="text-xs text-white/60">Novos cadastros · 7 dias</p><p className="mt-1 text-3xl font-black text-white">{recent}</p></div>
+        <div className="rounded-2xl border border-[#d6b34a]/30 bg-[#111] p-4"><p className="text-xs text-white/60">Administradores</p><p className="mt-1 text-3xl font-black text-white">{admins}</p></div>
+      </div>
+      <div className="overflow-hidden rounded-2xl border border-[#d6b34a]/30 bg-[#101010]">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 p-4"><div><h3 className="font-extrabold text-white">Lista de cadastros</h3><p className="text-xs text-white/50">Contas registradas no aplicativo</p></div><Button type="button" variant="outline" onClick={() => void q.refetch()} className="border-[#d6b34a]/40 text-[#e6c45f] hover:bg-[#d6b34a]/10">Atualizar lista</Button></div>
+        {q.data.length ? <ul className="divide-y divide-white/10">{q.data.map((profile) => <li key={profile.id} className="flex flex-wrap items-center justify-between gap-3 p-4"><div className="min-w-0"><p className="truncate text-sm font-bold text-white">{profile.display_name || profile.email || "Usuário sem nome"}</p><p className="truncate text-xs text-white/55">{profile.email || "E-mail não informado"}</p><p className="mt-1 text-xs text-white/40">{profile.created_at ? new Date(profile.created_at).toLocaleString("pt-BR") : "Data não disponível"}</p></div><span className={cn("rounded-full border px-3 py-1 text-xs font-bold",profile.isAdmin ? "border-[#d6b34a]/50 bg-[#d6b34a]/10 text-[#e6c45f]" : "border-white/15 bg-white/5 text-white/70")}>{profile.isAdmin ? "Administrador" : "Cadastrado"}</span></li>)}</ul> : <p className="p-5 text-sm text-white/55">Ainda não há contas cadastradas.</p>}
+      </div>
+    </div>
   );
 }
 
