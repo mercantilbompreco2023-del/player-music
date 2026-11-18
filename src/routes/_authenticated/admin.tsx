@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin, useSession } from "@/lib/auth";
 import { FUNCTIONS, FUNCTION_KEYS, ICON_NAMES, validateCard, type CardConfig } from "@/lib/cards";
 import { cn } from "@/lib/utils";
+import { AdminMusicLibrary } from "@/components/music/AdminMusicLibrary";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -39,7 +40,7 @@ function AdminPage() {
   const admin = useIsAdmin(user?.id);
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"cartoes" | "usuarios" | "config" | "registros">("cartoes");
+  const [tab, setTab] = useState<"cartoes" | "usuarios" | "musicas" | "config" | "registros">("cartoes");
 
   async function logout() {
     await qc.cancelQueries();
@@ -66,7 +67,7 @@ function AdminPage() {
     );
   }
 
-  const TABS = [["cartoes", "Cartões"], ["usuarios", "Usuários"], ["config", "Ajustes"], ["registros", "Registros"]] as const;
+  const TABS = [["cartoes", "Cartões"], ["usuarios", "Usuários"], ["musicas", "MÚSICAS OFICIAIS"], ["config", "Ajustes"], ["registros", "Registros"]] as const;
   return (
     <div className="space-y-5">
       <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="size-4" /> Início</Link>
@@ -75,13 +76,13 @@ function AdminPage() {
         <Button variant="ghost" size="sm" onClick={logout}><LogOut /> Sair</Button>
       </div>
       <p className="text-xs text-muted-foreground">Conectado como {user?.email}. Toda alteração é registrada.</p>
-      <div role="tablist" className="grid grid-cols-4 gap-1 rounded-full bg-muted p-1">
+      <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1 sm:grid-cols-5">
         {TABS.map(([k, l]) => (
-          <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn("rounded-full py-2 text-xs font-semibold", tab === k ? "bg-background" : "text-muted-foreground")}>{l}</button>
+          <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn("rounded-full py-2 text-xs font-semibold", tab === k ? "bg-background" : "text-muted-foreground", k === "musicas" && "bg-amber-500/15 text-amber-700 ring-1 ring-amber-500/50")}>{l}</button>
         ))}
       </div>
       {tab === "cartoes" && <CardsAdmin />}
-      {tab === "usuarios" && <UsersAdmin selfId={user!.id} />}
+      {tab === "usuarios" && <UsersAdmin selfId={user!.id} />}\n      {tab === "musicas" && <AdminMusicLibrary />}
       {tab === "config" && <SettingsAdmin />}
       {tab === "registros" && <AuditAdmin />}
     </div>
