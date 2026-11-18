@@ -17,7 +17,6 @@ const NAV = [
 const MOBILE_NAV = [
   { to: "/", label: "Início", icon: Home },
   { to: "/biblioteca", label: "Músicas", icon: Library },
-  { to: "/player", label: "Reproduzir", icon: CirclePlay },
   { to: "/pastas", label: "Pastas", icon: FolderOpen },
   { to: "/armazenamento", label: "Salvar", icon: HardDrive },
 ] as const;
@@ -103,6 +102,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       )}
 
+      {!onPlayer && <div className="sticky top-0 z-30 border-b border-border/70 bg-background/95 px-3 py-2 shadow-md backdrop-blur lg:hidden">
+        <Link to="/player" className={cn("flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-extrabold transition-colors", pathname.startsWith("/player") ? "border-primary bg-primary text-primary-foreground" : "border-primary/40 bg-primary/10 text-primary hover:bg-primary/20")}>
+          <CirclePlay className="size-5" /> Reproduzir
+        </Link>
+      </div>}
+
       {!onPlayer && <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border/70 p-5 shadow-2xl shadow-black/15 lg:flex">
         <Link to="/" className="mb-8 flex items-center gap-3 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-card px-3 py-3 shadow-lg shadow-black/10">
           <img src={playerMusicIcon} alt="" width={44} height={44} className="size-11 rounded-lg" />
@@ -154,7 +159,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {!onPlayer && (      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-2xl pb-safe lg:hidden">
         {!onPlayer && <MiniPlayer />}
-        <nav className="glass mx-2 mb-2 grid grid-cols-5 rounded-[1.4rem] border border-border/80 p-1.5 shadow-2xl shadow-black/25">
+        <nav className="glass mx-2 mb-2 grid grid-cols-4 rounded-[1.4rem] border border-border/80 p-1.5 shadow-2xl shadow-black/25">
           {MOBILE_NAV.map(({ to, label, icon: Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
             return (
