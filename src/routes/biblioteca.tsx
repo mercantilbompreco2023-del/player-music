@@ -26,7 +26,7 @@ export const Route = createFileRoute("/biblioteca")({
   component: BibliotecaPage,
 });
 
-type Tab = "todas" | "minhas" | "favoritas" | "demo" | "pastas";
+type Tab = "todas" | "minhas" | "oficiais" | "favoritas" | "demo" | "pastas";
 
 function BibliotecaPage() {
   const p = usePlayer();
@@ -40,12 +40,12 @@ function BibliotecaPage() {
   const manualFolders = customFolders(p.tracks);
   const folder = [...folders, ...manualFolders].find((item) => item.name === folderName);
   const list = p.tracks.filter((t) =>
-    tab === "minhas" ? t.source === "local" || t.source === "cloud" : tab === "demo" ? t.source === "demo" : tab === "favoritas" ? p.isFavorite(t.id) : true,
+    tab === "minhas" ? t.source === "local" || t.source === "cloud" : tab === "oficiais" ? t.source === "official" : tab === "demo" ? t.source === "demo" : tab === "favoritas" ? p.isFavorite(t.id) : true,
   );
   const empty: Record<Tab, string> = {
     todas: "Sua biblioteca está vazia.",
     minhas: "Suas músicas importadas e salvas na nuvem aparecerão aqui. Importe arquivos ou salve uma música na nuvem para mantê-la na sua biblioteca.",
-    favoritas: "Toque no coração de uma faixa para adicioná-la aos favoritos.",
+    oficiais: "As músicas publicadas pelo administrador aparecerão aqui para ouvir e baixar no aparelho.",\n    favoritas: "Toque no coração de uma faixa para adicioná-la aos favoritos.",
     demo: "Sem faixas de demonstração.",
     pastas: "Nenhuma pasta salva ainda. Importe uma pasta de músicas para vê-la aqui.",
   };
@@ -131,8 +131,8 @@ function BibliotecaPage() {
           ) : <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Selecione músicas na biblioteca e toque em “Criar pasta com selecionadas” para montar uma pasta por cantor.</p>}
         </section>
       )}
-      <div role="tablist" className="mb-4 grid grid-cols-4 gap-1 rounded-full bg-muted p-1">
-        {(["todas", "minhas", "favoritas", "demo"] as Tab[]).map((k) => (
+      <div role="tablist" className="mb-4 grid grid-cols-3 gap-1 rounded-xl bg-muted p-1 sm:grid-cols-5">
+        {(["todas", "minhas", "oficiais", "favoritas", "demo"] as Tab[]).map((k) => (
           <Button
             key={k}
             role="tab"
