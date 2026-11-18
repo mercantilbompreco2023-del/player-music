@@ -16,7 +16,7 @@ const NAV = [
 
 const MOBILE_NAV = [
   { to: "/", label: "Início", icon: Home },
-  { to: "/biblioteca", label: "Músicas", icon: Library },
+  { to: "/biblioteca", label: "Biblioteca", icon: Library },
   { to: "/pastas", label: "Pastas", icon: FolderOpen },
   { to: "/armazenamento", label: "Salvar", icon: HardDrive },
 ] as const;
