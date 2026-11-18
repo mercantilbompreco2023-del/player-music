@@ -12,9 +12,9 @@ import { useIsAdmin, useSession } from "@/lib/auth";
 export const Route = createFileRoute("/player")({
   head: () => ({
     meta: [
-      { title: "Tocando agora — Player Music" },
+      { title: "Tocando agora — PLAYER MUSIC PRO" },
       { name: "description", content: "Controles completos de reprodução e fila." },
-      { property: "og:title", content: "Tocando agora — Player Music" },
+      { property: "og:title", content: "Tocando agora — PLAYER MUSIC PRO" },
       { property: "og:description", content: "Controles completos de reprodução e fila." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -46,7 +46,7 @@ function PlayerPage() {
       <style>{"@keyframes pm-wave { 0%,100% { transform:scaleY(.28); opacity:.62 } 50% { transform:scaleY(1); opacity:1 } }"}</style>
       <div className="flex items-center justify-between gap-2 px-1">
         <button onClick={() => router.history.back()} aria-label="Voltar" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
-        <div className="text-center"><p className="text-[10px] font-bold uppercase tracking-[.22em] text-primary">Reprodutor de Música</p><p className="text-lg font-extrabold tracking-tight">Delícia Coxi’s <span className="text-primary">Music</span></p></div>
+        <div className="text-center"><p className="text-[10px] font-bold uppercase tracking-[.22em] text-primary">Reprodutor de Música</p><p className="text-lg font-extrabold tracking-tight"><span className="bg-gradient-to-r from-fuchsia-400 via-amber-300 to-yellow-500 bg-clip-text text-transparent">PLAYER MUSIC PRO</span></p></div>
         <div className="flex items-center gap-1">
           {admin.data === true && <Link to="/admin" aria-label="Painel do ADM" title="Painel do ADM" className="rounded-full border border-amber-500/40 bg-amber-500/10 p-2 text-amber-500"><ShieldCheck className="size-5" /></Link>}
           <Link to="/biblioteca" aria-label="Buscar músicas" title="Buscar músicas" className="rounded-full p-2"><Music2 className="size-5" /></Link>
