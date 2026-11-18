@@ -110,6 +110,16 @@ function probeDuration(url: string, signal?: AbortSignal): Promise<number | unde
   });
 }
 
+async function fetchOfficialTracks(): Promise<Track[]> {
+  const { data, error } = await supabase.from("public_music").select("*").eq("published", true).order("created_at", { ascending: false });
+  if (error || !data) return [];
+  return data.map((row) => {
+    const { data: url } = supabase.storage.from("player-public-music").getPublicUrl(row.storage_path);
+    return { id: `official-${row.id}`, title: row.title, artist: row.artist, album: row.album ?? undefined,
+      duration: row.duration ? Number(row.duration) : undefined, storagePath: row.storage_path, url: url.publicUrl, source: "official" as const };
+  });
+}
+
 async function fetchCloudTracks(userId: string): Promise<Track[]> {
   const { data: objects, error } = await supabase.storage.from("player-music").list(userId, { limit: 1000, sortBy: { column: "name", order: "asc" } });
   if (error || !objects?.length) return [];
@@ -152,6 +162,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [ready, setReady] = useState(false);
   const [localTracks, setLocalTracks] = useState<Track[]>([]);
+  const [officialTracks, setOfficialTracks] = useState<Track[]>([]);
   const [prefs, setPrefs] = useState<Prefs>(defaultPrefs);
   const [queue, setQueue] = useState<string[]>([]);
   const [index, setIndex] = useState(0);
@@ -195,7 +206,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     supabase.from("app_settings").select("value").eq("key", "demo_tracks_enabled").maybeSingle()
       .then(({ data }) => { if (data && data.value === false) setDemosOn(false); }, () => {});
   }, []);
-  const tracks = useMemo(() => [...localTracks, ...(demosOn ? DEMO_TRACKS : [])], [localTracks, demosOn]);
+  const tracks = useMemo(() => [...localTracks, ...officialTracks, ...(demosOn ? DEMO_TRACKS : [])], [localTracks, officialTracks, demosOn]);
   const map = useMemo(() => new Map(tracks.map((t) => [t.id, t])), [tracks]);
   const byId = useCallback((id: string) => map.get(id), [map]);
   const currentId = queue[index] ?? null;
@@ -230,7 +241,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       .catch(() => { if (active) toast.error("Não foi possível abrir os arquivos salvos neste aparelho."); })
       .finally(() => { if (active) setReady(true); });
 
-    // Sincronização da nuvem não deve atrasar o acesso às músicas offline.
+    // Catálogo oficial é público: carregar para todos, mesmo sem login.\n    void fetchOfficialTracks().then((list) => { if (active) setOfficialTracks(list); }).catch(() => {});\n\n    // Sincronização da nuvem não deve atrasar o acesso às músicas offline.
     void supabase.auth.getUser()
       .then(({ data }) => data.user ? fetchCloudTracks(data.user.id) : [])
       .then((cloud) => {
