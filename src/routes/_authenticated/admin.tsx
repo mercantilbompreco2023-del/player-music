@@ -137,7 +137,7 @@ function AdminPage() {
             </div>
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#d6b34a]/35 bg-gradient-to-r from-[#211b0d] to-[#111] p-4">
               <div className="flex items-center gap-3"><UploadCloud className="size-10 text-[#e6c45f]"/><div><h3 className="font-extrabold text-white">Adicionar músicas oficiais</h3><p className="text-xs text-white/65">Publique faixas autorizadas para todos os usuários</p></div></div>
-              <Button onClick={()=>setTab("uploads")} className="bg-gradient-to-r from-[#f0d477"] to-[#b68b27] font-black text-black hover:brightness-110"><Plus className="mr-1 size-4"/> Enviar músicas</Button>
+              <Button onClick={()=>setTab("uploads")} className="bg-gradient-to-r from-[#f0d477] to-[#b68b27] font-black text-black hover:brightness-110"><Plus className="mr-1 size-4"/> Enviar músicas</Button>
             </div>
             <div className="rounded-2xl border border-[#d6b34a]/30 bg-[#101010] p-4">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
