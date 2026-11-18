@@ -47,6 +47,7 @@ interface PlayerCtx {
   importFiles: (files: FileList | File[]) => Promise<ImportReport>;
   importItems: (items: ImportItem[], opts?: { signal?: AbortSignal; onProgress?: (p: ImportProgress) => void; quiet?: boolean }) => Promise<ImportReport>;
   saveTrackToCloud: (id: string) => Promise<void>;
+  saveFolderToCloud: (folderName: string, trackIds: string[]) => Promise<void>;
   shareTrack: (id: string) => Promise<void>;
   saveTrackLocally: (id: string) => Promise<void>;
   removeTrack: (id: string) => Promise<void>;
@@ -140,6 +141,7 @@ async function fetchCloudTracks(userId: string): Promise<Track[]> {
       duration: typeof meta["duration"] === "number" ? meta["duration"] : undefined,
       fingerprint: typeof meta["fingerprint"] === "string" ? meta["fingerprint"] : undefined,
       path: typeof meta["originalPath"] === "string" ? meta["originalPath"] : undefined,
+      folderName: typeof meta["folderName"] === "string" ? meta["folderName"] : undefined,
       storagePath: entry.path,
       url: entry.signedUrl,
       source: "cloud" as const,
@@ -712,13 +714,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         if (!r.ok) throw new Error("Não foi possível ler o arquivo importado.");
         return r.blob();
       });
-      const extension = (stored?.path ?? track.path ?? track.title).match(/\.([a-z0-9]{2,5})$/i)?.[1]?.toLowerCase() ?? "audio";
-      const fingerprintKey = (track.fingerprint ?? id).replace(/[^a-z0-9_-]/gi, "").slice(0, 48);
-      const storagePath = `${auth.user.id}/${fingerprintKey}.${extension}`;
+      const originalPath = (stored?.path ?? track.path ?? `${track.title}.${(response.type || "").includes("mpeg") ? "mp3" : "audio"}`).replace(/\\\\/g, "/");
+      const safeSegment = (value: string) => value.replace(/[\\\\:*?"<>|]/g, "_").trim() || "Sem nome";
+      const pathParts = originalPath.split("/").filter(Boolean);
+      const folder = safeSegment(track.folderName || track.artist || "Artistas");
+      const relativeParts = pathParts.length > 1 ? pathParts : [safeSegment(pathParts[0] || track.title)];
+      const hasFolder = relativeParts[0]?.toLocaleLowerCase("pt-BR") === folder.toLocaleLowerCase("pt-BR");
+      const preservedPath = hasFolder ? relativeParts.map(safeSegment).join("/") : [folder, ...relativeParts.map(safeSegment)].join("/");
+      const storagePath = `${auth.user.id}/${preservedPath}`;
       const { error: uploadError } = await supabase.storage.from("player-music").upload(storagePath, response, {
         upsert: true,
         contentType: response.type || "application/octet-stream",
-        metadata: { title: track.title, artist: track.artist, album: track.album, duration: track.duration, fingerprint: track.fingerprint, originalPath: track.path },
+        metadata: { title: track.title, artist: track.artist, album: track.album, duration: track.duration, fingerprint: track.fingerprint, originalPath, folderName: track.folderName || track.artist },
       });
       if (uploadError) throw uploadError;
       if (stored) await fileStore.put({ ...stored, storagePath });
@@ -730,6 +737,25 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       throw error;
     }
   }, [updatePrefs]);
+
+  const saveFolderToCloud = useCallback(async (folderName: string, trackIds: string[]) => {
+    const uniqueIds = [...new Set(trackIds)];
+    if (!uniqueIds.length) { toast.error("Esta pasta não tem músicas para enviar."); return; }
+    const { data: auth, error } = await supabase.auth.getUser();
+    if (error || !auth.user) {
+      toast.error("Entre na sua conta para guardar esta pasta na nuvem.");
+      throw new Error("Login necessário para salvar na nuvem.");
+    }
+    const available = uniqueIds.filter((id) => localRef.current.some((track) => track.id === id && track.source === "local"));
+    if (!available.length) { toast.info("As músicas desta pasta já estão na nuvem ou não são arquivos locais."); return; }
+    toast.info(`Enviando a pasta “${folderName}” para sua nuvem…`);
+    let uploaded = 0;
+    for (const id of available) {
+      await saveTrackToCloud(id);
+      uploaded++;
+    }
+    toast.success(`Pasta “${folderName}” salva na nuvem: ${uploaded} música(s). Nomes e organização preservados.`);
+  }, [saveTrackToCloud]);
 
   const shareTrack = useCallback(async (id: string) => {
     const track = localRef.current.find((item) => item.id === id);
@@ -877,7 +903,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       wantPlay.current = true;
       setIndex(pos);
     },
-    importFiles, importItems, saveTrackToCloud, shareTrack, saveTrackLocally, removeTrack,
+    importFiles, importItems, saveTrackToCloud, saveFolderToCloud, shareTrack, saveTrackLocally, removeTrack,
     toggleFavorite: (id) =>
       updatePrefs((p) => ({ ...p, favorites: p.favorites.includes(id) ? p.favorites.filter((f) => f !== id) : [id, ...p.favorites] })),
     isFavorite: (id) => prefs.favorites.includes(id),
