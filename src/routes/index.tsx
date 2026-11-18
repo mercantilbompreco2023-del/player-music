@@ -22,9 +22,9 @@ import artwork from "@/assets/music-headphones.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Player Music — Início" },
+      { title: "Música Player Pro — Início" },
       { name: "description", content: "Ouça seus próprios arquivos de áudio com playlists, favoritos e fila." },
-      { property: "og:title", content: "Player Music" },
+      { property: "og:title", content: "Música Player Pro" },
       { property: "og:description", content: "Ouça seus próprios arquivos de áudio com playlists, favoritos e fila." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -48,7 +48,7 @@ function Index() {
       <header className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <img src={playerIcon} alt="" width={46} height={46} className="size-11 rounded-2xl object-cover shadow-lg ring-1 ring-primary/25" />
-          <div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Sua trilha sonora</p><h1 className="truncate text-2xl font-extrabold tracking-tight">Delícia Coxi’s Music</h1></div>
+          <div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">MÚSICA PLAYER PRO</p><h1 className="truncate text-2xl font-extrabold tracking-tight">Música Player Pro</h1></div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button>
