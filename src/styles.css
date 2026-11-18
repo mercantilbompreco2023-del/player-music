@@ -473,3 +473,107 @@ body {
  .player-reworked .player-main-layout { gap:1rem; }
  .player-reworked .player-artwork { width:min(66vw,255px); }
 }
+
+
+/* DELÍCIA COXI'S MUSIC — unified neon-purple redesign */
+.dark {
+  --background: oklch(0.095 0.018 278);
+  --foreground: oklch(0.97 0.012 290);
+  --card: oklch(0.145 0.025 278);
+  --card-foreground: oklch(0.97 0.012 290);
+  --popover: oklch(0.17 0.03 280);
+  --popover-foreground: oklch(0.97 0.012 290);
+  --primary: oklch(0.72 0.26 310);
+  --primary-foreground: oklch(0.99 0.01 290);
+  --secondary: oklch(0.22 0.045 275);
+  --secondary-foreground: oklch(0.96 0.02 290);
+  --muted: oklch(0.2 0.03 278);
+  --muted-foreground: oklch(0.72 0.035 290);
+  --accent: oklch(0.25 0.09 300);
+  --accent-foreground: oklch(0.98 0.01 290);
+  --border: oklch(0.8 0.08 300 / 19%);
+  --input: oklch(0.8 0.08 300 / 24%);
+  --ring: oklch(0.72 0.26 310);
+  --surface: oklch(0.13 0.025 280 / 94%);
+  --glow: oklch(0.72 0.26 310);
+}
+.dark body {
+  background-color:#070610;
+  background-image:
+    radial-gradient(ellipse 80% 30% at 50% -8%,rgba(185,35,255,.20),transparent 72%),
+    radial-gradient(ellipse 60% 28% at 100% 40%,rgba(0,130,255,.08),transparent 75%),
+    linear-gradient(180deg,#0b0915,#070610 65%);
+  background-attachment:fixed;
+}
+.dark .home-streaming { --primary: oklch(0.72 0.26 310); }
+.dark .home-streaming .streaming-feature {
+  border-color:rgba(207,55,255,.58);
+  background:linear-gradient(135deg,#170c25 0%,#080916 62%,#10152b 100%);
+  box-shadow:0 18px 55px -30px rgba(195,45,255,.65);
+}
+.dark .home-streaming .streaming-shortcut {
+  border-color:rgba(177,70,255,.38);
+  background:linear-gradient(145deg,#21102d,#0c1020 75%);
+}
+.dark .home-streaming .streaming-shortcut:nth-child(2) { border-color:rgba(30,150,255,.5); }
+.dark .home-streaming .streaming-shortcut:nth-child(3) { border-color:rgba(85,220,70,.48); }
+.dark .home-streaming .streaming-shortcut:nth-child(4) { border-color:rgba(255,155,35,.5); }
+.dark .home-streaming .streaming-shortcut-icon { color:#ed75ff; background:rgba(192,55,255,.17); }
+.dark .home-streaming .streaming-shortcut:nth-child(2) .streaming-shortcut-icon { color:#45baff; background:rgba(30,150,255,.16); }
+.dark .home-streaming .streaming-shortcut:nth-child(3) .streaming-shortcut-icon { color:#83f36a; background:rgba(85,220,70,.15); }
+.dark .home-streaming .streaming-shortcut:nth-child(4) .streaming-shortcut-icon { color:#ffb24b; background:rgba(255,155,35,.15); }
+.dark .home-streaming .streaming-playlist-card {
+  border-color:rgba(188,68,255,.36);
+  background:linear-gradient(145deg,#20102d,#0b0c1b 78%);
+}
+.dark .home-streaming > section:nth-of-type(3) {
+  border-color:rgba(180,65,255,.35);
+  background:linear-gradient(145deg,#1b1029,#0b0c18 75%);
+}
+.dark .player-reworked,
+.dark .player-immersive {
+  background:
+    radial-gradient(ellipse 85% 38% at 50% 0%,rgba(194,40,255,.27),transparent 75%),
+    radial-gradient(ellipse 65% 25% at 50% 100%,rgba(0,105,255,.15),transparent 75%),
+    linear-gradient(180deg,#100b1d 0%,#080813 72%,#070610 100%);
+  border-color:rgba(200,70,255,.45);
+}
+.dark .player-reworked .player-artwork { box-shadow:0 20px 60px -24px rgba(200,55,255,.62); border-color:rgba(205,65,255,.55); }
+.dark .player-reworked .player-waveform { background:linear-gradient(90deg,rgba(104,24,150,.28),rgba(24,30,80,.72),rgba(104,24,150,.28)); }
+.dark .player-reworked .player-progress-panel,
+.dark .player-reworked .player-controls { background:linear-gradient(145deg,rgba(36,18,52,.94),rgba(10,12,28,.97)); border-color:rgba(190,65,255,.28); }
+.dark .player-reworked .player-queue-panel { background:rgba(13,11,28,.8); border-color:rgba(190,65,255,.28); }
+.dark .storage-library { background:linear-gradient(145deg,#150d25,#080a17); }
+.dark .storage-library section:first-of-type { background:linear-gradient(135deg,#241033,#10152c); border-color:rgba(214,55,255,.55); }
+.dark .folder-color-card,
+.dark .folder-color-card:nth-child(4n+2),
+.dark .folder-color-card:nth-child(4n+3),
+.dark .folder-color-card:nth-child(4n+4) {
+  border-color:rgba(202,55,255,.48);
+  background:linear-gradient(145deg,#20102f,#0d1020 78%);
+  box-shadow:0 12px 35px -26px rgba(198,50,255,.6);
+}
+.dark .folder-color-card:nth-child(4n+2) { border-color:rgba(20,155,255,.5); background:linear-gradient(145deg,#10213a,#0b1120); }
+.dark .folder-color-card:nth-child(4n+3) { border-color:rgba(255,155,35,.5); background:linear-gradient(145deg,#30200e,#15101a); }
+.dark .folder-color-card:nth-child(4n+4) { border-color:rgba(30,225,190,.45); background:linear-gradient(145deg,#0d2929,#0b121d); }
+.dark .now-playing-dock {
+  background:linear-gradient(105deg,#1a0e2a,#11102a 58%,#090c1b);
+  border-color:rgba(204,65,255,.5);
+  box-shadow:0 12px 38px -20px rgba(190,50,255,.55),0 8px 28px -20px #000;
+}
+.dark .now-playing-action { background:linear-gradient(145deg,#ed3cff,#9b28ff); color:white; box-shadow:0 0 22px -7px rgba(205,55,255,.95); }
+.dark aside.glass, .dark header.glass, .dark nav.glass { border-color:rgba(192,70,255,.23); }
+.dark main [role="tab"][aria-selected="true"] { background:linear-gradient(100deg,#b92bff,#5c4bff); color:#fff; }
+.dark main .bg-primary { background-color:#b72eff; }
+.dark main .text-primary { color:#e178ff; }
+.dark main .border-primary\/30 { border-color:rgba(195,65,255,.32); }
+.dark main .bg-primary\/10 { background-color:rgba(194,55,255,.13); }
+.dark main button:focus-visible, .dark main a:focus-visible { outline-color:#df69ff; }
+.dark .home-streaming .streaming-feature h2 { text-shadow:0 2px 18px rgba(0,0,0,.7),0 0 24px rgba(191,55,255,.28); }
+.dark .home-streaming .streaming-shortcut:active,
+.dark .folder-color-card:active { transform:scale(.98); }
+@media (max-width:640px) {
+  .dark .home-streaming { gap:1.1rem; }
+  .dark .home-streaming .streaming-shortcut { min-height:5.2rem; }
+  .dark .player-reworked .player-artwork { width:min(72vw,290px); }
+}
