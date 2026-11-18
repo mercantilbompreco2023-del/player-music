@@ -16,10 +16,10 @@ import { AdminMusicLibrary } from "@/components/music/AdminMusicLibrary";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "Administração — Player Music" },
+      { title: "Administração — PLAYER MUSIC PRO" },
       { name: "description", content: "Área restrita a administradores." },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Administração — Player Music" },
+      { property: "og:title", content: "Administração — PLAYER MUSIC PRO" },
       { property: "og:description", content: "Área restrita a administradores." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
