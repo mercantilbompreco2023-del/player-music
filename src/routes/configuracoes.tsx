@@ -24,7 +24,7 @@ function ConfigPage() {
   const hydrated = useHydrated();
   const hasMediaSession = hydrated && "mediaSession" in navigator;
   return (
-    <div className="space-y-5">
+    <div className="settings-neon space-y-5">
       <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="size-4" /> Início</Link>
       <h1 className="text-3xl font-bold">Configurações</h1>
 
