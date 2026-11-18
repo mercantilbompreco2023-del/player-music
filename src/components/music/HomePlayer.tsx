@@ -167,7 +167,7 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
     else if (libraryTracks.length) p.playList(libraryTracks.map((track) => track.id), previewTrack?.id, "ordered");
   };
   return (
-    <section aria-label="Tocando agora" className={cn("neon-panel rounded-2xl border border-primary/60 p-3 sm:p-5", variant === "showcase" && "rounded-[2rem] bg-gradient-to-br from-fuchsia-950/50 via-card to-background p-4 shadow-[0_0_32px_-8px_hsl(var(--primary)/0.65)] sm:p-6")}>
+    <section aria-label="Tocando agora" className={cn("neon-panel rounded-2xl border border-primary/60 p-3 sm:p-5", variant === "showcase" && "rounded-[2rem] bg-gradient-to-br from-emerald-950/55 via-card to-background p-4 shadow-[0_0_32px_-8px_hsl(var(--primary)/0.65)] sm:p-6")}>
       {!!libraryTracks.length && <div className="mb-3 flex flex-wrap gap-2">
         <Button size="sm" variant={p.autoNext ? "default" : "outline"} aria-pressed={p.autoNext} onClick={() => p.setAutoNext(!p.autoNext)} title="Avançar automaticamente quando a música terminar">
           <SkipForward /> {p.autoNext ? "Próxima automática: ligada" : "Próxima automática: desligada"}
