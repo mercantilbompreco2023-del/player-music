@@ -442,3 +442,34 @@ body {
 .player-immersive { border-color:rgba(58,220,112,.3); }
 .player-immersive .text-primary { color:#48df83; }
 .player-immersive button[aria-label="Tocar"], .player-immersive button[aria-label="Pausar"] { box-shadow:0 0 24px -8px rgba(50,230,110,.8); }
+
+
+/* Player v2: larger artwork on desktop, compact control deck on mobile */
+.player-reworked { background:radial-gradient(ellipse 90% 35% at 50% 0%,rgba(30,150,75,.22),transparent 75%),linear-gradient(160deg,#101a14,#080d0a 72%); }
+.player-reworked .player-main-layout { min-height:260px; }
+.player-reworked .player-artwork { box-shadow:0 22px 55px -28px rgba(42,230,112,.42); }
+.player-reworked .player-waveform { background:linear-gradient(90deg,rgba(13,60,34,.35),rgba(18,40,27,.72),rgba(13,60,34,.35)); }
+.player-reworked .player-progress-panel { background:linear-gradient(145deg,rgba(18,38,26,.92),rgba(8,15,11,.92)); }
+.player-reworked .player-controls { background:linear-gradient(145deg,rgba(20,39,28,.94),rgba(8,15,11,.96)); }
+.player-reworked .player-queue-panel { background:rgba(8,17,12,.65); border:1px solid rgba(60,210,110,.18); border-radius:1.25rem; padding:1rem; }
+.player-reworked .player-controls button[aria-label="Tocar"], .player-reworked .player-controls button[aria-label="Pausar"] { width:4.2rem;height:4.2rem; }
+.folder-color-card { border-color:rgba(65,210,120,.25); background:linear-gradient(145deg,#10251a,#0b1510 72%); }
+.folder-color-card:nth-child(4n+2) { border-color:rgba(45,190,170,.35); background:linear-gradient(145deg,#102522,#0a1515 76%); }
+.folder-color-card:nth-child(4n+3) { border-color:rgba(80,170,220,.34); background:linear-gradient(145deg,#10202a,#0a1219 76%); }
+.folder-color-card:nth-child(4n+4) { border-color:rgba(190,160,75,.34); background:linear-gradient(145deg,#292313,#151109 76%); }
+.folder-color-card button[variant="ghost"] { border-radius:1rem; }
+.folder-color-card button:not([variant="ghost"]) { border-radius:999px; }
+.now-playing-dock { background:linear-gradient(105deg,#0c1c12 0%,#101a14 55%,#07100b 100%); border-color:rgba(70,220,120,.42); box-shadow:0 12px 35px -20px rgba(30,230,100,.38),0 8px 28px -20px #000; }
+.now-playing-dock > div:first-child { min-height:66px; }
+.now-playing-dock .now-playing-action { width:2.55rem;height:2.55rem; }
+.now-playing-dock > div:nth-child(2) { background:rgba(255,255,255,.08); }
+@media (min-width:768px) {
+ .player-reworked .player-main-layout { min-height:340px; }
+ .player-reworked .player-artwork { width:min(100%,330px); }
+}
+@media (max-width:640px) {
+ .now-playing-dock { margin-left:.55rem;margin-right:.55rem; }
+ .player-reworked { border-radius:1.4rem; }
+ .player-reworked .player-main-layout { gap:1rem; }
+ .player-reworked .player-artwork { width:min(66vw,255px); }
+}
