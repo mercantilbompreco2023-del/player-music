@@ -9,6 +9,7 @@ import { PhoneMusicSync } from "@/components/music/PhoneMusicSync";
 import { ImportButton } from "@/components/music/ImportButton";
 import { FolderImport } from "@/components/music/FolderImport";
 import { Cover } from "@/components/music/Cover";
+import { TrackRow } from "@/components/music/TrackRow";
 import { cardsQuery } from "@/lib/cards-query";
 import { FUNCTIONS, ICONS, isFunctionKey, visibleCards } from "@/lib/cards";
 import { useIsAdmin, useSession } from "@/lib/auth";
@@ -72,11 +73,6 @@ function Index() {
         </div>
       </section>
 
-      <section className="streaming-feature rounded-[1.8rem] border border-primary/25 bg-card p-3 shadow-xl shadow-black/20 sm:p-5">
-        <div className="mb-3 flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Reprodução rápida</p><h2 className="text-lg font-extrabold">Seu player</h2></div><Link to="/player" className="rounded-full border border-primary/30 px-3 py-2 text-xs font-semibold text-primary">Tela completa ↗</Link></div>
-        <HomePlayer variant="showcase" />
-      </section>
-
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Acesso rápido">
         <Link to="/biblioteca" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Headphones /></span><span><b>Biblioteca</b><small>{ownTracks.length} músicas</small></span></Link>
         <Link to="/pastas" className="streaming-shortcut"><span className="streaming-shortcut-icon"><FolderOpen /></span><span><b>Pastas</b><small>{folders.length} pastas</small></span></Link>
@@ -98,18 +94,20 @@ function Index() {
         </div>
       </section>
 
-      <section className="space-y-4">
-        <div className="flex items-end justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-primary">Sua coleção</p><h2 className="text-xl font-extrabold">Ouça novamente</h2></div><Link to="/biblioteca" className="text-xs font-semibold text-primary">Ver biblioteca ›</Link></div>
-        <div className="flex gap-3 overflow-x-auto pb-2">
-          {(category==="Favoritas" ? ownTracks.filter(t=>p.isFavorite(t.id)) : category==="Recentes" ? [...ownTracks].reverse() : category==="Artistas" ? ownTracks.filter((t,i)=>ownTracks.findIndex(x=>x.artist===t.artist)===i) : ownTracks).slice(0,10).map(track => (
-            <button key={track.id} onClick={() => p.playList(ownTracks.map(t=>t.id),track.id)} className="streaming-track-card group w-36 shrink-0 text-left sm:w-40">
-              <div className="relative overflow-hidden rounded-2xl"><Cover seed={track.id} className="aspect-square w-full rounded-none" /><span className="absolute bottom-2 right-2 flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground opacity-100 shadow-lg"><Play className="size-4 fill-current" /></span></div>
-              <p className="mt-2 truncate text-sm font-bold">{track.title}</p><p className="truncate text-xs text-muted-foreground">{track.artist}</p>
-            </button>
-          ))}
-          {!ownTracks.length && <Link to="/importar" className="flex min-h-44 min-w-full items-center justify-center rounded-2xl border border-dashed border-primary/35 bg-card/60 p-5 text-center text-sm text-muted-foreground">Adicione músicas para montar sua coleção.</Link>}
+      <section className="space-y-3">
+        <div className="flex items-end justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-primary">Sua biblioteca</p><h2 className="text-xl font-extrabold">Últimos adicionados</h2></div><Link to="/biblioteca" className="text-xs font-semibold text-primary">Ver todos ›</Link></div>
+        <div className="space-y-2">
+          {[...ownTracks].slice(-5).reverse().map(track => <TrackRow key={track.id} track={track} list={ownTracks.map(item=>item.id)} />)}
+          {!ownTracks.length && <Link to="/importar" className="flex min-h-24 items-center justify-center rounded-2xl border border-dashed border-primary/35 p-4 text-sm text-muted-foreground">Importe suas músicas para vê-las aqui.</Link>}
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1">{["Todas","Favoritas","Recentes","Artistas"].map(item => <button key={item} onClick={() => setCategory(item)} className={cn("shrink-0 rounded-full border px-4 py-2 text-xs font-semibold",category===item?"border-primary bg-primary text-primary-foreground":"border-border bg-card text-muted-foreground")}>{item}</button>)}</div>
+      </section>
+
+      <section className="space-y-3">
+        <div className="flex items-end justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-primary">Sua seleção</p><h2 className="text-xl font-extrabold">Favoritas</h2></div><Link to="/favoritos" className="text-xs font-semibold text-primary">Ver todas ›</Link></div>
+        <div className="grid grid-cols-2 gap-3">
+          {ownTracks.filter(track=>p.isFavorite(track.id)).slice(0,4).map(track=><button key={track.id} onClick={()=>p.playList(ownTracks.filter(item=>p.isFavorite(item.id)).map(item=>item.id),track.id)} className="streaming-playlist-card flex items-center gap-2 text-left"><Cover seed={track.id} className="size-14 shrink-0 rounded-xl"/><span className="min-w-0"><b className="block truncate text-xs">{track.title}</b><small className="block truncate text-muted-foreground">{track.artist}</small></span></button>)}
+          {!ownTracks.some(track=>p.isFavorite(track.id)) && <Link to="/favoritos" className="col-span-2 rounded-2xl border border-dashed border-primary/30 p-4 text-center text-xs text-muted-foreground">Toque no coração das músicas para adicioná-las aos favoritos.</Link>}
+        </div>
       </section>
 
       <section className="space-y-4">
@@ -121,6 +119,11 @@ function Index() {
           </article>)}
           <Link to="/playlists" className="flex aspect-square flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-primary/35 bg-card/50 p-4 text-center"><span className="flex size-12 items-center justify-center rounded-full bg-primary/15 text-primary"><Plus/></span><b className="text-sm">Criar playlist</b><small className="text-xs text-muted-foreground">Organize suas músicas</small></Link>
         </div>
+      </section>
+
+      <section className="rounded-3xl border border-primary/35 bg-gradient-to-r from-[#10271a] to-[#09120d] p-3 shadow-[0_12px_36px_-24px_rgba(34,197,94,.65)]">
+        <div className="mb-2 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[.2em] text-primary">Tocando agora</span><Link to="/player" className="text-xs font-semibold text-primary">Abrir reprodução ↗</Link></div>
+        <HomePlayer />
       </section>
 
       <section id="gerenciar-musicas" className="streaming-manage space-y-4 rounded-3xl border border-border bg-card p-4 shadow-lg sm:p-5">
