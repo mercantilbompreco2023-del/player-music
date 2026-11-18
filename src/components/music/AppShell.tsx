@@ -46,24 +46,24 @@ function MiniPlayer() {
   const pct = p.duration ? Math.min(100, (p.currentTime / p.duration) * 100) : 0;
   const highlighted = prefs.style === "highlighted";
   return (
-    <div className={cn("mx-2 mb-2 overflow-hidden rounded-2xl border shadow-glow transition-all lg:mx-6 lg:mb-3", highlighted ? "border-primary/60 bg-card ring-1 ring-primary/20" : "glass")}>
-      <div className={cn("flex items-center gap-3", highlighted ? "p-3 lg:px-4 lg:py-3" : "p-2 lg:px-3 lg:py-2")}>
+    <div className={cn("now-playing-dock mx-2 mb-2 overflow-hidden rounded-[1.25rem] border shadow-2xl transition-all lg:mx-6 lg:mb-3", highlighted ? "border-primary/55 bg-[#0b1710]/95 ring-1 ring-primary/15" : "glass")}>
+      <div className={cn("flex items-center gap-3", highlighted ? "px-3 py-2 lg:px-4 lg:py-2.5" : "p-2 lg:px-3 lg:py-2")}>
         <Link to="/player" className="flex min-w-0 flex-1 items-center gap-3" aria-label="Abrir player">
-          {prefs.showCover && <Cover seed={p.current.id} className={cn("shrink-0", highlighted ? "size-12 lg:size-14" : "size-9")} />}
+          {prefs.showCover && <Cover seed={p.current.id} className={cn("shrink-0", highlighted ? "size-11 rounded-xl lg:size-12" : "size-9")} />}
           <div className="min-w-0 flex-1">
-            <p className="mb-0.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+            <p className="mb-0.5 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[.18em] text-primary">
               {p.isPlaying ? <><span className="size-1.5 animate-pulse rounded-full bg-primary" /> Tocando agora</> : "Reprodução pausada"}
             </p>
-            <p className={cn("truncate font-bold", highlighted ? "text-sm lg:text-base" : "text-xs")}>{p.current.title}</p>
+            <p className={cn("truncate font-extrabold tracking-tight", highlighted ? "text-sm lg:text-[15px]" : "text-xs")}>{p.current.title}</p>
             {prefs.showArtist && <p className="truncate text-xs text-muted-foreground">{p.current.artist}</p>}
           </div>
         </Link>
-        <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className={cn("flex shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground", highlighted ? "size-11" : "size-9")}>
+        <button onClick={p.toggle} aria-label={p.isPlaying ? "Pausar" : "Tocar"} className={cn("now-playing-action flex shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_0_18px_-7px_rgba(60,230,120,.8)]", highlighted ? "size-10" : "size-9")}>
           {p.isPlaying ? <Pause className="size-5 fill-current" /> : <Play className="size-5 fill-current" />}
         </button>
         <button onClick={p.next} aria-label="Próxima" className="shrink-0 rounded-full p-2 text-foreground hover:bg-muted"><SkipForward className="size-5" /></button>
         <button onClick={() => setCustomize((v) => !v)} aria-label="Personalizar painel de música" aria-expanded={customize} className={cn("shrink-0 rounded-full border p-2", customize ? "border-primary bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary")}><Settings2 className="size-4" /></button>
-        <Link to="/player" aria-label="Abrir painel completo de reprodução" className="hidden rounded-full border p-2 text-primary sm:flex"><Volume2 className="size-4" /></Link>
+        <Link to="/player" aria-label="Abrir painel completo de reprodução" className="flex rounded-full border border-primary/25 bg-primary/10 p-2 text-primary"><Volume2 className="size-4" /></Link>
       </div>
       {prefs.showProgress && <div className={cn("bg-muted", highlighted ? "h-1.5" : "h-0.5")}><div className="h-full bg-primary transition-[width]" style={{ width: `${pct}%` }} /></div>}
       {customize && <div className="grid gap-3 border-t bg-background/95 p-3 sm:grid-cols-2">
