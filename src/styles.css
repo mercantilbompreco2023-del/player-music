@@ -586,3 +586,94 @@ body { background-color: #090909; color: #f8f7f2; }
 .player-purple .border-primary, .home-purple .border-primary { border-color: rgb(212 175 55 / 42%); }
 .player-purple .bg-primary, .home-purple .bg-primary { background-color: #d4af37; color: #111; }
 .player-purple .bg-primary\\/10, .home-purple .bg-primary\\/10 { background-color: rgb(212 175 55 / 10%); }
+
+
+/* FINAL BRAND OVERRIDE — PLAYER MUSIC PRO: BLACK / GOLD / WHITE */
+:root, .dark {
+  color-scheme: dark;
+  --background: #080808;
+  --foreground: #f8f8f6;
+  --card: #151515;
+  --card-foreground: #f8f8f6;
+  --popover: #111111;
+  --popover-foreground: #f8f8f6;
+  --primary: #d6b34a;
+  --primary-foreground: #090909;
+  --secondary: #242424;
+  --secondary-foreground: #f7f5ee;
+  --muted: #202020;
+  --muted-foreground: #c4c1b8;
+  --accent: #3a3018;
+  --accent-foreground: #fffdf5;
+  --border: rgba(214,179,74,.34);
+  --input: rgba(214,179,74,.28);
+  --ring: #d6b34a;
+  --surface: rgba(18,18,18,.96);
+  --glow: #d6b34a;
+  --gradient-hero: radial-gradient(120% 80% at 0% 0%, rgba(214,179,74,.16), transparent 68%);
+}
+html, body, .dark body {
+  background-color:#080808 !important;
+  color:#f8f8f6;
+  background-image:radial-gradient(ellipse 80% 30% at 50% -8%,rgba(214,179,74,.10),transparent 72%),linear-gradient(180deg,#101010,#080808 70%) !important;
+}
+.dark .home-streaming .streaming-feature,
+.dark .home-streaming .streaming-shortcut,
+.dark .home-streaming .streaming-playlist-card,
+.dark .home-streaming > section:nth-of-type(3),
+.dark .player-reworked,
+.dark .player-immersive,
+.dark .player-reworked .player-progress-panel,
+.dark .player-reworked .player-controls,
+.dark .player-reworked .player-queue-panel,
+.dark .storage-library,
+.dark .storage-library section:first-of-type,
+.dark .folder-color-card,
+.dark .folder-color-card:nth-child(n),
+.dark .now-playing-dock {
+  background:#151515 !important;
+  border-color:rgba(214,179,74,.38) !important;
+  box-shadow:0 12px 35px -24px rgba(214,179,74,.22),0 8px 28px -20px #000 !important;
+}
+.dark .home-streaming .streaming-feature,
+.dark .player-reworked,
+.dark .player-immersive {
+  background:linear-gradient(160deg,#1b1b1b,#0a0a0a 78%) !important;
+}
+.dark .home-streaming .streaming-shortcut-icon,
+.dark .home-streaming .streaming-shortcut:nth-child(n) .streaming-shortcut-icon {
+  color:#e2c15c !important;
+  background:rgba(214,179,74,.13) !important;
+}
+.dark .home-streaming .streaming-shortcut:nth-child(n),
+.dark .folder-color-card:nth-child(n) { border-color:rgba(214,179,74,.4) !important; }
+.dark .now-playing-action,
+.dark main .bg-primary,
+.dark .home-purple .bg-primary,
+.dark .player-purple .bg-primary {
+  background:linear-gradient(145deg,#f0d477,#b68b27) !important;
+  color:#090909 !important;
+  box-shadow:0 0 20px -8px rgba(214,179,74,.65) !important;
+}
+.dark main .text-primary,
+.dark .home-purple .text-primary,
+.dark .player-purple .text-primary,
+.dark .now-playing-dock .text-primary { color:#e6c45f !important; }
+.dark main .border-primary,
+.dark main [class*="border-primary/"],
+.dark aside.glass, .dark header.glass, .dark nav.glass {
+  border-color:rgba(214,179,74,.4) !important;
+}
+.dark main [role="tab"][aria-selected="true"] {
+  background:linear-gradient(100deg,#f0d477,#b68b27) !important;
+  color:#090909 !important;
+}
+.dark main .bg-primary\/10,
+.dark main [class*="bg-primary/"] { background-color:rgba(214,179,74,.13) !important; }
+.dark main button:focus-visible, .dark main a:focus-visible { outline-color:#e6c45f !important; }
+[class*="text-violet-"], [class*="text-purple-"], [class*="text-fuchsia-"],
+[class*="text-emerald-"], [class*="text-green-"] { color:#e6c45f !important; }
+[class*="bg-violet-"], [class*="bg-purple-"], [class*="bg-fuchsia-"],
+[class*="bg-emerald-"], [class*="bg-green-"] { background-color:rgba(214,179,74,.14) !important; }
+[class*="border-violet-"], [class*="border-purple-"], [class*="border-fuchsia-"],
+[class*="border-emerald-"], [class*="border-green-"] { border-color:rgba(214,179,74,.4) !important; }
