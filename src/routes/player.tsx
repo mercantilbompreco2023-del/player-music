@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ChevronDown, FolderOpen, Heart, ListMusic, Music2, Pause, Play, Plus, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, X, Download, Check, Settings2 } from "lucide-react";
+import { ChevronDown, FolderOpen, Heart, ListMusic, Music2, Pause, Play, Plus, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, X, Download, Settings2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Cover } from "@/components/music/Cover";
 import { CustomFolderCover } from "@/components/music/CustomFolderCover";
