@@ -93,10 +93,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Player Music" },
+      { title: "PLAYER MUSIC PRO" },
       { name: "description", content: "Player de música para seus próprios arquivos de áudio." },
       { name: "theme-color", content: "#1c1d24" },
-            { property: "og:title", content: "Player Music" },
+            { property: "og:title", content: "PLAYER MUSIC PRO" },
       { property: "og:description", content: "Player de música para seus próprios arquivos de áudio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
