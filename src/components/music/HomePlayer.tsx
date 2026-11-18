@@ -158,7 +158,7 @@ export function HomePlayer({ variant = "classic" }: { variant?: "classic" | "sho
     try { localStorage.setItem("player-music-show-artist-name", String(next)); } catch { /* preferência opcional */ }
     return next;
   });
-  const libraryTracks = p.tracks.filter((track) => track.source === "local" || track.source === "cloud");
+  const libraryTracks = p.tracks.filter((track) => track.source === "local" || track.source === "cloud" || track.source === "official");
   const previewTrack = libraryTracks[0] ?? null;
   const t = p.current ?? previewTrack;
   const hasCurrent = !!p.current;
