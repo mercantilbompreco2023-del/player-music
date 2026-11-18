@@ -136,12 +136,14 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useEffect(() => {
-    // Na abertura inicial do aplicativo, mostrar primeiro o painel de reprodução.
-    // A marca de sessão evita redirecionar quando a pessoa volta ao Início pelo menu.
-    if (window.location.pathname === "/" && sessionStorage.getItem("pm:initial-player-opened") !== "1") {
-      sessionStorage.setItem("pm:initial-player-opened", "1");
-      void router.navigate({ to: "/player" });
-    }
+    // Na abertura: contas conectadas seguem direto para reprodução;
+    // visitantes veem o login, mas podem continuar sem entrar pela seta.
+    if (window.location.pathname !== "/") return;
+    let active = true;
+    void supabase.auth.getSession().then(({ data }) => {
+      if (active) void router.navigate({ to: data.session?.user ? "/player" : "/auth", replace: true });
+    });
+    return () => { active = false; };
   }, [router]);
 
   useEffect(() => {
