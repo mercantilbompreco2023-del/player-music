@@ -70,6 +70,20 @@ function Index() {
         <Link to="/playlists" className="streaming-shortcut"><span className="streaming-shortcut-icon"><ListMusic /></span><span><b>Playlists</b><small>{p.prefs.playlists.length} listas</small></span></Link>
       </section>
 
+      <section className="space-y-3 rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/15 via-card to-card p-4">
+        <div className="flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-primary">Artistas da sua biblioteca</p><h2 className="text-xl font-extrabold">Cantores em destaque</h2></div><Link to="/biblioteca" className="text-xs font-semibold text-primary">Ver todos ›</Link></div>
+        <div className="flex gap-4 overflow-x-auto pb-1">
+          {ownTracks.filter((track,index,all)=>all.findIndex(item=>item.artist.trim().toLocaleLowerCase("pt-BR")===track.artist.trim().toLocaleLowerCase("pt-BR"))===index).slice(0,10).map(artist=>{
+            const artistTracks=ownTracks.filter(track=>track.artist.trim().toLocaleLowerCase("pt-BR")===artist.artist.trim().toLocaleLowerCase("pt-BR"));
+            return <button key={artist.artist} onClick={()=>p.playList(artistTracks.map(track=>track.id),artistTracks[0]?.id)} className="flex w-24 shrink-0 flex-col items-center gap-2 text-center">
+              <span className="block size-20 overflow-hidden rounded-full border-2 border-primary/60 p-1 shadow-[0_0_18px_-8px_var(--primary)]"><Cover seed={artist.id} className="size-full rounded-full"/></span>
+              <span className="w-full truncate text-xs font-bold">{artist.artist}</span><span className="text-[10px] text-muted-foreground">{artistTracks.length} músicas</span>
+            </button>;
+          })}
+          {!ownTracks.length && <p className="text-sm text-muted-foreground">Seus cantores aparecem aqui depois que você importar músicas.</p>}
+        </div>
+      </section>
+
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-primary">Sua coleção</p><h2 className="text-xl font-extrabold">Ouça novamente</h2></div><Link to="/biblioteca" className="text-xs font-semibold text-primary">Ver biblioteca ›</Link></div>
         <div className="flex gap-3 overflow-x-auto pb-2">
