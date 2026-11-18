@@ -48,7 +48,7 @@ function Index() {
       <header className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <img src={playerIcon} alt="" width={46} height={46} className="size-11 rounded-2xl object-cover shadow-lg ring-1 ring-primary/25" />
-          <div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Sua trilha sonora</p><h1 className="truncate text-2xl font-extrabold tracking-tight">Player Music</h1></div>
+          <div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Sua trilha sonora</p><h1 className="truncate text-2xl font-extrabold tracking-tight">Delícia Coxi’s Music</h1></div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button>
