@@ -52,7 +52,9 @@ function StoragePage() {
   const custom = customFolders(p.tracks);
   const device = savedFolders(p.tracks);
   const folders = [...custom.map((folder) => ({ ...folder, kind: "Sua pasta" })), ...device.map((folder) => ({ ...folder, kind: "Pasta importada" }))];
-  const percent = quotaBytes && quotaBytes > 0 ? Math.min(100, (usedBytes / quotaBytes) * 100) : 0;\n  const cloudTracks = p.tracks.filter((track) => track.source === "cloud");\n  const saveLibrary = async () => { for (const track of cloudTracks) await p.saveTrackLocally(track.id); await refresh(); };
+  const percent = quotaBytes && quotaBytes > 0 ? Math.min(100, (usedBytes / quotaBytes) * 100) : 0;
+  const cloudTracks = p.tracks.filter((track) => track.source === "cloud");
+  const saveLibrary = async () => { for (const track of cloudTracks) await p.saveTrackLocally(track.id); await refresh(); };
 
   return <div className="storage-library space-y-5 rounded-[1.8rem] p-1 sm:p-3">
     <Link to="/configuracoes" className="inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="size-4" /> Configurações</Link>
