@@ -394,3 +394,20 @@ body {
   .home-streaming { gap:2.1rem; }
   .home-streaming .streaming-feature { padding:.35rem; }
 }
+
+
+/* Dedicated playback and local-library screens */
+.player-immersive {
+  background:
+    radial-gradient(ellipse 90% 42% at 50% 0%, oklch(0.38 0.12 155 / .34), transparent 72%),
+    radial-gradient(ellipse 65% 28% at 50% 100%, oklch(0.3 0.1 155 / .18), transparent 78%),
+    linear-gradient(180deg, #101a15 0%, #090e0c 58%, #080b0a 100%);
+}
+.player-immersive > div:first-of-type { position:relative; z-index:1; }
+.player-immersive > section { border:1px solid color-mix(in oklab,var(--primary) 22%,var(--border)); border-radius:1.25rem; background:color-mix(in oklab,var(--card) 88%,transparent); padding:1rem; }
+.home-streaming .artist-feature-card { background:linear-gradient(145deg,#14231c,#0d1210); border:1px solid color-mix(in oklab,var(--primary) 28%,var(--border)); }
+.storage-library { background:linear-gradient(145deg,#14231c,#0b100e); }
+@media (max-width:640px) {
+  .player-immersive { min-height:calc(100dvh - 4rem); border-radius:1.35rem; }
+  .player-immersive > div.flex.flex-col { gap:1.15rem; padding-top:.5rem; }
+}
