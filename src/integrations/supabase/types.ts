@@ -116,6 +116,12 @@ export type Database = {
         }
         Relationships: []
       }
+      public_music: {
+        Row: { id: string; title: string; artist: string; album: string | null; duration: number | null; storage_path: string; mime_type: string | null; file_size: number; published: boolean; created_at: string; updated_at: string }
+        Insert: { id?: string; title: string; artist?: string; album?: string | null; duration?: number | null; storage_path: string; mime_type?: string | null; file_size?: number; published?: boolean; created_at?: string; updated_at?: string }
+        Update: { id?: string; title?: string; artist?: string; album?: string | null; duration?: number | null; storage_path?: string; mime_type?: string | null; file_size?: number; published?: boolean; created_at?: string; updated_at?: string }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
