@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowLeft, ArrowUp, Loader2, LogOut, Plus, ShieldAlert, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, Loader2, LogOut, Plus, ShieldAlert, Trash2, Home, Music2, FolderOpen, UploadCloud, Users, BarChart3, Settings, HardDrive, Crown } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,7 @@ function AdminPage() {
   const admin = useIsAdmin(user?.id);
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"cartoes" | "usuarios" | "musicas" | "config" | "registros">("cartoes");
+  const [tab, setTab] = useState<"inicio" | "cartoes" | "usuarios" | "musicas" | "config" | "registros">("inicio");
 
   async function logout() {
     await qc.cancelQueries();
@@ -67,24 +67,44 @@ function AdminPage() {
     );
   }
 
-  const TABS = [["cartoes", "Cartões"], ["usuarios", "Usuários"], ["musicas", "MÚSICAS OFICIAIS"], ["config", "Ajustes"], ["registros", "Registros"]] as const;
+  const NAV = [
+    { key: "inicio", label: "Início", icon: Home },
+    { key: "musicas", label: "Músicas Oficiais", icon: Music2 },
+    { key: "cartoes", label: "Pastas / Artistas", icon: FolderOpen },
+    { key: "musicas", label: "Uploads (Adicionar)", icon: UploadCloud },
+    { key: "usuarios", label: "Usuários", icon: Users },
+    { key: "registros", label: "Estatísticas / Registros", icon: BarChart3 },
+    { key: "config", label: "Configurações", icon: Settings },
+  ] as const;
   return (
-    <div className="space-y-5">
-      <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="size-4" /> Início</Link>
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-3xl font-bold">Administração</h1>
-        <Button variant="ghost" size="sm" onClick={logout}><LogOut /> Sair</Button>
+    <div className="admin-console -mx-4 -mt-6 min-h-screen overflow-hidden bg-[#080b18] text-white sm:-mx-8 sm:-mt-8">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-amber-300/20 bg-[#0b1022] px-5 py-4 sm:px-8">
+        <div className="flex items-center gap-3">
+          <div className="rounded-2xl border border-amber-300/50 bg-amber-300/10 p-3"><Crown className="size-7 text-amber-300" /></div>
+          <div><p className="text-[10px] font-black uppercase tracking-[.3em] text-amber-300">PLAYER MUSIC PRO</p><h1 className="text-xl font-black sm:text-2xl">Painel do Administrador</h1><p className="text-xs text-slate-300">Gerencie músicas, pastas e usuários do aplicativo</p></div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="hidden rounded-xl border border-white/15 bg-white/5 px-4 py-2 sm:block"><p className="text-sm font-bold">ADM</p><p className="text-[11px] text-slate-300">{user?.email}</p></div>
+          <Button onClick={logout} className="bg-red-600 font-bold text-white hover:bg-red-700"><LogOut className="mr-2 size-4" /> Sair do Painel</Button>
+        </div>
+      </header>
+      <div className="grid min-h-[calc(100vh-88px)] lg:grid-cols-[245px_minmax(0,1fr)]">
+        <aside className="border-b border-amber-300/15 bg-[#0b1022] p-3 lg:border-b-0 lg:border-r lg:p-4">
+          <nav aria-label="Menu administrativo" className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-col">
+            {NAV.map(({key,label,icon:Icon},i) => <button key={label} onClick={()=>setTab(key)} className={cn("flex min-h-12 items-center gap-3 rounded-xl border px-3 py-3 text-left text-xs font-bold transition-colors sm:text-sm",tab===key && ((key==="inicio"&&i===0)||(key==="musicas"&&i===1)||(key==="cartoes"&&i===2)||(key==="usuarios"&&i===4)||(key==="registros"&&i===5)||(key==="config"&&i===6)) ? "border-amber-300/60 bg-gradient-to-r from-amber-400 to-yellow-600 text-black shadow-lg shadow-amber-950/30" : "border-white/10 bg-white/[.03] text-slate-100 hover:border-amber-300/40 hover:bg-white/[.07]")}><Icon className="size-5 shrink-0" />{label}</button>)}
+            <Link to="/armazenamento" className="flex min-h-12 items-center gap-3 rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-xs font-bold text-slate-100 hover:border-amber-300/40 sm:text-sm"><HardDrive className="size-5"/>Backup / Armazenamento</Link>
+          </nav>
+          <div className="mt-5 hidden rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-3 text-xs text-emerald-100 lg:block"><span className="mb-1 block font-bold">Acesso protegido</span>Área exclusiva para administradores autorizados.</div>
+        </aside>
+        <section className="min-w-0 space-y-5 p-4 sm:p-6 lg:p-8">
+          {tab === "inicio" && <div className="grid gap-4 sm:grid-cols-2"><button onClick={()=>setTab("musicas")} className="rounded-2xl border border-fuchsia-400/40 bg-gradient-to-br from-fuchsia-950/80 to-[#11152b] p-5 text-left"><Music2 className="mb-3 size-8 text-fuchsia-300"/><h2 className="text-lg font-extrabold">Músicas Oficiais</h2><p className="mt-1 text-sm text-slate-300">Publicar e administrar faixas disponíveis para os usuários</p></button><button onClick={()=>setTab("cartoes")} className="rounded-2xl border border-sky-400/40 bg-gradient-to-br from-sky-950/80 to-[#11152b] p-5 text-left"><FolderOpen className="mb-3 size-8 text-sky-300"/><h2 className="text-lg font-extrabold">Organização do aplicativo</h2><p className="mt-1 text-sm text-slate-300">Gerencie os cartões e atalhos existentes</p></button><button onClick={()=>setTab("usuarios")} className="rounded-2xl border border-emerald-400/40 bg-gradient-to-br from-emerald-950/80 to-[#11152b] p-5 text-left"><Users className="mb-3 size-8 text-emerald-300"/><h2 className="text-lg font-extrabold">Usuários</h2><p className="mt-1 text-sm text-slate-300">Gerenciar permissões de administrador</p></button><button onClick={()=>setTab("registros")} className="rounded-2xl border border-amber-300/40 bg-gradient-to-br from-amber-950/80 to-[#11152b] p-5 text-left"><BarChart3 className="mb-3 size-8 text-amber-300"/><h2 className="text-lg font-extrabold">Registros</h2><p className="mt-1 text-sm text-slate-300">Consultar ações administrativas registradas</p></button></div>}
+          {tab === "cartoes" && <><h2 className="text-xl font-black text-amber-200">Cartões e atalhos</h2><CardsAdmin /></>}
+          {tab === "usuarios" && <><h2 className="text-xl font-black text-amber-200">Usuários</h2><UsersAdmin selfId={user!.id} /></>}
+          {tab === "musicas" && <><div className="rounded-2xl border border-fuchsia-400/30 bg-gradient-to-r from-fuchsia-950/70 to-[#11152b] p-4"><h2 className="text-xl font-black">Adicionar Músicas</h2><p className="text-sm text-slate-300">Publique músicas oficiais disponíveis para os usuários</p></div><AdminMusicLibrary /></>}
+          {tab === "config" && <><h2 className="text-xl font-black text-amber-200">Configurações</h2><SettingsAdmin /></>}
+          {tab === "registros" && <><h2 className="text-xl font-black text-amber-200">Registros administrativos</h2><AuditAdmin /></>}
+        </section>
       </div>
-      <p className="text-xs text-muted-foreground">Conectado como {user?.email}. Toda alteração é registrada.</p>
-      <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1 sm:grid-cols-5">
-        {TABS.map(([k, l]) => (
-          <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn("rounded-full py-2 text-xs font-semibold", tab === k ? "bg-background" : "text-muted-foreground", k === "musicas" && "bg-amber-500/15 text-amber-700 ring-1 ring-amber-500/50")}>{l}</button>
-        ))}
-      </div>
-      {tab === "cartoes" && <CardsAdmin />}
-      {tab === "usuarios" && <UsersAdmin selfId={user!.id} />}\n      {tab === "musicas" && <AdminMusicLibrary />}
-      {tab === "config" && <SettingsAdmin />}
-      {tab === "registros" && <AuditAdmin />}
     </div>
   );
 }
