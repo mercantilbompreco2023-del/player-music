@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Database, FolderOpen, HardDrive, Music, RefreshCw, Download, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Database, FolderOpen, HardDrive, Music, RefreshCw, Download } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { usePlayer } from "@/lib/music/player-context";
