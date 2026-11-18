@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Cover } from "@/components/music/Cover";
+import { CustomFolderCover } from "@/components/music/CustomFolderCover";
 import { TrackRow } from "@/components/music/TrackRow";
 import { usePlayer } from "@/lib/music/player-context";
 
@@ -48,7 +48,7 @@ function PlaylistPage() {
     <div>
       <Link to="/playlists" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="size-4" /> Playlists</Link>
       <div className="mb-5 flex items-end gap-4">
-        <Cover seed={pl.id} className="size-28 rounded-2xl shadow-glow" />
+        <CustomFolderCover folderName={`playlist-cover:${pl.id}`} editable className="size-28 shrink-0 rounded-2xl shadow-glow" />
         <div className="min-w-0 flex-1">
           {editing ? (
             <form
