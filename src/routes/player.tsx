@@ -38,11 +38,11 @@ function PlayerPage() {
   const upcoming = p.queue.map((id, pos) => ({ pos, track: p.byId(id) })).filter((x) => x.pos > p.index && x.track);
 
   return (
-    <div className="player-purple player-immersive player-reworked relative mx-auto min-h-[calc(100dvh-5rem)] max-w-3xl space-y-5 overflow-hidden rounded-[2rem] border border-primary/25 px-4 pb-8 pt-3 text-foreground shadow-2xl shadow-primary/10 sm:px-6">
+    <div className="player-purple player-immersive player-reworked player-exclusive relative mx-auto min-h-screen w-full max-w-none space-y-5 overflow-hidden rounded-none border-0 px-4 pb-10 pt-3 text-foreground shadow-none sm:px-6">
       <style>{"@keyframes pm-wave { 0%,100% { transform:scaleY(.28); opacity:.62 } 50% { transform:scaleY(1); opacity:1 } }"}</style>
       <div className="flex items-center justify-between gap-2 px-1">
         <button onClick={() => router.history.back()} aria-label="Voltar" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
-        <div className="text-center"><p className="text-[10px] font-bold uppercase tracking-[.22em] text-primary">Tocando agora</p><p className="text-lg font-extrabold tracking-tight">Delícia Coxi’s <span className="text-primary">Music</span></p></div>
+        <div className="text-center"><p className="text-[10px] font-bold uppercase tracking-[.22em] text-primary">Reprodutor de Música</p><p className="text-lg font-extrabold tracking-tight">Delícia Coxi’s <span className="text-primary">Music</span></p></div>
         <Link to="/biblioteca" aria-label="Buscar músicas" title="Buscar músicas" className="rounded-full p-2"><Music2 className="size-5" /></Link>
       </div>
       <div className="player-main-layout grid grid-cols-1 items-center gap-5 px-1 pt-3 text-center md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 md:text-left">
