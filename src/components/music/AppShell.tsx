@@ -135,20 +135,20 @@ export function AppShell({ children }: { children: ReactNode }) {
           <p className="mt-1 text-xs text-muted-foreground">Sua biblioteca, do seu jeito.</p>
           <p className="mt-2 text-[11px] font-semibold tracking-wide text-primary">Feito por Adevaldo Marques</p>
         </div>
-      </aside>
+      </aside>}
 
-      <header className="glass fixed left-64 right-0 top-0 z-30 hidden h-20 items-center justify-between border-b px-8 lg:flex">
+      {!onPlayer && (      <header className="glass fixed left-64 right-0 top-0 z-30 hidden h-20 items-center justify-between border-b px-8 lg:flex">
         <Link to="/buscar" className="flex w-full max-w-xl items-center gap-3 rounded-full border bg-background/70 px-5 py-3 text-sm text-muted-foreground hover:border-primary/60">
           <Search className="size-5" /> Buscar músicas, artistas ou álbuns...
         </Link>
         <Link to="/configuracoes" className="rounded-full border p-3 text-muted-foreground hover:text-primary" aria-label="Configurações">⚙</Link>
-      </header>
+      </header> )}
 
       <div className="lg:pl-64">
         <main className={cn("mx-auto w-full max-w-7xl px-4 pt-6 lg:px-8 lg:pt-28", onPlayer ? "pb-24" : "pb-44 lg:pb-32")}>{children}</main>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-2xl pb-safe lg:hidden">
+      {!onPlayer && (      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-2xl pb-safe lg:hidden">
         {!onPlayer && <MiniPlayer />}
         <nav className="glass mx-2 mb-2 grid grid-cols-5 rounded-[1.4rem] border border-border/80 p-1.5 shadow-2xl shadow-black/25">
           {MOBILE_NAV.map(({ to, label, icon: Icon }) => {
@@ -161,7 +161,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-      </div>
+      </div> )}
       <div className="fixed bottom-0 left-64 right-0 z-40 hidden pb-safe lg:block">
         <MiniPlayer />
       </div>
