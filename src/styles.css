@@ -39,53 +39,53 @@
 
 :root {
   --radius: 0.875rem;
-  --background: oklch(0.97 0.008 255);
-  --foreground: oklch(0.2 0.02 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.02 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.02 260);
-  --primary: oklch(0.58 0.13 165);
-  --primary-foreground: oklch(0.99 0.01 255);
-  --secondary: oklch(0.92 0.015 255);
-  --secondary-foreground: oklch(0.25 0.02 260);
-  --muted: oklch(0.93 0.01 255);
-  --muted-foreground: oklch(0.48 0.02 260);
-  --accent: oklch(0.9 0.04 255);
-  --accent-foreground: oklch(0.25 0.03 255);
-  --destructive: oklch(0.58 0.22 27);
+  --background: oklch(0.12 0.008 75);
+  --foreground: oklch(0.97 0.008 85);
+  --card: oklch(0.18 0.009 75);
+  --card-foreground: oklch(0.97 0.008 85);
+  --popover: oklch(0.16 0.008 75);
+  --popover-foreground: oklch(0.97 0.008 85);
+  --primary: oklch(0.78 0.15 82);
+  --primary-foreground: oklch(0.13 0.012 75);
+  --secondary: oklch(0.24 0.012 75);
+  --secondary-foreground: oklch(0.96 0.008 85);
+  --muted: oklch(0.23 0.01 75);
+  --muted-foreground: oklch(0.76 0.018 85);
+  --accent: oklch(0.3 0.055 82);
+  --accent-foreground: oklch(0.98 0.008 85);
+  --destructive: oklch(0.62 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.88 0.012 255);
-  --input: oklch(0.88 0.012 255);
-  --ring: oklch(0.62 0.14 165);
-  --surface: oklch(0.99 0.005 165 / 0.85);
-  --glow: oklch(0.72 0.12 165);
-  --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.85 0.07 165 / 0.5), transparent 60%);
+  --border: oklch(0.42 0.045 82 / 55%);
+  --input: oklch(0.35 0.025 82 / 65%);
+  --ring: oklch(0.78 0.15 82);
+  --surface: oklch(0.17 0.01 75 / 0.94);
+  --glow: oklch(0.78 0.15 82);
+  --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.5 0.12 82 / 0.28), transparent 65%);
 }
 
 .dark {
-  --background: oklch(0.13 0.018 270);
-  --foreground: oklch(0.97 0.008 285);
-  --card: oklch(0.19 0.018 270);
-  --card-foreground: oklch(0.97 0.008 285);
-  --popover: oklch(0.21 0.02 270);
-  --popover-foreground: oklch(0.97 0.008 285);
-  --primary: oklch(0.72 0.16 285);
-  --primary-foreground: oklch(0.99 0.005 285);
-  --secondary: oklch(0.25 0.025 270);
-  --secondary-foreground: oklch(0.95 0.01 285);
-  --muted: oklch(0.24 0.018 270);
-  --muted-foreground: oklch(0.7 0.035 285);
-  --accent: oklch(0.3 0.07 285);
-  --accent-foreground: oklch(0.97 0.008 285);
+  --background: oklch(0.10 0.006 75);
+  --foreground: oklch(0.98 0.006 85);
+  --card: oklch(0.16 0.008 75);
+  --card-foreground: oklch(0.98 0.006 85);
+  --popover: oklch(0.15 0.008 75);
+  --popover-foreground: oklch(0.98 0.006 85);
+  --primary: oklch(0.8 0.15 82);
+  --primary-foreground: oklch(0.12 0.01 75);
+  --secondary: oklch(0.22 0.01 75);
+  --secondary-foreground: oklch(0.97 0.006 85);
+  --muted: oklch(0.21 0.008 75);
+  --muted-foreground: oklch(0.76 0.015 85);
+  --accent: oklch(0.28 0.05 82);
+  --accent-foreground: oklch(0.98 0.006 85);
   --destructive: oklch(0.68 0.19 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(1 0 0 / 11%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.72 0.16 285);
-  --surface: oklch(0.16 0.02 270 / 0.94);
-  --glow: oklch(0.72 0.16 285);
-  --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.42 0.12 285 / 0.45), transparent 65%);
+  --border: oklch(0.4 0.04 82 / 45%);
+  --input: oklch(0.34 0.02 82 / 60%);
+  --ring: oklch(0.8 0.15 82);
+  --surface: oklch(0.14 0.008 75 / 0.96);
+  --glow: oklch(0.8 0.15 82);
+  --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.48 0.11 82 / 0.3), transparent 65%);
 }
 
 @layer base {
@@ -126,7 +126,7 @@
   --ring: var(--primary);
   --glow: var(--primary);
 }
-.player-purple { --background: oklch(0.13 0.018 270); --card: oklch(0.19 0.018 270); --border: oklch(1 0 0 / 12%); }
+.player-purple { --background: oklch(0.10 0.006 75); --card: oklch(0.16 0.008 75); --border: oklch(0.4 0.04 82 / 45%); }
 .section-heading { border-left: 3px solid var(--primary); padding-left: 10px; }
 .home-purple section > h2,
 .home-purple section > div > h2 { letter-spacing: -0.025em; }
@@ -577,3 +577,12 @@ body {
   .dark .home-streaming .streaming-shortcut { min-height:5.2rem; }
   .dark .player-reworked .player-artwork { width:min(72vw,290px); }
 }
+
+
+/* PLAYER MUSIC PRO — identidade preto, dourado e branco */
+body { background-color: #090909; color: #f8f7f2; }
+.player-purple, .home-purple { background-color: #090909; color: #f8f7f2; }
+.player-purple .text-primary, .home-purple .text-primary { color: #e8bd55; }
+.player-purple .border-primary, .home-purple .border-primary { border-color: rgb(212 175 55 / 42%); }
+.player-purple .bg-primary, .home-purple .bg-primary { background-color: #d4af37; color: #111; }
+.player-purple .bg-primary\\/10, .home-purple .bg-primary\\/10 { background-color: rgb(212 175 55 / 10%); }
