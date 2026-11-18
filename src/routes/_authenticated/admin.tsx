@@ -41,6 +41,21 @@ function AdminPage() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"inicio" | "cartoes" | "usuarios" | "musicas" | "config" | "registros">("inicio");
+  const overview = useQuery({
+    queryKey: ["admin-overview"],
+    enabled: !!user?.id && admin.data === true,
+    queryFn: async () => {
+      const [music, profiles, cards] = await Promise.all([
+        supabase.from("public_music").select("id,title,artist,created_at,file_size", { count: "exact" }).order("created_at", { ascending: false }).limit(4),
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase.from("app_cards").select("id", { count: "exact", head: true }),
+      ]);
+      if (music.error) throw music.error;
+      if (profiles.error) throw profiles.error;
+      if (cards.error) throw cards.error;
+      return { music: music.data, musicCount: music.count ?? 0, userCount: profiles.count ?? 0, cardCount: cards.count ?? 0 };
+    },
+  });
 
   async function logout() {
     await qc.cancelQueries();
@@ -77,11 +92,11 @@ function AdminPage() {
     { key: "config", label: "Configurações", icon: Settings },
   ] as const;
   return (
-    <div className="admin-console -mx-4 -mt-6 min-h-screen overflow-hidden bg-[#080b18] text-white sm:-mx-8 sm:-mt-8">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-amber-300/20 bg-[#0b1022] px-5 py-4 sm:px-8">
+    <div className="admin-console -mx-4 -mt-6 min-h-screen overflow-hidden bg-[#080808] text-white sm:-mx-8 sm:-mt-8">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[#d6b34a]/35 bg-[#101010] px-5 py-4 sm:px-8">
         <div className="flex items-center gap-3">
-          <div className="rounded-2xl border border-amber-300/50 bg-amber-300/10 p-3"><Crown className="size-7 text-amber-300" /></div>
-          <div><p className="text-[10px] font-black uppercase tracking-[.3em] text-amber-300">PLAYER MUSIC PRO</p><h1 className="text-xl font-black sm:text-2xl">Painel do Administrador</h1><p className="text-xs text-slate-300">Gerencie músicas, pastas e usuários do aplicativo</p></div>
+          <div className="rounded-2xl border border-[#d6b34a]/60 bg-[#d6b34a]/10 p-3"><Crown className="size-7 text-amber-300" /></div>
+          <div><p className="text-[10px] font-black uppercase tracking-[.3em] text-[#e6c45f]">PLAYER MUSIC PRO</p><h1 className="text-xl font-black sm:text-2xl">Painel do Administrador</h1><p className="text-xs text-slate-300">Gerencie músicas, pastas e usuários do aplicativo</p></div>
         </div>
         <div className="flex items-center gap-3">
           <div className="hidden rounded-xl border border-white/15 bg-white/5 px-4 py-2 sm:block"><p className="text-sm font-bold">ADM</p><p className="text-[11px] text-slate-300">{user?.email}</p></div>
@@ -89,18 +104,39 @@ function AdminPage() {
         </div>
       </header>
       <div className="grid min-h-[calc(100vh-88px)] lg:grid-cols-[245px_minmax(0,1fr)]">
-        <aside className="border-b border-amber-300/15 bg-[#0b1022] p-3 lg:border-b-0 lg:border-r lg:p-4">
+        <aside className="border-b border-[#d6b34a]/20 bg-[#0b1022] p-3 lg:border-b-0 lg:border-r lg:p-4">
           <nav aria-label="Menu administrativo" className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-col">
             {NAV.map(({key,label,icon:Icon},i) => <button key={label} onClick={()=>setTab(key)} className={cn("flex min-h-12 items-center gap-3 rounded-xl border px-3 py-3 text-left text-xs font-bold transition-colors sm:text-sm",tab===key && ((key==="inicio"&&i===0)||(key==="musicas"&&i===1)||(key==="cartoes"&&i===2)||(key==="usuarios"&&i===4)||(key==="registros"&&i===5)||(key==="config"&&i===6)) ? "border-amber-300/60 bg-gradient-to-r from-amber-400 to-yellow-600 text-black shadow-lg shadow-amber-950/30" : "border-white/10 bg-white/[.03] text-slate-100 hover:border-amber-300/40 hover:bg-white/[.07]")}><Icon className="size-5 shrink-0" />{label}</button>)}
             <Link to="/armazenamento" className="flex min-h-12 items-center gap-3 rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-xs font-bold text-slate-100 hover:border-amber-300/40 sm:text-sm"><HardDrive className="size-5"/>Backup / Armazenamento</Link>
           </nav>
-          <div className="mt-5 hidden rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-3 text-xs text-emerald-100 lg:block"><span className="mb-1 block font-bold">Acesso protegido</span>Área exclusiva para administradores autorizados.</div>
+          <div className="mt-5 hidden rounded-xl border border-[#d6b34a]/30 bg-[#d6b34a]/10 p-3 text-xs text-white/80 lg:block"><span className="mb-1 block font-bold">Acesso protegido</span>Área exclusiva para administradores autorizados.</div>
         </aside>
         <section className="min-w-0 space-y-5 p-4 sm:p-6 lg:p-8">
-          {tab === "inicio" && <div className="grid gap-4 sm:grid-cols-2"><button onClick={()=>setTab("musicas")} className="rounded-2xl border border-fuchsia-400/40 bg-gradient-to-br from-fuchsia-950/80 to-[#11152b] p-5 text-left"><Music2 className="mb-3 size-8 text-fuchsia-300"/><h2 className="text-lg font-extrabold">Músicas Oficiais</h2><p className="mt-1 text-sm text-slate-300">Publicar e administrar faixas disponíveis para os usuários</p></button><button onClick={()=>setTab("cartoes")} className="rounded-2xl border border-sky-400/40 bg-gradient-to-br from-sky-950/80 to-[#11152b] p-5 text-left"><FolderOpen className="mb-3 size-8 text-sky-300"/><h2 className="text-lg font-extrabold">Organização do aplicativo</h2><p className="mt-1 text-sm text-slate-300">Gerencie os cartões e atalhos existentes</p></button><button onClick={()=>setTab("usuarios")} className="rounded-2xl border border-emerald-400/40 bg-gradient-to-br from-emerald-950/80 to-[#11152b] p-5 text-left"><Users className="mb-3 size-8 text-emerald-300"/><h2 className="text-lg font-extrabold">Usuários</h2><p className="mt-1 text-sm text-slate-300">Gerenciar permissões de administrador</p></button><button onClick={()=>setTab("registros")} className="rounded-2xl border border-amber-300/40 bg-gradient-to-br from-amber-950/80 to-[#11152b] p-5 text-left"><BarChart3 className="mb-3 size-8 text-amber-300"/><h2 className="text-lg font-extrabold">Registros</h2><p className="mt-1 text-sm text-slate-300">Consultar ações administrativas registradas</p></button></div>}
-          {tab === "cartoes" && <><h2 className="text-xl font-black text-amber-200">Cartões e atalhos</h2><CardsAdmin /></>}
+
+          {tab === "inicio" && <div className="space-y-5">
+            <div className="rounded-2xl border border-[#d6b34a]/35 bg-gradient-to-r from-[#191919] via-[#101010] to-[#17130a] p-5">
+              <p className="text-xs font-black uppercase tracking-[.25em] text-[#e6c45f]">Visão geral</p>
+              <h2 className="mt-1 text-2xl font-black text-white sm:text-3xl">Bem-vindo ao Painel ADM</h2>
+              <p className="mt-1 text-sm text-white/65">Gerencie músicas oficiais, artistas e usuários em um só lugar.</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+              <button onClick={()=>setTab("musicas")} className="rounded-2xl border border-[#d6b34a]/45 bg-gradient-to-br from-[#242016] to-[#111] p-4 text-left"><Music2 className="mb-3 size-7 text-[#e6c45f]"/><p className="text-xs text-white/65">Músicas oficiais</p><p className="mt-1 text-2xl font-black">{overview.data?.musicCount ?? "—"}</p></button>
+              <button onClick={()=>setTab("cartoes")} className="rounded-2xl border border-[#d6b34a]/35 bg-[#151515] p-4 text-left"><FolderOpen className="mb-3 size-7 text-[#e6c45f]"/><p className="text-xs text-white/65">Atalhos / Pastas</p><p className="mt-1 text-2xl font-black">{overview.data?.cardCount ?? "—"}</p></button>
+              <button onClick={()=>setTab("usuarios")} className="rounded-2xl border border-[#d6b34a]/35 bg-[#151515] p-4 text-left"><Users className="mb-3 size-7 text-[#e6c45f]"/><p className="text-xs text-white/65">Usuários cadastrados</p><p className="mt-1 text-2xl font-black">{overview.data?.userCount ?? "—"}</p></button>
+              <div className="rounded-2xl border border-[#d6b34a]/35 bg-[#151515] p-4"><HardDrive className="mb-3 size-7 text-[#e6c45f]"/><p className="text-xs text-white/65">Armazenamento</p><p className="mt-1 text-sm font-bold">Gerenciado pelo provedor</p><p className="mt-1 text-xs text-white/45">Sem capacidade fictícia</p></div>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#d6b34a]/35 bg-gradient-to-r from-[#211b0d] to-[#111] p-4">
+              <div className="flex items-center gap-3"><UploadCloud className="size-10 text-[#e6c45f]"/><div><h3 className="font-extrabold text-white">Adicionar músicas oficiais</h3><p className="text-xs text-white/65">Publique faixas autorizadas para todos os usuários</p></div></div>
+              <Button onClick={()=>setTab("musicas")} className="bg-gradient-to-r from-[#f0d477] to-[#b68b27] font-black text-black hover:brightness-110"><Plus className="mr-1 size-4"/> Enviar músicas</Button>
+            </div>
+            <div className="rounded-2xl border border-[#d6b34a]/30 bg-[#111] p-4">
+              <div className="mb-3 flex items-center justify-between"><h3 className="flex items-center gap-2 font-extrabold"><FolderOpen className="size-5 text-[#e6c45f]"/> Últimas músicas publicadas</h3><button onClick={()=>setTab("musicas")} className="text-xs font-bold text-[#e6c45f]">Ver todas</button></div>
+              {overview.isPending ? <p className="text-sm text-white/55">Carregando catálogo…</p> : overview.isError ? <p className="text-sm text-white/55">Não foi possível carregar o catálogo. Verifique a configuração do banco.</p> : overview.data?.music.length ? <div className="divide-y divide-white/10">{overview.data.music.map(track=><div key={track.id} className="flex items-center gap-3 py-3"><div className="rounded-lg bg-[#d6b34a]/15 p-2"><Music2 className="size-5 text-[#e6c45f]"/></div><div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-white">{track.title}</p><p className="truncate text-xs text-white/55">{track.artist} · {((track.file_size ?? 0)/1048576).toFixed(1)} MB</p></div></div>)}</div> : <p className="rounded-xl border border-dashed border-[#d6b34a]/25 p-4 text-sm text-white/55">Nenhuma música oficial publicada ainda.</p>}
+            </div>
+          </div>
+          {tab === "cartoes" && <><h2 className="text-xl font-black text-[#e6c45f]">Cartões e atalhos</h2><CardsAdmin /></>}
           {tab === "usuarios" && <><h2 className="text-xl font-black text-amber-200">Usuários</h2><UsersAdmin selfId={user!.id} /></>}
-          {tab === "musicas" && <><div className="rounded-2xl border border-fuchsia-400/30 bg-gradient-to-r from-fuchsia-950/70 to-[#11152b] p-4"><h2 className="text-xl font-black">Adicionar Músicas</h2><p className="text-sm text-slate-300">Publique músicas oficiais disponíveis para os usuários</p></div><AdminMusicLibrary /></>}
+          {tab === "musicas" && <><div className="rounded-2xl border border-[#d6b34a]/35 bg-gradient-to-r from-[#211b0d] to-[#111] p-4"><h2 className="text-xl font-black">Adicionar Músicas</h2><p className="text-sm text-slate-300">Publique músicas oficiais disponíveis para os usuários</p></div><AdminMusicLibrary /></>}
           {tab === "config" && <><h2 className="text-xl font-black text-amber-200">Configurações</h2><SettingsAdmin /></>}
           {tab === "registros" && <><h2 className="text-xl font-black text-amber-200">Registros administrativos</h2><AuditAdmin /></>}
         </section>
