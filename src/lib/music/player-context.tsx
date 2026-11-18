@@ -489,8 +489,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         /* ação não suportada */
       }
     };
-    set("play", () => toggle());
-    set("pause", () => toggle());
+    set("play", () => {
+      const audio = audioRef.current;
+      if (!audio || !current) return;
+      wantPlay.current = true;
+      if (audio.paused) void audio.play().catch(() => {
+        setIsPlaying(false);
+        toast.error("Não foi possível retomar a reprodução. Abra o player e tente novamente.");
+      });
+    });
+    set("pause", () => {
+      wantPlay.current = false;
+      audioRef.current?.pause();
+    });
     set("nexttrack", () => next());
     set("previoustrack", () => prev());
     set("seekto", (d) => d.seekTime !== undefined && seek(d.seekTime));
@@ -540,15 +551,31 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }, [current?.id, current?.artist, current?.fingerprint]);
 
   // Serviço de mídia nativo (somente no APK Android)
-  const actionsRef = useRef({ toggle, next, prev, isPlaying });
-  actionsRef.current = { toggle, next, prev, isPlaying };
+  const actionsRef = useRef({ toggle, next, prev, isPlaying, play: () => {}, pause: () => {} });
+  actionsRef.current = {
+    toggle, next, prev, isPlaying,
+    play: () => {
+      const audio = audioRef.current;
+      if (!audio || !current) return;
+      wantPlay.current = true;
+      if (audio.paused) void audio.play().catch(() => {
+        setIsPlaying(false);
+        toast.error("Não foi possível retomar a reprodução. Abra o player e tente novamente.");
+      });
+    },
+    pause: () => {
+      wantPlay.current = false;
+      audioRef.current?.pause();
+    },
+  };
   useEffect(() => {
     if (!nativeMedia || !backgroundPreferenceReady || !backgroundPlayback) return;
     const h = nativeMedia.addListener("action", ({ action }) => {
       const a = actionsRef.current;
       if (action === "next") a.next();
       else if (action === "previous") a.prev();
-      else if ((action === "play") !== a.isPlaying) a.toggle();
+      else if (action === "play") a.play();
+      else if (action === "pause") a.pause();
     });
     return () => { void h.then((x) => x.remove()).catch(() => {}); };
   }, [backgroundPlayback, backgroundPreferenceReady]);
@@ -558,7 +585,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     void nativeMedia
       .update({ title: current.title, artist: current.artist, isPlaying, position: currentTime, duration, artworkBase64: backgroundArtwork?.base64, artworkMime: backgroundArtwork?.mime })
       .catch(() => {});
-  }, [backgroundPlayback, backgroundPreferenceReady, current?.id, isPlaying, Math.floor(currentTime), Math.floor(duration), backgroundArtwork]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Evita reiniciar o serviço Android a cada segundo apenas para atualizar a posição.
+  }, [backgroundPlayback, backgroundPreferenceReady, current?.id, isPlaying, backgroundArtwork]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => { if (nativeMedia) void nativeMedia.stop().catch(() => {}); }, []);
 
   const localRef = useRef<Track[]>([]);
