@@ -10,6 +10,7 @@ const NAV = [
   { to: "/", label: "Início", icon: Home },
   { to: "/buscar", label: "Buscar", icon: Search },
   { to: "/biblioteca", label: "Biblioteca", icon: Library },
+  { to: "/player", label: "Painel de reprodução", icon: CirclePlay },
   { to: "/playlists", label: "Playlists", icon: ListMusic },
 ] as const;
 
