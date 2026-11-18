@@ -40,7 +40,7 @@ function AdminPage() {
   const admin = useIsAdmin(user?.id);
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"inicio" | "cartoes" | "usuarios" | "musicas" | "config" | "registros">("inicio");
+  const [tab, setTab] = useState<"inicio" | "cartoes" | "artistas" | "uploads" | "usuarios" | "musicas" | "config" | "registros">("inicio");
   const overview = useQuery({
     queryKey: ["admin-overview"],
     enabled: !!user?.id && admin.data === true,
@@ -95,8 +95,8 @@ function AdminPage() {
   const NAV = [
     { key: "inicio", label: "Início", icon: Home },
     { key: "musicas", label: "Músicas Oficiais", icon: Music2 },
-    { key: "cartoes", label: "Pastas / Artistas", icon: FolderOpen },
-    { key: "musicas", label: "Uploads (Adicionar)", icon: UploadCloud },
+    { key: "artistas", label: "Pastas / Artistas", icon: FolderOpen },
+    { key: "uploads", label: "Uploads (Adicionar)", icon: UploadCloud },
     { key: "usuarios", label: "Usuários", icon: Users },
     { key: "registros", label: "Estatísticas / Registros", icon: BarChart3 },
     { key: "config", label: "Configurações", icon: Settings },
@@ -114,9 +114,9 @@ function AdminPage() {
         </div>
       </header>
       <div className="grid min-h-[calc(100vh-88px)] lg:grid-cols-[245px_minmax(0,1fr)]">
-        <aside className="border-b border-[#d6b34a]/20 bg-[#0b1022] p-3 lg:border-b-0 lg:border-r lg:p-4">
+        <aside className="border-b border-[#d6b34a]/20 bg-[#101010] p-3 lg:border-b-0 lg:border-r lg:p-4">
           <nav aria-label="Menu administrativo" className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-col">
-            {NAV.map(({key,label,icon:Icon},i) => <button key={label} onClick={()=>setTab(key)} className={cn("flex min-h-12 items-center gap-3 rounded-xl border px-3 py-3 text-left text-xs font-bold transition-colors sm:text-sm",tab===key && ((key==="inicio"&&i===0)||(key==="musicas"&&i===1)||(key==="cartoes"&&i===2)||(key==="usuarios"&&i===4)||(key==="registros"&&i===5)||(key==="config"&&i===6)) ? "border-amber-300/60 bg-gradient-to-r from-amber-400 to-yellow-600 text-black shadow-lg shadow-amber-950/30" : "border-white/10 bg-white/[.03] text-slate-100 hover:border-amber-300/40 hover:bg-white/[.07]")}><Icon className="size-5 shrink-0" />{label}</button>)}
+            {NAV.map(({key,label,icon:Icon}) => <button key={key} type="button" onClick={()=>setTab(key)} aria-current={tab===key ? "page" : undefined} className={cn("flex min-h-12 items-center gap-3 rounded-xl border px-3 py-3 text-left text-xs font-bold transition-colors sm:text-sm",tab===key ? "border-[#d6b34a]/70 bg-gradient-to-r from-[#f0d477] to-[#b68b27] text-black shadow-lg shadow-black/30" : "border-white/10 bg-white/[.03] text-white hover:border-[#d6b34a]/50 hover:bg-white/[.07]")}><Icon className="size-5 shrink-0" />{label}</button>)}
             <Link to="/armazenamento" className="flex min-h-12 items-center gap-3 rounded-xl border border-white/10 bg-white/[.03] px-3 py-3 text-xs font-bold text-slate-100 hover:border-amber-300/40 sm:text-sm"><HardDrive className="size-5"/>Backup / Armazenamento</Link>
           </nav>
           <div className="mt-5 hidden rounded-xl border border-[#d6b34a]/30 bg-[#d6b34a]/10 p-3 text-xs text-white/80 lg:block"><span className="mb-1 block font-bold">Acesso protegido</span>Área exclusiva para administradores autorizados.</div>
@@ -137,12 +137,12 @@ function AdminPage() {
             </div>
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#d6b34a]/35 bg-gradient-to-r from-[#211b0d] to-[#111] p-4">
               <div className="flex items-center gap-3"><UploadCloud className="size-10 text-[#e6c45f]"/><div><h3 className="font-extrabold text-white">Adicionar músicas oficiais</h3><p className="text-xs text-white/65">Publique faixas autorizadas para todos os usuários</p></div></div>
-              <Button onClick={()=>setTab("musicas")} className="bg-gradient-to-r from-[#f0d477] to-[#b68b27] font-black text-black hover:brightness-110"><Plus className="mr-1 size-4"/> Enviar músicas</Button>
+              <Button onClick={()=>setTab("uploads")} className="bg-gradient-to-r from-[#f0d477"] to-[#b68b27] font-black text-black hover:brightness-110"><Plus className="mr-1 size-4"/> Enviar músicas</Button>
             </div>
             <div className="rounded-2xl border border-[#d6b34a]/30 bg-[#101010] p-4">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h3 className="flex items-center gap-2 font-extrabold text-white"><FolderOpen className="size-5 text-[#e6c45f]"/> Pastas / Artistas</h3>
-                <button onClick={()=>setTab("musicas")} className="rounded-lg border border-[#d6b34a]/40 bg-[#d6b34a]/10 px-3 py-2 text-xs font-bold text-[#e6c45f]">+ Adicionar músicas</button>
+                <button onClick={()=>setTab("uploads")} className="rounded-lg border border-[#d6b34a]/40 bg-[#d6b34a]/10 px-3 py-2 text-xs font-bold text-[#e6c45f]">+ Adicionar músicas</button>
               </div>
               {overview.isPending ? <p className="text-sm text-white/55">Carregando artistas…</p> : overview.data?.artists.length ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">{overview.data.artists.slice(0,10).map(([artist,count])=><button key={artist} onClick={()=>setTab("musicas")} className="flex min-h-28 flex-col items-start justify-between rounded-xl border border-[#d6b34a]/40 bg-gradient-to-br from-[#201b10] to-[#111] p-3 text-left transition hover:border-[#e6c45f]"><FolderOpen className="size-7 text-[#e6c45f]"/><span className="line-clamp-2 text-sm font-bold text-white">{artist}</span><span className="text-xs text-white/55">{count} {count===1?"música":"músicas"}</span></button>)}</div> : <p className="rounded-xl border border-dashed border-[#d6b34a]/25 p-4 text-sm text-white/55">As pastas dos artistas aparecerão aqui quando houver músicas oficiais publicadas.</p>}
             </div>
@@ -164,8 +164,10 @@ function AdminPage() {
             </div>
           </div>
           {tab === "cartoes" && <><h2 className="text-xl font-black text-[#e6c45f]">Cartões e atalhos</h2><CardsAdmin /></>}
+          {tab === "artistas" && <div className="space-y-4"><div><h2 className="text-xl font-black text-[#e6c45f]">Pastas / Artistas</h2><p className="text-sm text-white/60">Artistas agrupados automaticamente pelas músicas oficiais publicadas.</p></div>{overview.isPending ? <p className="text-sm text-white/60">Carregando artistas…</p> : overview.isError ? <p className="text-sm text-red-300">Não foi possível carregar os artistas. Verifique a conexão e a migração do catálogo.</p> : overview.data?.artists.length ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">{overview.data.artists.map(([artist,count])=><button type="button" key={artist} onClick={()=>setTab("musicas")} className="flex min-h-32 flex-col items-start justify-between rounded-2xl border border-[#d6b34a]/40 bg-gradient-to-br from-[#201b10] to-[#101010] p-4 text-left hover:border-[#e6c45f]"><FolderOpen className="size-8 text-[#e6c45f]"/><span className="font-bold text-white">{artist}</span><span className="text-xs text-white/55">{count} {count===1?"música":"músicas"} · Ver catálogo</span></button>)}</div> : <p className="rounded-xl border border-dashed border-[#d6b34a]/30 p-5 text-sm text-white/60">Nenhuma música oficial publicada ainda. Publique músicas na aba Uploads para criar as pastas dos artistas.</p>}</div>}
           {tab === "usuarios" && <><h2 className="text-xl font-black text-amber-200">Usuários</h2><UsersAdmin selfId={user!.id} /></>}
-          {tab === "musicas" && <><div className="rounded-2xl border border-[#d6b34a]/35 bg-gradient-to-r from-[#211b0d] to-[#111] p-4"><h2 className="text-xl font-black">Adicionar Músicas</h2><p className="text-sm text-slate-300">Publique músicas oficiais disponíveis para os usuários</p></div><AdminMusicLibrary /></>}
+          {tab === "musicas" && <><div className="rounded-2xl border border-[#d6b34a]/35 bg-gradient-to-r from-[#211b0d] to-[#111] p-4"><h2 className="text-xl font-black text-white">Músicas Oficiais</h2><p className="text-sm text-white/65">Consulte e gerencie o catálogo oficial do aplicativo.</p></div><AdminMusicLibrary /></>}
+          {tab === "uploads" && <><div className="rounded-2xl border border-[#d6b34a]/35 bg-gradient-to-r from-[#211b0d] to-[#111] p-4"><h2 className="text-xl font-black text-white">Uploads · Adicionar músicas</h2><p className="text-sm text-white/65">Publique faixas autorizadas para todos os usuários.</p></div><AdminMusicLibrary /></>}
           {tab === "config" && <><h2 className="text-xl font-black text-amber-200">Configurações</h2><SettingsAdmin /></>}
           {tab === "registros" && <><h2 className="text-xl font-black text-amber-200">Registros administrativos</h2><AuditAdmin /></>}
         </section>
