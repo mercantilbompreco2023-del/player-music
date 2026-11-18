@@ -48,8 +48,8 @@ function PlayerPage() {
         <button onClick={() => router.history.back()} aria-label="Voltar" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
         <div className="text-center"><p className="text-[10px] font-bold uppercase tracking-[.22em] text-primary">Reprodutor de Música</p><p className="text-lg font-extrabold tracking-tight"><span className="bg-gradient-to-r from-fuchsia-400 via-amber-300 to-yellow-500 bg-clip-text text-transparent">PLAYER MUSIC PRO</span></p></div>
         <div className="flex items-center gap-1.5">
-          <Link to="/" title="Sair do painel de reprodução" className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-bold text-foreground hover:bg-primary/20">
-            <ChevronDown className="size-4 rotate-90" /> <span>Sair do painel</span>
+          <Link to="/" title="Sair da interface de reprodução" className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-bold text-foreground hover:bg-primary/20">
+            <ChevronDown className="size-4 rotate-90" /> <span>Sair da reprodução</span>
           </Link>
           {admin.data === true && <Link to="/admin" aria-label="Painel do ADM" title="Painel do ADM" className="rounded-full border border-amber-500/40 bg-amber-500/10 p-2 text-amber-500"><ShieldCheck className="size-5" /></Link>}
           <Link to="/biblioteca" aria-label="Buscar músicas" title="Buscar músicas" className="rounded-full p-2"><Music2 className="size-5" /></Link>
