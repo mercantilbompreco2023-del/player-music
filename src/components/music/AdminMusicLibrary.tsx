@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Download, Music2, Plus, Trash2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
@@ -18,7 +18,7 @@ export function AdminMusicLibrary() {
     const { data, error } = await supabase.from("public_music").select("*").order("created_at", { ascending: false });
     if (error) throw error; return data;
   }});
-  async function publish(e: React.FormEvent) {
+  async function publish(e: FormEvent) {
     e.preventDefault();
     if (!file) { toast.error("Escolha um arquivo de áudio."); return; }
     if (file.size > 100 * 1024 * 1024) { toast.error("O arquivo deve ter no máximo 100 MB."); return; }
