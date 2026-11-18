@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ChevronDown, FolderOpen, Heart, ListMusic, Music2, Pause, Play, Plus, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, X, Download, Settings2, ShieldCheck } from "lucide-react";
+import { ChevronDown, FolderOpen, Heart, ListMusic, Music2, Pause, Play, Plus, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, X, Download, Settings2, ShieldCheck, Library, Check } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Cover } from "@/components/music/Cover";
 import { CustomFolderCover } from "@/components/music/CustomFolderCover";
@@ -39,7 +39,8 @@ function PlayerPage() {
   }
   const fav = p.isFavorite(t.id);
   const upcoming = p.queue.map((id, pos) => ({ pos, track: p.byId(id) })).filter((x) => x.pos > p.index && x.track);
-  const netoTracks = p.tracks.filter((track) => track.source !== "demo" && track.artist.trim().toLocaleLowerCase("pt-BR").includes("neto brito"));
+  const normalizeArtist = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").replace(/nett?o/g, "neto").replace(/\s+/g, " ").trim();
+  const netoTracks = p.tracks.filter((track) => track.source !== "demo" && normalizeArtist(track.artist).includes("neto brito"));
 
   return (
     <div className="player-purple player-immersive player-reworked player-exclusive relative mx-auto min-h-screen w-full max-w-none space-y-5 overflow-hidden rounded-none border-0 px-4 pb-10 pt-3 text-foreground shadow-none sm:px-6">
@@ -72,7 +73,14 @@ function PlayerPage() {
         <button onClick={p.next} aria-label="Próxima" className="p-2"><SkipForward className="size-7 fill-current" /></button>
         <button onClick={p.cycleRepeat} aria-label={`Repetir: ${{ off: "desligado", all: "fila", one: "uma música" }[p.prefs.repeat]}`} title="Alternar repetição" className={cn("p-2", p.prefs.repeat !== "off" ? "text-primary" : "text-muted-foreground")}>{p.prefs.repeat === "one" ? <Repeat1 className="size-6" /> : <Repeat className="size-6" />}</button>
       </div>
-      <div className="grid grid-cols-2 gap-2 pt-1 sm:grid-cols-4"><Link to="/configuracoes" className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-primary/40 bg-primary/10 px-2 py-3 text-xs font-semibold"><Settings2 className="size-4"/> Opções do player</Link><Link to="/armazenamento" className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-primary/40 px-2 py-3 text-xs font-semibold"><Download className="size-4"/> Salvar e organizar</Link></div><div className="grid grid-cols-3 gap-2 pt-1">
+      <div className="grid grid-cols-1 gap-2 pt-1 sm:grid-cols-3">
+        <button type="button" onClick={() => { void p.saveTrackLocally(t.id); }} disabled={t.source === "demo" || t.source === "local"} className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-3 text-sm font-bold text-emerald-300 disabled:opacity-60">
+          {t.source === "local" ? <Check className="size-4"/> : <Library className="size-4"/>}
+          {t.source === "local" ? "Salva na biblioteca" : "Salvar na biblioteca"}
+        </button>
+        <Link to="/biblioteca" className="inline-flex items-center justify-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-3 py-3 text-sm font-semibold"><Library className="size-4"/> Abrir biblioteca</Link>
+        <Link to="/armazenamento" className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-primary/40 px-2 py-3 text-xs font-semibold"><Download className="size-4"/> Salvar e organizar</Link>
+      </div><div className="grid grid-cols-2 gap-2 pt-1"><Link to="/configuracoes" className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-primary/40 bg-primary/10 px-2 py-3 text-xs font-semibold"><Settings2 className="size-4"/> Opções do player</Link><Link to="/armazenamento" className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-primary/40 px-2 py-3 text-xs font-semibold"><Download className="size-4"/> Salvar e organizar</Link></div><div className="grid grid-cols-3 gap-2 pt-1">
         <Link to="/fila" className="inline-flex items-center justify-center gap-1.5 rounded-full border border-primary/70 px-2 py-2.5 text-xs font-semibold"><ListMusic className="size-4" /> Fila ({p.queue.length})</Link>
         <Link to="/biblioteca" className="inline-flex items-center justify-center gap-1.5 rounded-full border border-primary/70 px-2 py-2.5 text-xs font-semibold"><Plus className="size-4" /> Adicionar</Link>
         <Link to="/pastas" className="inline-flex items-center justify-center gap-1.5 rounded-full border border-primary/70 px-2 py-2.5 text-xs font-semibold"><FolderOpen className="size-4" /> Pastas</Link>
