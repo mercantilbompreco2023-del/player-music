@@ -58,15 +58,15 @@ export function CustomFolderCover({ folderName, artistName, editable = false, tr
   const upload = async (file?: File) => {
     if (!file || (!folderName && !artistName)) return;
     const ok = artistName ? await saveArtistFolderCover(artistName, file) : await saveCustomFolderCover(folderName!, file);
-    if (!ok) { toast.error("Não foi possível salvar a foto da pasta."); return; }
+    if (!ok) { toast.error(`Não foi possível salvar a foto da ${entityLabel}.`); return; }
     const next = artistName ? await loadArtistFolderCover(artistName) : await loadCustomFolderCover(folderName!);
     setSrc((previous) => { if (previous) URL.revokeObjectURL(previous); return next; });
-    toast.success("Foto da pasta atualizada.");
+    toast.success(`Foto da ${entityLabel} atualizada.`);
   };
   const remove = async () => {
     if (!folderName && !artistName) return;
     const ok = artistName ? await removeArtistFolderCover(artistName) : await removeCustomFolderCover(folderName!);
-    if (!ok) { toast.error("Não foi possível remover a foto da pasta."); return; }
+    if (!ok) { toast.error(`Não foi possível remover a foto da ${entityLabel}.`); return; }
     setSrc((previous) => { if (previous) URL.revokeObjectURL(previous); return null; });
     toast.success("Foto personalizada removida.");
   };
