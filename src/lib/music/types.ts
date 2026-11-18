@@ -1,4 +1,4 @@
-export type TrackSource = "demo" | "local" | "cloud";
+export type TrackSource = "demo" | "local" | "cloud" | "official";
 
 export interface Track {
   id: string;
