@@ -45,7 +45,8 @@ function BibliotecaPage() {
   const empty: Record<Tab, string> = {
     todas: "Sua biblioteca está vazia.",
     minhas: "Suas músicas importadas e salvas na nuvem aparecerão aqui. Importe arquivos ou salve uma música na nuvem para mantê-la na sua biblioteca.",
-    oficiais: "As músicas publicadas pelo administrador aparecerão aqui para ouvir e baixar no aparelho.",\n    favoritas: "Toque no coração de uma faixa para adicioná-la aos favoritos.",
+    oficiais: "As músicas publicadas pelo administrador aparecerão aqui para ouvir e baixar no aparelho.",
+    favoritas: "Toque no coração de uma faixa para adicioná-la aos favoritos.",
     demo: "Sem faixas de demonstração.",
     pastas: "Nenhuma pasta salva ainda. Importe uma pasta de músicas para vê-la aqui.",
   };
