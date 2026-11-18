@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Database, FolderOpen, HardDrive, Music, RefreshCw, Download, Plus, ListFilter, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Database, FolderOpen, HardDrive, Music, RefreshCw, Download, Plus, ListFilter, CheckCircle2, Save } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { usePlayer } from "@/lib/music/player-context";
@@ -7,6 +7,8 @@ import { customFolders, savedFolders } from "@/lib/music/folders";
 import { fileStore } from "@/lib/music/storage";
 import { ImportButton } from "@/components/music/ImportButton";
 import { FolderImport } from "@/components/music/FolderImport";
+import { requestPersistentStorage } from "@/lib/music/storage";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/armazenamento")({
   head: () => ({ meta: [
@@ -29,6 +31,7 @@ function StoragePage() {
   const [quotaBytes, setQuotaBytes] = useState<number | null>(null);
   const [fileCount, setFileCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [savingFolder, setSavingFolder] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -54,7 +57,32 @@ function StoragePage() {
   const folders = [...custom.map((folder) => ({ ...folder, kind: "Sua pasta" })), ...device.map((folder) => ({ ...folder, kind: "Pasta importada" }))];
   const percent = quotaBytes && quotaBytes > 0 ? Math.min(100, (usedBytes / quotaBytes) * 100) : 0;
   const cloudTracks = p.tracks.filter((track) => track.source === "cloud");
-  const saveLibrary = async () => { for (const track of cloudTracks) await p.saveTrackLocally(track.id); await refresh(); };
+  const saveLibrary = async () => {
+    setSavingFolder("__all__");
+    try {
+      await requestPersistentStorage();
+      for (const track of cloudTracks) await p.saveTrackLocally(track.id);
+      await requestPersistentStorage();
+      await refresh();
+      toast.success(cloudTracks.length ? "Músicas da nuvem copiadas para este aparelho." : "As músicas importadas já ficam salvas no armazenamento deste aplicativo.");
+    } catch {
+      toast.error("Não foi possível concluir o salvamento. Verifique o espaço disponível.");
+    } finally { setSavingFolder(null); }
+  };
+  const saveFolderInApp = async (folder: (typeof folders)[number]) => {
+    setSavingFolder(folder.name);
+    try {
+      await requestPersistentStorage();
+      const toCopy = folder.tracks.filter((track) => track.source === "cloud");
+      for (const track of toCopy) await p.saveTrackLocally(track.id);
+      await requestPersistentStorage();
+      await refresh();
+      const alreadyLocal = folder.tracks.filter((track) => track.source === "local").length;
+      toast.success(toCopy.length ? "Pasta salva no aparelho: " + toCopy.length + " música(s) copiadas; " + alreadyLocal + " já estavam salvas." : "A pasta “" + folder.name + "” já está salva neste aparelho.");
+    } catch {
+      toast.error("Não foi possível salvar toda a pasta. Verifique o espaço disponível e tente novamente.");
+    } finally { setSavingFolder(null); }
+  };
 
   return <div className="storage-library mx-auto w-full max-w-6xl space-y-5 rounded-[1.8rem] bg-[#080808] p-3 text-white sm:p-5">
     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -74,7 +102,7 @@ function StoragePage() {
       <p className="text-xs leading-relaxed text-white/50">As músicas importadas ficam salvas localmente neste aparelho. O espaço disponível depende do dispositivo e do navegador. Armazenamento online de 1 TB exige contratação e configuração de um serviço de nuvem.</p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <div className="flex min-h-24 flex-col items-center justify-center gap-2 rounded-xl border border-[#d6aa38]/55 bg-gradient-to-br from-[#f1d477] to-[#b88622] p-3 text-center text-black"><ImportButton/><span className="text-xs font-black">Importar músicas</span></div>
-        <Button variant="outline" className="h-auto min-h-24 flex-col gap-2 rounded-xl border-white/15 bg-white/[.03] text-white hover:border-[#d6aa38]/60 hover:bg-[#d6aa38]/10" onClick={() => void saveLibrary()} disabled={!cloudTracks.length}><Download className="size-5 text-[#e6c45f]"/><span className="text-xs font-bold">Salvar no aparelho</span></Button>
+        <Button variant="outline" className="h-auto min-h-24 flex-col gap-2 rounded-xl border-white/15 bg-white/[.03] text-white hover:border-[#d6aa38]/60 hover:bg-[#d6aa38]/10" onClick={() => void saveLibrary()} disabled={savingFolder !== null}><Download className="size-5 text-[#e6c45f]"/><span className="text-xs font-bold">{savingFolder === "__all__" ? "Salvando…" : "Salvar no aparelho"}</span></Button>
         <Button asChild variant="outline" className="h-auto min-h-24 flex-col gap-2 rounded-xl border-white/15 bg-white/[.03] text-white hover:border-[#d6aa38]/60 hover:bg-[#d6aa38]/10"><Link to="/pastas"><Plus className="size-5 text-[#e6c45f]"/><span className="text-xs font-bold">Nova pasta</span></Link></Button>
         <Button asChild variant="outline" className="h-auto min-h-24 flex-col gap-2 rounded-xl border-white/15 bg-white/[.03] text-white hover:border-[#d6aa38]/60 hover:bg-[#d6aa38]/10"><Link to="/pastas"><ListFilter className="size-5 text-[#e6c45f]"/><span className="text-xs font-bold">Organizar pastas</span></Link></Button>
       </div>
@@ -83,7 +111,7 @@ function StoragePage() {
 
     <section className="space-y-4 rounded-2xl border border-[#d6aa38]/30 bg-[#101010] p-4 sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-2"><div className="flex items-center gap-2"><FolderOpen className="size-5 text-[#e6c45f]"/><h2 className="text-lg font-extrabold">Minhas pastas</h2></div><span className="rounded-full bg-white/[.06] px-3 py-1 text-xs text-white/65">{folders.length} {folders.length===1?"pasta":"pastas"}</span></div>
-      {folders.length ? <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{folders.map((folder) => <Link key={folder.kind + folder.name} to="/pastas" className="flex min-w-0 items-center gap-3 rounded-xl border border-white/10 bg-white/[.035] p-3 transition hover:border-[#d6aa38]/55 hover:bg-[#d6aa38]/[.06]"><div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#d6aa38]/10 text-[#e6c45f]"><FolderOpen/></div><div className="min-w-0 flex-1"><p className="truncate font-bold text-white">{folder.name}</p><p className="text-xs text-white/50">{folder.tracks.length} músicas · {folder.kind}</p></div><ArrowLeft className="size-4 rotate-180 text-white/35"/></Link>)}</div> : <div className="rounded-xl border border-dashed border-[#d6aa38]/30 bg-black/20 p-5 text-center"><FolderOpen className="mx-auto mb-2 size-8 text-[#e6c45f]/70"/><p className="font-semibold text-white">Você ainda não criou pastas</p><p className="mt-1 text-sm text-white/50">Crie uma pasta para organizar suas músicas por artista ou estilo.</p></div>}
+      {folders.length ? <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{folders.map((folder) => <div key={folder.kind + folder.name} className="flex min-w-0 flex-col gap-2 rounded-xl border border-white/10 bg-white/[.035] p-3"><Link to="/pastas" className="flex min-w-0 items-center gap-3"><div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#d6aa38]/10 text-[#e6c45f]"><FolderOpen/></div><div className="min-w-0 flex-1"><p className="truncate font-bold text-white">{folder.name}</p><p className="text-xs text-white/50">{folder.tracks.length} músicas · {folder.kind}</p></div><ArrowLeft className="size-4 rotate-180 text-white/35"/></Link><Button type="button" variant="outline" size="sm" className="w-full border-[#d6aa38]/40 bg-[#d6aa38]/[.06] text-xs font-bold text-[#f4c64d] hover:bg-[#d6aa38]/15" disabled={savingFolder !== null} onClick={() => void saveFolderInApp(folder)}><Save className="mr-2 size-4"/>{savingFolder === folder.name ? "Salvando pasta…" : "Salvar pasta no aplicativo"}</Button></div>)}</div> : <div className="rounded-xl border border-dashed border-[#d6aa38]/30 bg-black/20 p-5 text-center"><FolderOpen className="mx-auto mb-2 size-8 text-[#e6c45f]/70"/><p className="font-semibold text-white">Você ainda não criou pastas</p><p className="mt-1 text-sm text-white/50">Crie uma pasta para organizar suas músicas por artista ou estilo.</p></div>}
       <div className="grid gap-3 lg:grid-cols-2">
         <Link to="/pastas" className="flex min-h-28 flex-col justify-center gap-2 rounded-xl border border-[#d6aa38]/60 bg-gradient-to-br from-[#f0d477] to-[#b88622] p-4 text-center font-black text-black transition hover:brightness-110"><Plus className="mx-auto size-7"/><span>Criar e organizar pastas</span><span className="text-xs font-medium text-black/65">Monte sua biblioteca do seu jeito</span></Link>
         <div className="flex flex-col justify-center gap-3 rounded-xl border border-white/10 bg-white/[.035] p-4"><div className="flex items-center gap-2"><FolderOpen className="size-5 text-[#e6c45f]"/><div><p className="font-bold">Importar pasta de músicas</p><p className="text-xs text-white/50">Escolha uma pasta do aparelho</p></div></div><p className="text-xs leading-relaxed text-white/55">A importação depende das permissões do navegador e do seletor de arquivos do aparelho. Os arquivos selecionados são copiados para a biblioteca local deste navegador.</p><FolderImport/></div>
