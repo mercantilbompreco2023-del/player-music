@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Database, FolderOpen, HardDrive, Music, RefreshCw } from "lucide-react";
+import { ArrowLeft, Database, FolderOpen, HardDrive, Music, RefreshCw, Download, CheckCircle2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { usePlayer } from "@/lib/music/player-context";
@@ -54,15 +54,15 @@ function StoragePage() {
 
   return <div className="space-y-5">
     <Link to="/configuracoes" className="inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="size-4" /> Configurações</Link>
-    <div><h1 className="text-3xl font-bold">Armazenamento</h1><p className="mt-1 text-sm text-muted-foreground">Suas músicas e pastas guardadas neste aparelho.</p></div>
+    <div><h1 className="text-3xl font-bold">Pastas e armazenamento</h1><p className="mt-1 text-sm text-muted-foreground">Sua biblioteca organizada e salva dentro do Player Music.</p></div>
 
     <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4">
-      <div className="flex items-center gap-2"><HardDrive className="size-5 text-primary" /><h2 className="text-lg font-bold">Espaço utilizado</h2></div>
+      <div className="flex items-center gap-2"><HardDrive className="size-5 text-primary" /><h2 className="text-lg font-bold">Armazenamento do aplicativo</h2></div>
       <div className="flex items-end gap-2"><strong className="text-3xl">{formatBytes(usedBytes)}</strong><span className="pb-1 text-sm text-muted-foreground">em músicas importadas</span></div>
       <div className="h-3 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${percent}%` }} /></div>
       <div className="flex justify-between gap-2 text-xs text-muted-foreground"><span>{fileCount} arquivo(s) de áudio</span><span>{quotaBytes ? `Cota estimada: ${formatBytes(quotaBytes)}` : "Cota informada pelo aparelho indisponível"}</span></div>
-      <p className="text-xs text-muted-foreground">O espaço é o que o navegador ou Android disponibiliza neste aparelho. O Player Music não consegue transformar o celular em um armazenamento de 1 TB. Para ter 1 TB online, é necessário contratar e conectar um serviço de nuvem.</p>
-      <Button variant="outline" className="w-full" onClick={() => void refresh()} disabled={loading}><RefreshCw className={loading ? "animate-spin" : ""} /> Atualizar espaço</Button>
+      <p className="text-xs text-muted-foreground">As músicas importadas ficam salvas no armazenamento local do aplicativo e podem ser reproduzidas sem login e sem internet. O espaço disponível depende do aparelho; armazenamento de 1 TB online exige um serviço de nuvem contratado.</p>
+      <div className="grid grid-cols-2 gap-2"><Button variant="outline" className="w-full" onClick={() => void refresh()} disabled={loading}><RefreshCw className={loading ? "animate-spin" : ""} /> Atualizar</Button><Button asChild className="w-full"><Link to="/importar"><Download /> Salvar músicas</Link></Button></div>
     </section>
 
     <section className="space-y-3 rounded-2xl border border-primary/30 bg-card p-4">
