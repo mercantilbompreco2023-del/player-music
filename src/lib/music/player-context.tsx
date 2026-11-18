@@ -122,26 +122,38 @@ async function fetchOfficialTracks(): Promise<Track[]> {
 }
 
 async function fetchCloudTracks(userId: string): Promise<Track[]> {
-  const { data: objects, error } = await supabase.storage.from("player-music").list(userId, { limit: 1000, sortBy: { column: "name", order: "asc" } });
-  if (error || !objects?.length) return [];
-  const files = objects.filter((o) => o.name && !o.name.endsWith("/"));
-  const paths = files.map((o) => `${userId}/${o.name}`);
+  const bucket = supabase.storage.from("player-music");
+  const paths: string[] = [];
+  const walk = async (prefix: string, depth = 0): Promise<void> => {
+    if (depth > 12) return;
+    const { data: objects, error } = await bucket.list(prefix, { limit: 1000, sortBy: { column: "name", order: "asc" } });
+    if (error || !objects?.length) return;
+    for (const object of objects) {
+      if (!object.name) continue;
+      const fullPath = `${prefix}/${object.name}`;
+      if (object.id === null) await walk(fullPath, depth + 1);
+      else paths.push(fullPath);
+    }
+  };
+  await walk(userId);
   if (!paths.length) return [];
-  const { data: signed, error: signedError } = await supabase.storage.from("player-music").createSignedUrls(paths, 60 * 60 * 24);
+  const { data: signed, error: signedError } = await bucket.createSignedUrls(paths, 60 * 60 * 24);
   if (signedError || !signed) return [];
-  return signed.flatMap((entry, i) => {
+  return signed.flatMap((entry) => {
     if (!entry.signedUrl || !entry.path) return [];
-    const meta = (files[i]?.metadata ?? {}) as Record<string, unknown>;
-    const name = files[i]?.name ?? entry.path.split("/").pop() ?? "Música";
+    const fileName = entry.path.split("/").pop() ?? "Música";
+    const folderFromPath = entry.path.split("/").slice(-2, -1)[0];
+    const { data: object } = { data: undefined as { metadata?: Record<string, unknown> } | undefined };
+    const meta = (object?.metadata ?? {}) as Record<string, unknown>;
     return [{
       id: typeof meta["fingerprint"] === "string" ? `cloud-${meta["fingerprint"]}` : `cloud-${entry.path}`,
-      title: typeof meta["title"] === "string" ? meta["title"] : name.replace(/\.[^.]+$/, ""),
-      artist: typeof meta["artist"] === "string" ? meta["artist"] : "Biblioteca na nuvem",
+      title: typeof meta["title"] === "string" ? meta["title"] : fileName.replace(/\.[^.]+$/, ""),
+      artist: typeof meta["artist"] === "string" ? meta["artist"] : folderFromPath ?? "Biblioteca na nuvem",
       album: typeof meta["album"] === "string" ? meta["album"] : undefined,
       duration: typeof meta["duration"] === "number" ? meta["duration"] : undefined,
       fingerprint: typeof meta["fingerprint"] === "string" ? meta["fingerprint"] : undefined,
-      path: typeof meta["originalPath"] === "string" ? meta["originalPath"] : undefined,
-      folderName: typeof meta["folderName"] === "string" ? meta["folderName"] : undefined,
+      path: entry.path.split("/").slice(2).join("/"),
+      folderName: folderFromPath,
       storagePath: entry.path,
       url: entry.signedUrl,
       source: "cloud" as const,
