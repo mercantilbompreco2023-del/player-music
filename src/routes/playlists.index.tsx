@@ -54,7 +54,7 @@ function PlaylistsPage() {
               <section key={pl.id} className="overflow-hidden rounded-2xl border border-primary/20 bg-card/70">
                 <div className="flex items-center gap-3 p-3">
                   <Link to="/playlists/$id" params={{ id: pl.id }} className="flex min-w-0 flex-1 items-center gap-3">
-                    <CustomFolderCover folderName={`playlist-cover:${pl.id}`} editable className="size-14 shrink-0" />
+                    <CustomFolderCover folderName={`playlist-cover:${pl.id}`} entityLabel="playlist" editable className="size-14 shrink-0" />
                     <div className="min-w-0">
                       <p className="truncate font-semibold">{pl.name}</p>
                       <p className="text-sm text-muted-foreground">{tracks.length} músicas disponíveis</p>
