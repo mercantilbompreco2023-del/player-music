@@ -241,7 +241,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       .catch(() => { if (active) toast.error("Não foi possível abrir os arquivos salvos neste aparelho."); })
       .finally(() => { if (active) setReady(true); });
 
-    // Catálogo oficial é público: carregar para todos, mesmo sem login.\n    void fetchOfficialTracks().then((list) => { if (active) setOfficialTracks(list); }).catch(() => {});\n\n    // Sincronização da nuvem não deve atrasar o acesso às músicas offline.
+    // Catálogo oficial é público: carregar para todos, mesmo sem login.
+    void fetchOfficialTracks().then((list) => { if (active) setOfficialTracks(list); }).catch(() => {});
+
+    // Sincronização da nuvem não deve atrasar o acesso às músicas offline.
     void supabase.auth.getUser()
       .then(({ data }) => data.user ? fetchCloudTracks(data.user.id) : [])
       .then((cloud) => {
