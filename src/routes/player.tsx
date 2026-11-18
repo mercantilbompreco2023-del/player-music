@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ChevronDown, FolderOpen, Heart, ListMusic, Music2, Pause, Play, Plus, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, X, Download, Settings2 } from "lucide-react";
+import { ChevronDown, FolderOpen, Heart, ListMusic, Music2, Pause, Play, Plus, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, X, Download, Settings2, ShieldCheck } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Cover } from "@/components/music/Cover";
 import { CustomFolderCover } from "@/components/music/CustomFolderCover";
@@ -7,6 +7,7 @@ import { TrackVisual } from "@/components/music/TrackVisual";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/music/player-context";
 import { formatTime } from "@/lib/music/queue";
+import { useIsAdmin, useSession } from "@/lib/auth";
 
 export const Route = createFileRoute("/player")({
   head: () => ({
@@ -25,6 +26,8 @@ export const Route = createFileRoute("/player")({
 function PlayerPage() {
   const p = usePlayer();
   const router = useRouter();
+  const { user } = useSession();
+  const admin = useIsAdmin(user?.id);
   const t = p.current;
   if (!t) {
     return (
@@ -44,7 +47,10 @@ function PlayerPage() {
       <div className="flex items-center justify-between gap-2 px-1">
         <button onClick={() => router.history.back()} aria-label="Voltar" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
         <div className="text-center"><p className="text-[10px] font-bold uppercase tracking-[.22em] text-primary">Reprodutor de Música</p><p className="text-lg font-extrabold tracking-tight">Delícia Coxi’s <span className="text-primary">Music</span></p></div>
-        <Link to="/biblioteca" aria-label="Buscar músicas" title="Buscar músicas" className="rounded-full p-2"><Music2 className="size-5" /></Link>
+        <div className="flex items-center gap-1">
+          {admin.data === true && <Link to="/admin" aria-label="Painel do ADM" title="Painel do ADM" className="rounded-full border border-amber-500/40 bg-amber-500/10 p-2 text-amber-500"><ShieldCheck className="size-5" /></Link>}
+          <Link to="/biblioteca" aria-label="Buscar músicas" title="Buscar músicas" className="rounded-full p-2"><Music2 className="size-5" /></Link>
+        </div>
       </div>
       <div className="player-main-layout grid grid-cols-1 items-center gap-5 px-1 pt-3 text-center md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 md:text-left">
         <div className="player-artwork mx-auto w-[66vw] max-w-[290px] overflow-hidden rounded-[1.6rem] border border-primary/35 bg-card shadow-2xl shadow-primary/20 [&_img]:!rounded-[1.4rem]">
