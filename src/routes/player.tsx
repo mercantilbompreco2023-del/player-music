@@ -88,7 +88,7 @@ function PlayerPage() {
       <div className="sr-only"><span>{p.prefs.repeat === "one" ? "Repetindo esta música" : p.prefs.repeat === "all" ? "Repetindo a fila" : "Repetição desligada"}</span></div>
       <section className="rounded-3xl border border-primary/35 bg-gradient-to-br from-primary/15 via-card to-card p-4">
         <div className="mb-3 flex items-center gap-3">
-          <CustomFolderCover artistName="Neto Brito" className="w-20 shrink-0" />
+          <CustomFolderCover artistName="Neto Brito" editable entityLabel="pasta do cantor" className="w-20 shrink-0" />
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-black uppercase tracking-[.18em] text-primary">Pasta do cantor</p>
             <h2 className="text-xl font-extrabold">Neto Brito</h2>
