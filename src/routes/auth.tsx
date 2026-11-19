@@ -53,7 +53,7 @@ function AccountPage() {
   async function signOut() { await queryClient.cancelQueries(); queryClient.clear(); await supabase.auth.signOut(); await navigate({ to: "/auth", replace: true }); }
   async function resetPassword() { if (!email.trim()) { toast.error("Digite seu e-mail primeiro."); return; } const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` }); toast[error ? "error" : "success"](error ? "Não foi possível enviar o link." : "Confira seu e-mail para trocar a senha."); }
   return (
-    <main className="relative flex min-h-[calc(100vh-1rem)] items-center justify-center overflow-hidden rounded-[1.75rem] bg-[#050505] px-3 py-5 text-white sm:px-6">
+    <main className="relative flex min-h-[100dvh] items-start justify-center overflow-y-auto bg-[#050505] px-3 py-6 text-white sm:items-center sm:px-6 sm:py-8">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(212,165,45,.16),transparent_42%),radial-gradient(ellipse_at_bottom_right,rgba(212,165,45,.12),transparent_38%)]" />
       <section className="relative grid w-full max-w-6xl overflow-hidden rounded-[1.75rem] border border-[#d6aa38]/70 bg-[#080808] shadow-[0_0_55px_rgba(212,165,45,.13)] md:min-h-[690px] md:grid-cols-[.95fr_1.05fr]">
         <div className="relative flex flex-col justify-between overflow-hidden border-b border-[#d6aa38]/30 bg-[radial-gradient(ellipse_at_center,rgba(125,79,15,.22),transparent_55%),linear-gradient(145deg,#111,#030303_70%)] p-6 sm:p-9 md:border-b-0 md:border-r">
