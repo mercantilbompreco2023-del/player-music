@@ -67,7 +67,7 @@ function BibliotecaPage() {
     <div className="mb-3 space-y-2">
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="outline" size="sm" onClick={marcar}>
-          <Check /> {tudo ? "Nenhuma selecionada" : "Selecionar todas"}
+          <Check /> {tudo ? "Desmarcar todas" : "SELECIONAR TUDO"}
         </Button>
         {selected.size > 0 && <span className="text-xs text-muted-foreground">{selected.size} selecionada(s)</span>}
       </div>
