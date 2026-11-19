@@ -31,6 +31,7 @@ function FoldersPage() {
   const { user } = useSession();
   const organize = useServerFn(organizeArtistFolders);
   const [organizing, setOrganizing] = useState(false);
+  const [selectedFolders, setSelectedFolders] = useState<Set<string>>(new Set());
   const organizeWithAi = async () => {
     const tracks = p.tracks.filter((track) => track.source !== "demo");
     if (!tracks.length) { toast.message("Importe músicas primeiro."); return; }
@@ -45,6 +46,16 @@ function FoldersPage() {
       setSelected(null);
     } catch { toast.error("Entre na sua conta e confira a conexão para usar a organização por IA."); }
     finally { setOrganizing(false); }
+  };
+  const toggleFolder = (name: string) => setSelectedFolders((current) => { const next = new Set(current); if (next.has(name)) next.delete(name); else next.add(name); return next; });
+  const selectAllCustomFolders = () => setSelectedFolders((current) => current.size === manualFolders.length ? new Set() : new Set(manualFolders.map((folder) => folder.name)));
+  const removeSelectedFolders = () => {
+    const names = [...selectedFolders];
+    if (!names.length || !window.confirm(`Excluir ${names.length} pasta(s) selecionada(s)? As músicas continuarão na biblioteca.`)) return;
+    const failed = names.filter((name) => !deleteCustomFolder(name));
+    setSelectedFolders(new Set());
+    if (failed.length) toast.error(`Não foi possível excluir ${failed.length} pasta(s).`);
+    else toast.success(`${names.length} pasta(s) excluída(s). As músicas foram preservadas.`);
   };
   const removeFolder = (name: string) => {
     if (!window.confirm(`Excluir a pasta "${name}"? As músicas continuarão na biblioteca.`)) return;
