@@ -3,19 +3,17 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
-  useRouter,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { PlayerProvider } from "@/lib/music/player-context";
 import { AppShell } from "@/components/music/AppShell";
 import { Toaster } from "@/components/ui/sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   const router = useRouter();
@@ -134,37 +132,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const router = useRouter();
-  useEffect(() => {
-    // Na abertura: contas conectadas seguem direto para reprodução;
-    // visitantes veem o login, mas podem continuar sem entrar pela seta.
-    if (window.location.pathname !== "/") return;
-    let active = true;
-    void supabase.auth.getSession().then(({ data }) => {
-      if (active) void router.navigate({ to: data.session?.user ? "/player" : "/auth", replace: true });
-    });
-    return () => { active = false; };
-  }, [router]);
-
-  useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
-      if (event === "SIGNED_IN") {
-        const next = sessionStorage.getItem("pm:after-login");
-        if (next && next.startsWith("/") && !next.startsWith("//")) {
-          sessionStorage.removeItem("pm:after-login");
-          router.history.push(next);
-        }
-      }
-    });
-    return () => data.subscription.unsubscribe();
-  }, [router, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <PlayerProvider>
         <AppShell>
           <Outlet />
