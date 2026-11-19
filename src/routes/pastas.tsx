@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, FolderOpen, ListPlus, Play, Shuffle } from "lucide-react";
+import { ArrowLeft, FolderOpen, ListPlus, Play, Shuffle, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth";
 import { organizeArtistFolders } from "@/lib/music/artist-folders.functions";
-import { saveAiArtistFolders } from "@/lib/music/folders";
+import { saveAiArtistFolders, deleteCustomFolder } from "@/lib/music/folders";
 import { PageHeader } from "@/components/music/AppShell";
 import { CustomFolderCover } from "@/components/music/CustomFolderCover";
 import { TrackRow } from "@/components/music/TrackRow";
@@ -45,6 +45,13 @@ function FoldersPage() {
       setSelected(null);
     } catch { toast.error("Entre na sua conta e confira a conexão para usar a organização por IA."); }
     finally { setOrganizing(false); }
+  };
+  const removeFolder = (name: string) => {
+    if (!window.confirm(`Excluir a pasta "${name}"? As músicas continuarão na biblioteca.`)) return;
+    if (!deleteCustomFolder(name)) { toast.error("Não foi possível excluir esta pasta."); return; }
+    toast.success(`Pasta "${name}" excluída. As músicas foram preservadas.`);
+    setSelected((current) => current?.kind === "custom" && current.name === name ? null : current);
+    window.dispatchEvent(new Event("player-music-folders-updated"));
   };
   const folders = savedFolders(p.tracks);
   const manualFolders = customFolders(p.tracks);
@@ -114,6 +121,7 @@ function FoldersPage() {
             </Button>
             <div className="mt-2 flex flex-wrap gap-2">
               <Button size="sm" onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "ordered")}><Play /> Ouvir pasta</Button>
+              <Button size="sm" variant="destructive" aria-label={`Excluir pasta ${folder.name}`} onClick={() => removeFolder(folder.name)}><Trash2 /> Excluir pasta</Button>
               <Button size="sm" variant="outline" onClick={() => p.addManyToQueue(folder.tracks.map((track) => track.id))}><ListPlus /> Adicionar à sequência</Button>
               <Button size="sm" variant="secondary" onClick={() => p.playList(folder.tracks.map((track) => track.id), undefined, "shuffle")}><Shuffle /> Aleatório</Button>
             </div>
