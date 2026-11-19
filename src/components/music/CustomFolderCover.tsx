@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ImagePlus, Trash2 } from "lucide-react";
 import { Cover } from "@/components/music/Cover";
-import { saveArtistFolderCover, loadArtistFolderCover, saveCustomFolderCover, loadCustomFolderCover, loadCustomFolderCoverForTrack, removeArtistFolderCover, removeCustomFolderCover } from "@/lib/music/folder-covers";
+import { saveArtistFolderCover, loadArtistFolderCover, saveCustomFolderCover, loadCustomFolderCover, loadFolderCoverForTrack, removeArtistFolderCover, removeCustomFolderCover } from "@/lib/music/folder-covers";
 import { toast } from "sonner";
 
 export function CustomFolderCover({ folderName, artistName, editable = false, trackId, fallbackSeed, className = "w-full", entityLabel = "pasta" }: { folderName?: string; artistName?: string; editable?: boolean; trackId?: string; fallbackSeed?: string; className?: string; entityLabel?: string }) {
@@ -10,10 +10,10 @@ export function CustomFolderCover({ folderName, artistName, editable = false, tr
     let active = true;
     let localUrl: string | null = null;
     const load = async () => {
-      const local = artistName
-        ? await loadArtistFolderCover(artistName)
-        : trackId
-          ? await loadCustomFolderCoverForTrack(trackId)
+      const local = trackId
+        ? await loadFolderCoverForTrack({ id: trackId, folderName, artist: artistName })
+        : artistName
+          ? await loadArtistFolderCover(artistName)
           : folderName
             ? await loadCustomFolderCover(folderName)
             : null;
