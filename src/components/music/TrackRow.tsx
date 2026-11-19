@@ -35,7 +35,7 @@ export function TrackRow({ track, list, playlistId, selectable, selected, onTogg
       )}
       <button className="flex min-w-0 flex-1 items-center gap-3 text-left" onClick={() => p.playList(list, track.id)} aria-label={`Tocar ${track.title}`}>
         <div className="relative">
-          <TrackVisual track={track} fallback={<CustomFolderCover {...(folderName ? { folderName } : {})} trackId={track.id} fallbackSeed={track.id} className="size-12 border-0" />} />
+          <TrackVisual track={track} fallback={<CustomFolderCover {...(folderName ? { folderName } : {})} trackId={track.id} artistName={track.artist} fallbackSeed={track.id} className="size-12 border-0" />} />
           {active && p.isPlaying && (
             <div className="absolute inset-0 flex items-end justify-center gap-0.5 rounded-lg bg-background/50 pb-2">
               {[0, 1, 2].map((i) => (
