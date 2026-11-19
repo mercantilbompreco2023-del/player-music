@@ -95,3 +95,14 @@ export function savedFolders<T extends FolderSource>(tracks: T[]): MusicFolder<T
   return Array.from(groups, ([name, items]) => ({ name, tracks: items }))
     .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 }
+
+/** Remove uma pasta manual sem apagar os arquivos de música da biblioteca. */
+export function deleteCustomFolder(name: string): boolean {
+  try {
+    const folders = readCustomFolders();
+    if (!Object.prototype.hasOwnProperty.call(folders, name)) return false;
+    delete folders[name];
+    localStorage.setItem(CUSTOM_FOLDERS_KEY, JSON.stringify(folders));
+    return true;
+  } catch { return false; }
+}
