@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, AudioLines, Crown, Headphones, LockKeyhole, Mail, Music2, Play, SkipBack, SkipForward, UserRoundPlus, Zap } from "lucide-react";
+import { ArrowLeft, AudioLines, Crown, Eye, EyeOff, Headphones, LockKeyhole, Mail, Music2, Play, SkipBack, SkipForward, UserRoundPlus, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ function AccountPage() {
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [signup, setSignup] = useState(false);
   const [easy, setEasy] = useState(true);
@@ -39,6 +40,7 @@ function AccountPage() {
         else if (message.includes("password") && (message.includes("weak") || message.includes("short"))) toast.error("A senha precisa ter pelo menos 6 caracteres e ser mais segura.");
         else if (message.includes("rate limit") || message.includes("too many")) toast.error("Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.");
         else if (message.includes("signup") && (message.includes("disabled") || message.includes("not allowed"))) toast.error("O cadastro por e-mail está desativado no serviço de autenticação. É necessário habilitá-lo no Supabase.");
+        else if (message.includes("530") || message.includes("cloudflare")) toast.error("O serviço de autenticação está temporariamente indisponível (erro 530). Aguarde alguns minutos e tente novamente. Não é problema da sua senha.");
         else toast.error("Falha na autenticação: " + result.error.message);
         return;
       }
@@ -72,7 +74,7 @@ function AccountPage() {
             <div className="mb-7 text-center"><div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl border border-[#d6aa38]/65 bg-[#d6aa38]/10 text-[#f4c64d]"><Crown className="size-8"/></div><h2 className="text-2xl font-black sm:text-3xl">{user ? "Conta conectada" : signup ? "Criar cadastro" : "Acesse sua conta"}</h2><p className="mt-2 text-sm text-white/55">Entre para acessar sua experiência Música Player Pro</p></div>
             {user ? <div className="space-y-4"><p className="rounded-xl border border-[#d6aa38]/35 bg-black/50 p-4 text-sm">{user.email}</p><Button asChild className="h-12 w-full bg-gradient-to-r from-[#ffe17a] to-[#c58b16] font-black text-black hover:brightness-110"><Link to="/player">Ir para reprodução</Link></Button><Button variant="outline" className="w-full border-red-500/40 text-red-200" onClick={() => void signOut()}>Sair da conta</Button></div> : <form onSubmit={(e) => void submit(e)} className="space-y-4">
               <div className="space-y-2"><Label htmlFor="email" className="text-sm text-white/80">E-mail</Label><div className="relative"><Mail className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[#e7bb43]"/><Input id="email" type="email" required autoComplete="email" placeholder="Digite seu e-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="h-14 rounded-xl border border-[#d6aa38]/70 bg-[#111] pl-12 text-white placeholder:text-white/35 focus-visible:ring-[#e7bb43]"/></div></div>
-              {!easy && <div className="space-y-2"><Label htmlFor="password" className="text-sm text-white/80">Senha</Label><div className="relative"><LockKeyhole className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[#e7bb43]"/><Input id="password" type="password" required minLength={6} autoComplete={signup ? "new-password" : "current-password"} placeholder="Digite sua senha" value={password} onChange={(e) => setPassword(e.target.value)} className="h-14 rounded-xl border border-[#d6aa38]/70 bg-[#111] pl-12 text-white placeholder:text-white/35 focus-visible:ring-[#e7bb43]"/></div></div>}
+              {!easy && <div className="space-y-2"><Label htmlFor="password" className="text-sm text-white/80">Senha</Label><div className="relative"><LockKeyhole className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[#e7bb43]"/><Input id="password" type={showPassword ? "text" : "password"} required minLength={6} autoComplete={signup ? "new-password" : "current-password"} placeholder="Digite sua senha" value={password} onChange={(e) => setPassword(e.target.value)} className="h-14 rounded-xl border border-[#d6aa38]/70 bg-[#111] pl-12 pr-14 text-white placeholder:text-white/35 focus-visible:ring-[#e7bb43]"/><button type="button" onClick={() => setShowPassword((v) => !v)} aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} aria-pressed={showPassword} className="absolute right-3 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-lg text-[#e7bb43] hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e7bb43]">{showPassword ? <EyeOff className="size-5"/> : <Eye className="size-5"/>}</button></div></div>}
               <Button type="submit" disabled={busy} className="h-14 w-full rounded-full bg-gradient-to-r from-[#ffe17a] via-[#eab735] to-[#b77d13] text-lg font-black text-black shadow-[0_8px_28px_rgba(198,140,20,.22)] hover:brightness-110">{busy ? "Aguarde…" : easy ? "ENTRAR SEM SENHA" : signup ? "CRIAR CONTA" : "ENTRAR"}</Button>
               <div className="flex items-center gap-3 py-1 text-xs text-white/45"><span className="h-px flex-1 bg-white/20"/><span>OU</span><span className="h-px flex-1 bg-white/20"/></div>
               {easy && <Button type="button" variant="outline" className="h-12 w-full rounded-full border-[#d6aa38] bg-transparent font-bold text-white hover:bg-[#d6aa38]/10" onClick={() => { setEasy(false); setSignup(true); setSent(false); }}><UserRoundPlus className="mr-2 size-5 text-[#f4c64d]"/> CRIAR CADASTRO</Button>}
