@@ -29,8 +29,19 @@ function AccountPage() {
     e.preventDefault(); setBusy(true);
     try {
       sessionStorage.setItem("pm:after-login", "/player");
-      const result = easy ? await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } }) : signup ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } }) : await supabase.auth.signInWithPassword({ email, password });
-      if (result.error) { toast.error(result.error.message.includes("Invalid login") ? "E-mail ou senha incorretos." : "Não foi possível entrar ou criar a conta. Confira os dados e a confirmação do e-mail."); return; }
+      const cleanEmail = email.trim().toLowerCase();
+      const result = easy ? await supabase.auth.signInWithOtp({ email: cleanEmail, options: { emailRedirectTo: window.location.origin } }) : signup ? await supabase.auth.signUp({ email: cleanEmail, password, options: { emailRedirectTo: window.location.origin } }) : await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+      if (result.error) {
+        const message = result.error.message.toLowerCase();
+        if (message.includes("invalid login credentials") || message.includes("invalid_credentials")) toast.error("E-mail ou senha incorretos. Confira os dados e tente novamente.");
+        else if (message.includes("email not confirmed")) toast.error("Seu e-mail ainda não foi confirmado. Abra a mensagem de confirmação enviada pelo Música Player Pro.");
+        else if (message.includes("already registered") || message.includes("user already")) toast.error("Este e-mail já tem cadastro. Volte para Entrar e use sua senha ou recupere-a.");
+        else if (message.includes("password") && (message.includes("weak") || message.includes("short"))) toast.error("A senha precisa ter pelo menos 6 caracteres e ser mais segura.");
+        else if (message.includes("rate limit") || message.includes("too many")) toast.error("Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.");
+        else if (message.includes("signup") && (message.includes("disabled") || message.includes("not allowed"))) toast.error("O cadastro por e-mail está desativado no serviço de autenticação. É necessário habilitá-lo no Supabase.");
+        else toast.error("Falha na autenticação: " + result.error.message);
+        return;
+      }
       if (easy) setSent(true);
       if (!easy && !signup) await navigate({ to: "/player", replace: true });
       if (!easy && signup && result.data.session) await navigate({ to: "/player", replace: true });
