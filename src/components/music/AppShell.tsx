@@ -86,6 +86,7 @@ function MiniPlayer() {
 export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const onPlayer = pathname === "/player";
+  const isAuthScreen = pathname === "/auth" || pathname === "/reset-password";
   const [offline, setOffline] = useState(false);
   useEffect(() => {
     const u = () => setOffline(!navigator.onLine);
@@ -94,6 +95,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     window.addEventListener("offline", u);
     return () => { window.removeEventListener("online", u); window.removeEventListener("offline", u); };
   }, []);
+  if (isAuthScreen) return <div className="min-h-[100dvh] w-full bg-[#050505]">{children}</div>;
+
   return (
     <div className="min-h-screen">
       {offline && (
