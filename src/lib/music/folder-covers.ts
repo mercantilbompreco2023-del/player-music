@@ -78,12 +78,10 @@ export async function removeArtistFolderCover(artistName: string): Promise<boole
   return removeCustomFolderCover(ARTIST_COVER_PREFIX + artistName.trim().toLocaleLowerCase("pt-BR"));
 }
 
-export async function loadFolderCoverForTrack(track: { id: string; folderName?: string; path?: string }): Promise<string | null> {
+export async function loadFolderCoverForTrack(track: { id: string; artist?: string; folderName?: string; path?: string }): Promise<string | null> {
   const folderName = track.folderName || track.path?.replace(/\\/g, "/").split("/")[0];
-  if (folderName) {
-    const cover = await loadCustomFolderCover(folderName);
-    if (cover) return cover;
-  }
+  if (folderName) { const cover = await loadCustomFolderCover(folderName); if (cover) return cover; }
+  if (track.artist) { const cover = await loadArtistFolderCover(track.artist); if (cover) return cover; }
   return loadCustomFolderCoverForTrack(track.id);
 }
 
