@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, Headphones, Smartphone, ListMusic, Shuffle } from "lucide-react";
+import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, Headphones, Smartphone, ListMusic, Shuffle, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HomePlayer, ArtistPhoto } from "@/components/music/HomePlayer";
@@ -48,7 +48,7 @@ function Index() {
       <header className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <img src={playerIcon} alt="" width={46} height={46} className="size-11 rounded-2xl object-cover shadow-lg ring-1 ring-primary/25" />
-          <div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">MÚSICA PLAYER PRO</p><h1 className="truncate text-2xl font-extrabold tracking-tight">Música Player Pro</h1></div>
+          <div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">DELÍCIA COXI’S MUSIC & VIDEO</p><h1 className="truncate text-2xl font-extrabold tracking-tight">Music & Video</h1></div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button>
@@ -60,7 +60,7 @@ function Index() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-black/10"/>
         <div className="relative grid min-h-[230px] grid-cols-[minmax(0,1fr)_42%] items-center gap-2 p-4 sm:min-h-[290px] sm:p-6">
           <div className="z-10 min-w-0 space-y-3">
-            <p className="text-[10px] font-black uppercase tracking-[.24em] text-primary">Artista em destaque</p>
+            <p className="text-[10px] font-black uppercase tracking-[.24em] text-primary">Top músicas e vídeos</p>
             <h2 className="text-3xl font-black leading-[.95] tracking-tight sm:text-5xl">{ownTracks[0]?.artist || "Sua música"}</h2>
             <p className="text-xs font-bold uppercase tracking-wider text-white/80 sm:text-sm">Biblioteca atualizada</p>
             <p className="line-clamp-2 text-xs text-white/70 sm:text-sm">{ownTracks[0]?.title || "Suas músicas favoritas em um só lugar"}</p>
@@ -76,7 +76,7 @@ function Index() {
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Acesso rápido">
         <Link to="/biblioteca" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Headphones /></span><span><b>Biblioteca</b><small>{ownTracks.length} músicas</small></span></Link>
         <Link to="/pastas" className="streaming-shortcut"><span className="streaming-shortcut-icon"><FolderOpen /></span><span><b>Pastas</b><small>{folders.length} pastas</small></span></Link>
-        <Link to="/favoritos" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Heart /></span><span><b>Favoritos</b><small>Suas preferidas</small></span></Link>
+        <Link to="/videos" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Heart /></span><span><b>Vídeos</b><small>Clipes e shows</small></span></Link>
         <Link to="/playlists" className="streaming-shortcut"><span className="streaming-shortcut-icon"><ListMusic /></span><span><b>Playlists</b><small>{p.prefs.playlists.length} listas</small></span></Link>
       </section>
 
