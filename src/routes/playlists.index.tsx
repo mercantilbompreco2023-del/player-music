@@ -26,7 +26,7 @@ function PlaylistsPage() {
   const filtered = artists.filter(a => a.name.toLocaleLowerCase("pt-BR").includes(search.toLocaleLowerCase("pt-BR")));
   const favorites = p.tracks.filter(t => p.isFavorite(t.id));
   return <div className="artist-playlists-page space-y-5 pb-4">
-    <PageHeader title="Playlists dos Cantores" description="Todas as playlists organizadas por artista"/>
+    <PageHeader title="Delícia Coxi’s Music & Video" description="Playlists dos Cantores · Todas as playlists organizadas por artista"/>
     <AiPlaylist/>
     <div className="flex items-center gap-2 rounded-full border border-primary/35 bg-background/70 px-4 py-2.5 shadow-[0_0_20px_-14px_hsl(var(--primary))]"><Search className="size-5 shrink-0 text-primary"/><Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar cantor ou playlist..." aria-label="Buscar cantor ou playlist" className="h-8 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0"/></div>
     <div className="grid grid-cols-3 gap-2">
