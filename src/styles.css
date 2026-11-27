@@ -704,3 +704,18 @@ html, body, .dark body {
 .video-hub .video-filter { border:1px solid rgba(150,180,160,.25); border-radius:999px; padding:.55rem 1rem; font-size:.78rem; font-weight:800; background:#0b1510; }
 .video-hub .video-filter[aria-pressed="true"] { background:#39f56b; color:#031006; border-color:#39f56b; box-shadow:0 0 16px -6px rgba(57,245,107,.85); }
 .video-hub .video-item { border:1px solid rgba(57,245,107,.24); border-radius:1rem; background:linear-gradient(145deg,#0a1b0e,#030704); }
+
+/* Final specificity pass for dark-mode neon green brand */
+.dark .home-streaming, .dark .player-purple { --primary:#39f56b!important; --primary-foreground:#031006!important; --ring:#39f56b!important; }
+.dark .home-streaming .streaming-feature { border-color:rgba(57,245,107,.58)!important; background:linear-gradient(145deg,#06140a,#020503 72%)!important; }
+.dark .home-streaming .streaming-shortcut:nth-child(n) { border-color:rgba(57,245,107,.38)!important; background:linear-gradient(145deg,rgba(9,37,18,.95),rgba(3,9,5,.98))!important; }
+.dark .home-streaming .streaming-shortcut:nth-child(2) { border-color:rgba(176,75,255,.48)!important; }
+.dark .home-streaming .streaming-shortcut:nth-child(2) .streaming-shortcut-icon { color:#c47bff!important; background:rgba(176,75,255,.14)!important; }
+.dark .home-streaming .streaming-shortcut:nth-child(3) { border-color:rgba(255,64,64,.48)!important; }
+.dark .home-streaming .streaming-shortcut:nth-child(3) .streaming-shortcut-icon { color:#ff6464!important; background:rgba(255,64,64,.14)!important; }
+.dark .home-streaming .streaming-shortcut:nth-child(4) { border-color:rgba(255,196,44,.48)!important; }
+.dark .home-streaming .streaming-shortcut:nth-child(4) .streaming-shortcut-icon { color:#ffc42c!important; background:rgba(255,196,44,.14)!important; }
+.dark .home-streaming .streaming-playlist-card { border-color:rgba(57,245,107,.3)!important; background:linear-gradient(145deg,#0a1c0e,#030704)!important; }
+.dark .player-purple .text-primary { color:#39f56b!important; }
+.dark .player-purple .border-primary { border-color:rgba(57,245,107,.55)!important; }
+.dark .player-purple .bg-primary { background-color:#39f56b!important; color:#031006!important; }
