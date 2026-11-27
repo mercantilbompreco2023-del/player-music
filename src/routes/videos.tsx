@@ -57,13 +57,15 @@ function VideosPage() {
   const [message, setMessage] = useState("");
   useEffect(() => {
     let alive = true;
+    let loadedUrls: string[] = [];
     readVideos().then(items => {
       if (!alive) return;
       const entries = items.sort((a,b)=>b.createdAt-a.createdAt).map(({blob,...item})=>({...item,url:URL.createObjectURL(blob)}));
+      loadedUrls = entries.map(item=>item.url);
       setVideos(entries);
       setSelectedId(entries[0]?.id ?? null);
     }).catch(()=>setMessage("Não foi possível abrir a biblioteca de vídeos neste navegador."));
-    return () => { alive=false; videos.forEach(item=>URL.revokeObjectURL(item.url)); };
+    return () => { alive=false; loadedUrls.forEach(url=>URL.revokeObjectURL(url)); };
     // Load once on mount; blob URLs are released when the page unmounts.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
