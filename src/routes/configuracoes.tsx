@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowLeft, AudioLines, Bell, Bluetooth, BookOpen, CheckCircle2, Cloud, Database, Download, FolderOpen, Gauge, HardDrive, History, Info, ListMusic, Moon, Music2, Palette, Play, RotateCcw, Settings2, Smartphone, Sparkles, Timer, Trash2, Video, Volume2, Wifi } from "lucide-react";
+import { useEffect, useState, type ReactNode, type ElementType } from "react";
+import { ArrowLeft, AudioLines, Bell, Bluetooth, BookOpen, CheckCircle2, Cloud, Database, Download, FolderOpen, Gauge, HardDrive, History, Info, ListMusic, Moon, Music2, Palette, Play, Repeat, RotateCcw, Settings2, Shuffle, Smartphone, Sparkles, Timer, Trash2, Video, Volume2, Wifi } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -23,10 +23,10 @@ const DEFAULT_UI: UiPrefs = { visualizer: true, lyrics: true, musicNotifications
 function readUiPrefs(): UiPrefs {
   try { return { ...DEFAULT_UI, ...JSON.parse(localStorage.getItem(PREF_KEY) || "{}") }; } catch { return DEFAULT_UI; }
 }
-function SettingRow({ icon: Icon, title, detail, control }: { icon: React.ElementType; title: string; detail?: string; control: React.ReactNode }) {
+function SettingRow({ icon: Icon, title, detail, control }: { icon: ElementType; title: string; detail?: string; control: ReactNode }) {
   return <div className="flex min-h-[58px] items-center gap-3 border-b border-primary/15 py-2.5 last:border-0"><Icon className="size-5 shrink-0 text-primary"/><div className="min-w-0 flex-1"><p className="text-sm font-semibold leading-tight">{title}</p>{detail && <p className="mt-0.5 text-xs text-muted-foreground">{detail}</p>}</div>{control}</div>;
 }
-function Group({ icon: Icon, title, children }: { icon: React.ElementType; title: string; children: React.ReactNode }) {
+function Group({ icon: Icon, title, children }: { icon: ElementType; title: string; children: ReactNode }) {
   return <section className="settings-group rounded-2xl border border-primary/35 bg-card/75 p-3 shadow-[0_0_22px_-16px_hsl(var(--primary))] sm:p-4"><h2 className="mb-2 flex items-center gap-2 text-base font-extrabold text-primary"><Icon className="size-5"/>{title}</h2>{children}</section>;
 }
 function ConfigPage() {
