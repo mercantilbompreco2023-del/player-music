@@ -18,6 +18,7 @@ on:
       - "src/routes/pastas.tsx"
       - "src/routes/biblioteca.tsx"
       - "src/routes/player.tsx"
+      - "src/routes/videos.tsx"
       - "src/routes/armazenamento.tsx"
       - "src/styles.css"
       - "src/components/music/HomePlayer.tsx"
