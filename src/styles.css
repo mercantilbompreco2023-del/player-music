@@ -677,3 +677,30 @@ html, body, .dark body {
 [class*="bg-emerald-"], [class*="bg-green-"] { background-color:rgba(214,179,74,.14) !important; }
 [class*="border-violet-"], [class*="border-purple-"], [class*="border-fuchsia-"],
 [class*="border-emerald-"], [class*="border-green-"] { border-color:rgba(214,179,74,.4) !important; }
+
+
+/* Delícia Coxi's Music & Video — neon green visual refresh */
+.home-streaming, .player-purple { --primary: #39f56b; --primary-foreground: #031006; --ring: #39f56b; }
+.home-streaming { color: #f4fff6; background: radial-gradient(ellipse 90% 32% at 50% 0%, rgba(25,245,95,.16), transparent 72%); }
+.home-streaming .streaming-feature { border-color: rgba(57,245,107,.58)!important; background: linear-gradient(145deg,#06140a,#020503 72%)!important; box-shadow: 0 0 28px -12px rgba(57,245,107,.55), inset 0 0 24px rgba(57,245,107,.05); }
+.home-streaming .streaming-shortcut { border-color: rgba(57,245,107,.38)!important; background: linear-gradient(145deg,rgba(9,37,18,.95),rgba(3,9,5,.98))!important; box-shadow: inset 0 0 16px rgba(57,245,107,.035); }
+.home-streaming .streaming-shortcut-icon { color:#39f56b!important; background:rgba(57,245,107,.13)!important; }
+.home-streaming .streaming-shortcut:nth-child(2) { border-color:rgba(255,64,64,.48)!important; }
+.home-streaming .streaming-shortcut:nth-child(2) .streaming-shortcut-icon { color:#ff6464!important; background:rgba(255,64,64,.14)!important; }
+.home-streaming .streaming-shortcut:nth-child(3) { border-color:rgba(176,75,255,.48)!important; }
+.home-streaming .streaming-shortcut:nth-child(3) .streaming-shortcut-icon { color:#c47bff!important; background:rgba(176,75,255,.14)!important; }
+.home-streaming .streaming-shortcut:nth-child(4) { border-color:rgba(255,196,44,.48)!important; }
+.home-streaming .streaming-shortcut:nth-child(4) .streaming-shortcut-icon { color:#ffc42c!important; background:rgba(255,196,44,.14)!important; }
+.home-streaming .streaming-playlist-card, .home-streaming .streaming-track-card { border-color:rgba(57,245,107,.3)!important; background:linear-gradient(145deg,#0a1c0e,#030704)!important; }
+.player-purple, .home-purple { background-color:#030704!important; color:#f4fff6!important; }
+.player-purple .text-primary, .home-purple .text-primary { color:#39f56b!important; }
+.player-purple .border-primary, .home-purple .border-primary { border-color:rgba(57,245,107,.55)!important; }
+.player-purple .bg-primary, .home-purple .bg-primary { background-color:#39f56b!important; color:#031006!important; }
+.player-immersive { background:radial-gradient(ellipse at 50% 0%,rgba(57,245,107,.1),transparent 46%),#030704!important; border-color:rgba(57,245,107,.5)!important; box-shadow:inset 0 0 30px rgba(57,245,107,.04),0 0 24px -14px rgba(57,245,107,.5)!important; }
+.player-reworked .player-waveform { border-color:rgba(57,245,107,.28)!important; background:linear-gradient(90deg,rgba(6,50,20,.4),rgba(7,25,12,.8),rgba(6,50,20,.4))!important; }
+.player-immersive button[aria-label="Tocar"], .player-immersive button[aria-label="Pausar"] { border-color:#39f56b!important; background:#39f56b!important; color:#031006!important; box-shadow:0 0 30px -6px rgba(57,245,107,.8)!important; }
+.video-hub { color:#f4fff6; }
+.video-hub .video-neon-panel { border:1px solid rgba(57,245,107,.42); background:linear-gradient(145deg,#08150b,#020503); box-shadow:0 0 24px -14px rgba(57,245,107,.6); }
+.video-hub .video-filter { border:1px solid rgba(150,180,160,.25); border-radius:999px; padding:.55rem 1rem; font-size:.78rem; font-weight:800; background:#0b1510; }
+.video-hub .video-filter[aria-pressed="true"] { background:#39f56b; color:#031006; border-color:#39f56b; box-shadow:0 0 16px -6px rgba(57,245,107,.85); }
+.video-hub .video-item { border:1px solid rgba(57,245,107,.24); border-radius:1rem; background:linear-gradient(145deg,#0a1b0e,#030704); }
