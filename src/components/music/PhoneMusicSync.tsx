@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { Smartphone, Music2, Loader2, CheckCircle2, RefreshCw } from "lucide-react";
+import { Smartphone, Music2, Loader2, CheckCircle2, RefreshCw, FolderOpen, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { usePlayer } from "@/lib/music/player-context";
 import { phoneMusicLibrary, readPhoneAudio, type PhoneAudioTrack } from "@/lib/music/phone-music-library";
 import { toast } from "sonner";
+import { FolderImport } from "@/components/music/FolderImport";
 
 export function PhoneMusicSync() {
   const { importItems } = usePlayer();
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0, imported: 0, duplicates: 0, skipped: 0 });
   const [finished, setFinished] = useState(false);
+  const [showFolderImport, setShowFolderImport] = useState(false);
 
   async function sync() {
     if (!phoneMusicLibrary || busy) return;
@@ -54,12 +56,20 @@ export function PhoneMusicSync() {
         <div className="min-w-0"><h2 className="font-display text-xl font-bold">Vincular músicas do celular</h2><p className="text-sm text-muted-foreground">Encontre as músicas que já estão no seu aparelho.</p></div>
       </div>
       <p className="text-sm text-muted-foreground">O Player Music vai solicitar permissão, localizar os arquivos de áudio do celular e adicioná-los à sua biblioteca automaticamente. As faixas duplicadas são ignoradas. Os arquivos originais não são apagados nem modificados.</p>
-      <Button className="h-12 w-full rounded-full text-base" onClick={() => void sync()} disabled={busy}>
+      {phoneMusicLibrary && <Button className="h-12 w-full rounded-full text-base" onClick={() => void sync()} disabled={busy}>
         {busy ? <Loader2 className="animate-spin" /> : finished ? <RefreshCw /> : <Music2 />}
         {busy ? "Vinculando músicas…" : finished ? "Atualizar biblioteca do celular" : "Vincular músicas do celular"}
       </Button>
       {busy && <div role="status" className="space-y-2"><div className="flex justify-between text-xs"><span>Verificando músicas</span><span>{progress.current}/{progress.total}</span></div><Progress value={progress.total ? progress.current / progress.total * 100 : 0} /><p className="text-xs text-muted-foreground">Adicionadas: {progress.imported} · Já existentes: {progress.duplicates} · Ignoradas: {progress.skipped}</p></div>}
-      {finished && <p className="flex items-center gap-2 text-sm text-emerald-400"><CheckCircle2 className="size-4" /> Biblioteca do celular vinculada. Você já pode tocar as músicas no Player Music.</p>}
+      {phoneMusicLibrary && finished && <p className="flex items-center gap-2 text-sm text-emerald-400"><CheckCircle2 className="size-4" /> Biblioteca do celular vinculada. Você já pode tocar as músicas no Player Music.</p>}
+      <div className="space-y-2 rounded-2xl border border-primary/40 bg-background/50 p-3">
+        <div className="flex items-center gap-3"><FolderOpen className="size-6 shrink-0 text-primary"/><div className="min-w-0 flex-1"><h3 className="font-semibold">Adicionar por pasta</h3><p className="text-xs text-muted-foreground">Escolha uma pasta de cada cantor para manter cada coleção separada.</p></div></div>
+        <Button variant="outline" className="h-11 w-full rounded-full border-primary/50" onClick={() => setShowFolderImport((v) => !v)}>
+          <FolderOpen /> {showFolderImport ? "Fechar seletor de pastas" : "Escolher pasta do celular"} {showFolderImport ? <ChevronUp /> : <ChevronDown />}
+        </Button>
+        {showFolderImport && <div className="pt-2"><FolderImport /></div>}
+        <p className="text-xs text-muted-foreground">Importe uma pasta por vez (por exemplo, Neto Brito, Marília Tavares ou Theuzinho). Cada pasta escolhida será criada separadamente na biblioteca. Repita para adicionar outra pasta.</p>
+      </div>
     </section>
   );
 }
