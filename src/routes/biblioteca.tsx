@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/music/AppShell";
 import { ImportButton } from "@/components/music/ImportButton";
 import { TrackRow } from "@/components/music/TrackRow";
+import { CustomFolderCover } from "@/components/music/CustomFolderCover";
 import { usePlayer } from "@/lib/music/player-context";
 import { addTracksToCustomFolder, createCustomFolder, customFolders, savedFolders, artistFolders } from "@/lib/music/folders";
 import { allSelected, toggleAll, toggleOne } from "@/lib/music/selection";
@@ -49,6 +50,8 @@ function BibliotecaPage() {
     favoritas: "Toque no coração de uma faixa para adicioná-la aos favoritos.",
     demo: "Sem faixas de demonstração.",
     pastas: "Nenhuma pasta salva ainda. Importe uma pasta de músicas para vê-la aqui.",
+    artistas: "Nenhuma música com artista identificado ainda.",
+    albuns: "Nenhuma música com álbum identificado ainda.",
   };
 
   const activeList = tab === "pastas" && folder ? folder.tracks : list;
