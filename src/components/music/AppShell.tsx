@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff, Volume2, Settings2, Image, AudioLines, FolderOpen, Heart, CirclePlay, HardDrive } from "lucide-react";
+import { ArrowLeft, Home, Library, ListMusic, Pause, Play, Search, SkipForward, WifiOff, Volume2, Settings2, Image, AudioLines, FolderOpen, Heart, CirclePlay, HardDrive, Video } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/music/player-context";
@@ -18,7 +18,7 @@ const MOBILE_NAV = [
   { to: "/", label: "Início", icon: Home },
   { to: "/biblioteca", label: "Biblioteca", icon: Library },
   { to: "/pastas", label: "Pastas", icon: FolderOpen },
-  { to: "/armazenamento", label: "Salvar", icon: HardDrive },
+  { to: "/videos", label: "Vídeos", icon: Video },
 ] as const;
 
 type NowPlayingPrefs = { style: "compact" | "highlighted"; showCover: boolean; showArtist: boolean; showProgress: boolean };
@@ -114,7 +114,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {!onPlayer && <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border/70 p-5 shadow-2xl shadow-black/15 lg:flex">
         <Link to="/" className="mb-8 flex items-center gap-3 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-card px-3 py-3 shadow-lg shadow-black/10">
           <img src={playerMusicIcon} alt="" width={44} height={44} className="size-11 rounded-lg" />
-          <span className="font-display text-xl font-bold tracking-tight">Delícia Coxi’s <span className="text-primary">Music</span></span>
+          <span className="font-display text-xl font-bold tracking-tight">Delícia Coxi’s <span className="text-primary">Music & Video</span></span>
         </Link>
         <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Sua música</p>
         <nav aria-label="Navegação principal" className="space-y-2">
