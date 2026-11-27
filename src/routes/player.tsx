@@ -47,7 +47,7 @@ function PlayerPage() {
       <style>{"@keyframes pm-wave { 0%,100% { transform:scaleY(.28); opacity:.62 } 50% { transform:scaleY(1); opacity:1 } }"}</style>
       <div className="flex items-center justify-between gap-2 px-1">
         <button onClick={() => router.history.back()} aria-label="Voltar" className="rounded-full p-2"><ChevronDown className="size-6" /></button>
-        <div className="text-center"><p className="text-[10px] font-bold uppercase tracking-[.22em] text-primary">Reprodutor de Música</p><p className="text-lg font-extrabold tracking-tight"><span className="bg-gradient-to-r from-fuchsia-400 via-amber-300 to-yellow-500 bg-clip-text text-transparent">PLAYER MUSIC PRO</span></p></div>
+        <div className="text-center"><p className="text-[10px] font-bold uppercase tracking-[.22em] text-primary">Delícia Coxi’s Music & Video</p><p className="text-lg font-extrabold tracking-tight"><span className="bg-gradient-to-r from-fuchsia-400 via-amber-300 to-yellow-500 bg-clip-text text-transparent">MUSIC & VIDEO</span></p></div>
         <div className="flex items-center gap-1.5">
           <Link to="/" title="Sair da interface de reprodução" className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-bold text-foreground hover:bg-primary/20">
             <ChevronDown className="size-4 rotate-90" /> <span>Sair da reprodução</span>
