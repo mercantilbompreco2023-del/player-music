@@ -76,7 +76,7 @@ function Index() {
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Acesso rápido">
         <Link to="/biblioteca" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Headphones /></span><span><b>Biblioteca</b><small>{ownTracks.length} músicas</small></span></Link>
         <Link to="/pastas" className="streaming-shortcut"><span className="streaming-shortcut-icon"><FolderOpen /></span><span><b>Pastas</b><small>{folders.length} pastas</small></span></Link>
-        <Link to="/videos" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Heart /></span><span><b>Vídeos</b><small>Clipes e shows</small></span></Link>
+        <Link to="/videos" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Video /></span><span><b>Vídeos</b><small>Clipes e shows</small></span></Link>
         <Link to="/playlists" className="streaming-shortcut"><span className="streaming-shortcut-icon"><ListMusic /></span><span><b>Playlists</b><small>{p.prefs.playlists.length} listas</small></span></Link>
       </section>
 
