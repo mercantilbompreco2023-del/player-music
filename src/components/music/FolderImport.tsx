@@ -43,7 +43,7 @@ export function FolderImport() {
       setSt({ s: "erro", msg: `A pasta “${folder}” está vazia.` });
       return;
     }
-    const r = await importItems(items.map((item) => ({ ...item, folderName: folder })), { signal: c.signal, quiet: true, onProgress: (p) => setSt({ s: "importando", p }) });
+    const r = await importItems(items.map((item) => { const relative = item.path.replace(/\\\\/g, "/"); const firstFolder = relative.includes("/") ? relative.split("/")[0] : folder; return { ...item, folderName: firstFolder || folder }; }), { signal: c.signal, quiet: true, onProgress: (p) => setSt({ s: "importando", p }) });
     r.skipped.unshift(...pre);
     r.found += pre.length;
     setSt({ s: "fim", r, folder });
@@ -98,7 +98,9 @@ export function FolderImport() {
       setSt({ s: "importando", p: { phase: "importando", found: total.found, processed, imported: total.imported, current: f.path } });
       try {
         const file = await readNativeFile(f);
-        const r = await importItems([{ file, path: f.path, folderName: res.name }], { signal: c.signal, quiet: true });
+        const relative = f.path.replace(/\\\\/g, "/");
+        const firstFolder = relative.includes("/") ? relative.split("/")[0] : res.name;
+        const r = await importItems([{ file, path: f.path, folderName: firstFolder || res.name }], { signal: c.signal, quiet: true });
         total.imported += r.imported;
         total.duplicates += r.duplicates;
         total.skipped.push(...r.skipped);
