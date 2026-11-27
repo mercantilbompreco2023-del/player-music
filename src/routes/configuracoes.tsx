@@ -44,7 +44,7 @@ function ConfigPage() {
   return <div className="settings-neon settings-complete space-y-4 pb-5">
     <Link to="/" className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-3 py-2 text-sm font-semibold text-primary"><ArrowLeft className="size-4"/> Início</Link>
     <header className="rounded-2xl border border-primary/45 bg-gradient-to-r from-[#06170b] via-card to-[#031006] p-4 shadow-[0_0_24px_-12px_hsl(var(--primary))]">
-      <p className="text-[10px] font-black uppercase tracking-[.22em] text-primary">Delícia Coxi’s Music & Video</p><h1 className="mt-1 text-2xl font-black sm:text-3xl">Configurações</h1><p className="mt-1 text-sm text-muted-foreground">Personalize o aplicativo do seu jeito</p>
+      <p className="text-[10px] font-black uppercase tracking-[.22em] text-primary">Delícia Coxi’s Music & Video</p><h1 className="mt-1 text-2xl font-black sm:text-3xl">Configurações</h1><p className="mt-1 text-xs font-bold text-primary">Personalize seu Music & Video</p><p className="mt-1 text-sm text-muted-foreground">Personalize o aplicativo do seu jeito</p>
     </header>
     <div className="grid gap-3 lg:grid-cols-2">
       <Group icon={Smartphone} title="Minha conta e dispositivo">
