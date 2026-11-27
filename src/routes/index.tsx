@@ -56,6 +56,11 @@ function Index() {
         </div>
       </header>
 
+      <section className="rounded-3xl border border-primary/35 bg-gradient-to-r from-[#10271a] to-[#09120d] p-3 shadow-[0_12px_36px_-24px_rgba(34,197,94,.65)]">
+        <div className="mb-2 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[.2em] text-primary">Tocando agora</span><Link to="/player" className="text-xs font-semibold text-primary">Abrir reprodução ↗</Link></div>
+        <HomePlayer />
+      </section>
+
       <section className="streaming-feature relative isolate overflow-hidden rounded-[1.8rem] border border-primary/35 bg-[#07110b] shadow-2xl shadow-primary/10">
         <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-black/10"/>
         <div className="relative grid min-h-[230px] grid-cols-[minmax(0,1fr)_42%] items-center gap-2 p-4 sm:min-h-[290px] sm:p-6">
@@ -119,11 +124,6 @@ function Index() {
           </article>)}
           <Link to="/playlists" className="flex aspect-square flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-primary/35 bg-card/50 p-4 text-center"><span className="flex size-12 items-center justify-center rounded-full bg-primary/15 text-primary"><Plus/></span><b className="text-sm">Criar playlist</b><small className="text-xs text-muted-foreground">Organize suas músicas</small></Link>
         </div>
-      </section>
-
-      <section className="rounded-3xl border border-primary/35 bg-gradient-to-r from-[#10271a] to-[#09120d] p-3 shadow-[0_12px_36px_-24px_rgba(34,197,94,.65)]">
-        <div className="mb-2 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[.2em] text-primary">Tocando agora</span><Link to="/player" className="text-xs font-semibold text-primary">Abrir reprodução ↗</Link></div>
-        <HomePlayer />
       </section>
 
       <section id="gerenciar-musicas" className="streaming-manage space-y-4 rounded-3xl border border-border bg-card p-4 shadow-lg sm:p-5">
