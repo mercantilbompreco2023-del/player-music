@@ -758,3 +758,11 @@ html, body, .dark body {
  .home-streaming .music-video-shortcuts .streaming-shortcut b { font-size:.61rem; }
  .home-streaming .music-video-shortcuts .streaming-shortcut-icon { width:2.2rem;height:2.2rem; }
 }
+
+/* Reference screenshot final polish */
+.home-streaming .music-video-shortcuts .streaming-shortcut { box-shadow:inset 0 0 20px rgba(255,255,255,.025),0 8px 22px -16px rgba(57,245,107,.75)!important; }
+.home-streaming .streaming-feature .relative.grid { min-height:9.5rem; }
+.home-streaming > section:nth-of-type(4) { border-color:rgba(57,245,107,.28); }
+.player-purple .bg-gradient-to-r.from-fuchsia-400 { background-image:linear-gradient(90deg,#39f56b,#baff7c,#39f56b)!important; }
+.player-purple .player-waveform, .player-purple [aria-label="Visualização animada da música"] { border-color:rgba(57,245,107,.3)!important; }
+.player-purple .player-waveform span, .player-purple [aria-label="Visualização animada da música"] span { background:linear-gradient(to top,#16a34a,#39f56b,#c4ff8a)!important; }
