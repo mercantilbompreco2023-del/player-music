@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/music/AppShell";
 import { ImportButton } from "@/components/music/ImportButton";
 import { TrackRow } from "@/components/music/TrackRow";
 import { usePlayer } from "@/lib/music/player-context";
-import { addTracksToCustomFolder, createCustomFolder, customFolders, savedFolders } from "@/lib/music/folders";
+import { addTracksToCustomFolder, createCustomFolder, customFolders, savedFolders, artistFolders } from "@/lib/music/folders";
 import { allSelected, toggleAll, toggleOne } from "@/lib/music/selection";
 import { Button } from "@/components/ui/button";
 import { exportAudioTracks, exportLibrary } from "@/lib/music/export";
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/biblioteca")({
   component: BibliotecaPage,
 });
 
-type Tab = "todas" | "minhas" | "oficiais" | "favoritas" | "demo" | "pastas";
+type Tab = "todas" | "minhas" | "oficiais" | "favoritas" | "demo" | "pastas" | "artistas" | "albuns";
 
 function BibliotecaPage() {
   const p = usePlayer();
@@ -36,11 +36,11 @@ function BibliotecaPage() {
   const [newFolderName, setNewFolderName] = useState("");
   const [showFolderCreator, setShowFolderCreator] = useState(false);
   const [targetFolder, setTargetFolder] = useState("");
-  const folders = savedFolders(p.tracks);
+  const folders = savedFolders(p.tracks);\n  const artistGroups = artistFolders(p.tracks).filter((a) => a.tracks.length > 0);\n  const albumGroups = [...new Set(p.tracks.filter((t) => t.source !== "demo").map((t) => t.album?.trim() || "Sem álbum"))].map((album) => ({ album, tracks: p.tracks.filter((t) => t.source !== "demo" && (t.album?.trim() || "Sem álbum") === album) }));
   const manualFolders = customFolders(p.tracks);
   const folder = [...folders, ...manualFolders].find((item) => item.name === folderName);
   const list = p.tracks.filter((t) =>
-    tab === "minhas" ? t.source === "local" || t.source === "cloud" : tab === "oficiais" ? t.source === "official" : tab === "demo" ? t.source === "demo" : tab === "favoritas" ? p.isFavorite(t.id) : true,
+    tab === "minhas" ? t.source === "local" || t.source === "cloud" : tab === "oficiais" ? t.source === "official" : tab === "demo" ? t.source === "demo" : tab === "favoritas" ? p.isFavorite(t.id) : tab === "artistas" || tab === "albuns" ? false : true,
   );
   const empty: Record<Tab, string> = {
     todas: "Sua biblioteca está vazia.",
@@ -132,8 +132,8 @@ function BibliotecaPage() {
           ) : <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Selecione músicas na biblioteca e toque em “Criar pasta com selecionadas” para montar uma pasta por cantor.</p>}
         </section>
       )}
-      <div role="tablist" className="mb-4 grid grid-cols-3 gap-1 rounded-xl bg-muted p-1 sm:grid-cols-5">
-        {(["todas", "minhas", "oficiais", "favoritas", "demo"] as Tab[]).map((k) => (
+      <div role="tablist" className="mb-4 grid grid-cols-3 gap-1 rounded-xl bg-muted p-1 sm:grid-cols-6">
+        {(["todas", "minhas", "pastas", "artistas", "albuns", "favoritas"] as Tab[]).map((k) => (
           <Button
             key={k}
             role="tab"
@@ -146,7 +146,7 @@ function BibliotecaPage() {
           </Button>
         ))}
       </div>
-      {tab === "pastas" && folder && (
+      {tab === "artistas" && <section className="mb-5"><h2 className="mb-3 flex items-center gap-2 text-lg font-extrabold"><FolderOpen className="size-5 text-primary"/> Pastas dos Cantores</h2><div className="library-artist-grid">{artistGroups.map((artist) => <button key={artist.name} className="library-artist-card p-2 text-left" onClick={() => { setFolderName(artist.name); setTab("pastas"); limpar(); }}><CustomFolderCover artistName={artist.name} className="mb-2 aspect-square w-full rounded-xl"/><span className="block truncate text-sm font-extrabold">{artist.name}</span><span className="text-xs text-muted-foreground">{artist.tracks.length} músicas</span></button>)}</div></section>}\n      {tab === "albuns" && <section className="mb-5 space-y-2"><h2 className="mb-3 flex items-center gap-2 text-lg font-extrabold"><Music2 className="size-5 text-primary"/> Álbuns</h2>{albumGroups.map((album) => <button key={album.album} className="flex w-full items-center gap-3 rounded-xl border border-primary/35 bg-card/70 p-3 text-left" onClick={() => p.playList(album.tracks.map(t=>t.id), undefined, "ordered")}><CustomFolderCover folderName={"album:"+album.album} entityLabel="álbum" className="size-12 shrink-0 rounded-lg"/><span className="min-w-0 flex-1"><span className="block truncate font-bold">{album.album}</span><span className="text-xs text-muted-foreground">{album.tracks.length} músicas</span></span><Play className="size-5 text-primary"/></button>)}</section>}\n      {tab === "pastas" && folder && (
         <section aria-label={`Músicas de ${folder.name}`}>
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <Button variant="ghost" size="icon" aria-label="Voltar para minhas músicas" onClick={() => { setTab("minhas"); setFolderName(null); limpar(); }}><ArrowLeft /></Button>
@@ -158,7 +158,7 @@ function BibliotecaPage() {
           {rows}
         </section>
       )}
-      {tab !== "pastas" && (
+      {tab !== "pastas" && tab !== "artistas" && tab !== "albuns" && (
       !p.ready ? (
         <p className="text-sm text-muted-foreground">Carregando…</p>
       ) : list.length === 0 ? (
