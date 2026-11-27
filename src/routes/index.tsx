@@ -66,6 +66,75 @@ function Index() {
 
       <section className="music-video-shortcuts grid grid-cols-4 gap-2 sm:gap-3" aria-label="Acesso rápido">
         <Link to="/biblioteca" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Music /></span><span><b>Músicas</b><small>{ownTracks.length} faixas</small></span></Link>
+
+eFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, Headphones, Smartphone, ListMusic, Shuffle, Video, AudioLines } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { HomePlayer, ArtistPhoto } from "@/components/music/HomePlayer";
+import { PhoneMusicSync } from "@/components/music/PhoneMusicSync";
+import { ImportButton } from "@/components/music/ImportButton";
+import { FolderImport } from "@/components/music/FolderImport";
+import { Cover } from "@/components/music/Cover";
+import { TrackRow } from "@/components/music/TrackRow";
+import { cardsQuery } from "@/lib/cards-query";
+import { FUNCTIONS, ICONS, isFunctionKey, visibleCards } from "@/lib/cards";
+import { useIsAdmin, useSession } from "@/lib/auth";
+import { usePlayer } from "@/lib/music/player-context";
+import { cn } from "@/lib/utils";
+import { savedFolders } from "@/lib/music/folders";
+import playerIcon from "@/assets/player-music-icon.jpg";
+import artwork from "@/assets/music-headphones.jpg";
+
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Delícia Coxi’s Music & Video — Início" },
+      { name: "description", content: "Ouça seus próprios arquivos de áudio com playlists, favoritos e fila." },
+      { property: "og:title", content: "Delícia Coxi’s Music & Video" },
+      { property: "og:description", content: "Ouça seus próprios arquivos de áudio com playlists, favoritos e fila." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: Index,
+});
+
+function Index() {
+  const p = usePlayer();
+  const [category, setCategory] = useState("Todas");
+  const { user } = useSession();
+  const admin = useIsAdmin(user?.id);
+  const cards = useQuery(cardsQuery);
+  const folders = savedFolders(p.tracks);
+  const phoneTracks = p.tracks.filter(t => t.source !== "demo" && (t.folderName === "Músicas do celular" || t.path?.startsWith("Músicas do celular/")));
+  const list = cards.data ? visibleCards(cards.data.cards, admin.data === true).filter(c => c.function_key !== "descobrir" && c.function_key !== "buscar") : [];
+  const ownTracks = p.tracks.filter(t => t.source !== "demo");
+  return (
+    <div className="home-streaming space-y-8 pb-5">
+      <header className="music-video-brand flex flex-col items-center justify-center gap-2 py-2 text-center">
+        <div className="flex items-center justify-center gap-3">
+          <img src={playerIcon} alt="" width={64} height={64} className="size-16 rounded-full object-cover shadow-[0_0_24px_-5px_rgba(57,245,107,.7)] ring-2 ring-primary/70" />
+          <div className="min-w-0 text-left"><p className="text-[10px] font-black uppercase tracking-[.22em] text-primary">Delícia Coxi’s</p><h1 className="text-2xl font-black italic tracking-tight sm:text-3xl">Music & Video</h1></div>
+        </div>
+        <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[.18em] text-primary"><AudioLines className="size-5"/> Música • Clipes • Shows <AudioLines className="size-5"/></p>
+      </header>
+
+      <Link to="/buscar" className="music-video-search flex items-center gap-3 rounded-full border border-primary/45 bg-black/55 px-4 py-3 shadow-[0_0_18px_-10px_rgba(57,245,107,.7)]">
+        <Search className="size-5 shrink-0 text-white/90"/><span className="flex-1 text-left text-sm text-white/75">Buscar músicas ou vídeos...</span><span className="rounded-full border border-primary/50 bg-primary/10 p-2 text-primary"><AudioLines className="size-4"/></span>
+      </Link>
+
+
+
+      <section className="rounded-3xl border border-primary/35 bg-gradient-to-r from-[#10271a] to-[#09120d] p-3 shadow-[0_12px_36px_-24px_rgba(34,197,94,.65)]">
+        <div className="mb-2 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[.2em] text-primary">Tocando agora</span><Link to="/player" className="text-xs font-semibold text-primary">Abrir reprodução ↗</Link></div>
+        <HomePlayer />
+      </section>
+
+      <section className="music-video-shortcuts grid grid-cols-4 gap-2 sm:gap-3" aria-label="Acesso rápido">
+        <Link to="/biblioteca" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Music /></span><span><b>Músicas</b><small>{ownTracks.length} faixas</small></span></Link>
         <Link to="/pastas" className="streaming-shortcut"><span className="streaming-shortcut-icon"><FolderOpen /></span><span><b>Pastas</b><small>{folders.length} álbuns</small></span></Link>
         <Link to="/videos" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Video /></span><span><b>Vídeos</b><small>Clipes & shows</small></span></Link>
         <Link to="/playlists" className="streaming-shortcut"><span className="streaming-shortcut-icon"><ListMusic /></span><span><b>Playlists</b><small>{p.prefs.playlists.length} listas</small></span></Link>
