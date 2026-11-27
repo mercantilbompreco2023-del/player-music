@@ -48,7 +48,6 @@ export function PhoneMusicSync() {
     } finally { setBusy(false); }
   }
 
-  if (!phoneMusicLibrary) return null;
   return (
     <section className="space-y-3 rounded-3xl border border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 via-card to-card p-5 shadow-lg">
       <div className="flex items-center gap-3">
@@ -59,8 +58,8 @@ export function PhoneMusicSync() {
       {phoneMusicLibrary && <Button className="h-12 w-full rounded-full text-base" onClick={() => void sync()} disabled={busy}>
         {busy ? <Loader2 className="animate-spin" /> : finished ? <RefreshCw /> : <Music2 />}
         {busy ? "Vinculando músicas…" : finished ? "Atualizar biblioteca do celular" : "Vincular músicas do celular"}
-      </Button>
-      {busy && <div role="status" className="space-y-2"><div className="flex justify-between text-xs"><span>Verificando músicas</span><span>{progress.current}/{progress.total}</span></div><Progress value={progress.total ? progress.current / progress.total * 100 : 0} /><p className="text-xs text-muted-foreground">Adicionadas: {progress.imported} · Já existentes: {progress.duplicates} · Ignoradas: {progress.skipped}</p></div>}
+      </Button>}
+      {phoneMusicLibrary && busy && <div role="status" className="space-y-2"><div className="flex justify-between text-xs"><span>Verificando músicas</span><span>{progress.current}/{progress.total}</span></div><Progress value={progress.total ? progress.current / progress.total * 100 : 0} /><p className="text-xs text-muted-foreground">Adicionadas: {progress.imported} · Já existentes: {progress.duplicates} · Ignoradas: {progress.skipped}</p></div>}
       {phoneMusicLibrary && finished && <p className="flex items-center gap-2 text-sm text-emerald-400"><CheckCircle2 className="size-4" /> Biblioteca do celular vinculada. Você já pode tocar as músicas no Player Music.</p>}
       <div className="space-y-2 rounded-2xl border border-primary/40 bg-background/50 p-3">
         <div className="flex items-center gap-3"><FolderOpen className="size-6 shrink-0 text-primary"/><div className="min-w-0 flex-1"><h3 className="font-semibold">Adicionar por pasta</h3><p className="text-xs text-muted-foreground">Escolha uma pasta de cada cantor para manter cada coleção separada.</p></div></div>
