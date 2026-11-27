@@ -928,3 +928,19 @@ body {
   .player-neon-reference .player-controls button:nth-child(3) { width: 76px !important; height: 76px !important; }
   .library-neon-reference, .artist-playlists-page, .settings-neon.settings-complete { padding: 12px; border-radius: 24px; }
 }
+
+.player-neon-reference .player-quick-actions a,
+.player-neon-reference .player-quick-actions button {
+  border-color: #39ff14 !important;
+  border-radius: 18px !important;
+  background: linear-gradient(145deg, rgb(9 50 18 / 72%), #020603) !important;
+  color: white !important;
+  box-shadow: 0 0 10px rgb(57 255 20 / 20%);
+}
+.player-neon-reference .player-quick-actions svg { color: #7cff28 !important; }
+.player-neon-reference .player-quick-actions span { font-size: clamp(9px, 2.5vw, 14px); }
+@media (max-width: 390px) {
+  .player-neon-reference .player-quick-actions { gap: 5px !important; }
+  .player-neon-reference .player-quick-actions a,
+  .player-neon-reference .player-quick-actions button { min-height: 82px !important; padding-inline: 2px !important; }
+}
