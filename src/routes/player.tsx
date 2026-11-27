@@ -75,7 +75,7 @@ function PlayerPage() {
         <button onClick={p.next} aria-label="Próxima" className="p-2"><SkipForward className="size-7 fill-current" /></button>
         <button onClick={p.cycleRepeat} aria-label={`Repetir: ${{ off: "desligado", all: "fila", one: "uma música" }[p.prefs.repeat]}`} title="Alternar repetição" className={cn("p-2", p.prefs.repeat !== "off" ? "text-primary" : "text-muted-foreground")}>{p.prefs.repeat === "one" ? <Repeat1 className="size-6" /> : <Repeat className="size-6" />}</button>
       </div>
-      <div className="player-quick-actions grid grid-cols-2 gap-2 pt-1 sm:grid-cols-4">
+      <div className="player-quick-actions grid grid-cols-4 gap-2 pt-1">
         <Link to="/configuracoes" className="flex min-h-[94px] flex-col items-center justify-center gap-2 rounded-2xl border border-primary/60 bg-primary/5 px-2 py-3 text-center text-sm font-semibold shadow-[0_0_14px_-10px_hsl(var(--primary))]"><SlidersHorizontal className="size-7 text-primary"/><span>Equalizador</span></Link>
         <Link to="/configuracoes" className="flex min-h-[94px] flex-col items-center justify-center gap-2 rounded-2xl border border-primary/60 bg-primary/5 px-2 py-3 text-center text-sm font-semibold"><Timer className="size-7 text-primary"/><span>Timer</span></Link>
         <button type="button" onClick={() => toast.info("As letras serão exibidas aqui quando estiverem disponíveis para esta música.")} className="flex min-h-[94px] flex-col items-center justify-center gap-2 rounded-2xl border border-primary/60 bg-primary/5 px-2 py-3 text-center text-sm font-semibold"><BookOpen className="size-7 text-primary"/><span>Letra</span></button>
@@ -111,7 +111,7 @@ function PlayerPage() {
         )}
       </section>
       <section>
-        <div className="mb-2 flex items-center justify-between"><h2 className="text-lg font-bold">A seguir na fila</h2><Link to="/fila" className="text-sm font-semibold text-primary">Editar fila</Link></div>
+        <div className="mb-2 flex items-center justify-between"><h2 className="text-lg font-bold">Próximas músicas</h2><Link to="/fila" className="text-sm font-semibold text-primary">Editar fila</Link></div>
         {upcoming.length === 0 ? (
           <p className="text-sm text-muted-foreground">{p.prefs.repeat === "all" ? "A fila recomeça do início." : "Fim da fila."}</p>
         ) : (
