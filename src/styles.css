@@ -719,3 +719,42 @@ html, body, .dark body {
 .dark .player-purple .text-primary { color:#39f56b!important; }
 .dark .player-purple .border-primary { border-color:rgba(57,245,107,.55)!important; }
 .dark .player-purple .bg-primary { background-color:#39f56b!important; color:#031006!important; }
+
+
+/* Reference layout: Delícia Coxi's Music & Video home */
+.home-streaming { gap:1.15rem!important; color:#f4fff6; background:radial-gradient(ellipse 100% 24% at 50% 0%,rgba(57,245,107,.16),transparent 74%); }
+.home-streaming .music-video-brand { margin-bottom:.1rem; }
+.home-streaming .music-video-search { min-height:3.4rem; color:#fff; border-color:rgba(57,245,107,.55); background:linear-gradient(100deg,rgba(7,25,13,.96),rgba(2,7,4,.98)); }
+.home-streaming .music-video-shortcuts { gap:.55rem!important; }
+.home-streaming .music-video-shortcuts .streaming-shortcut { min-width:0; min-height:7.3rem; flex-direction:column; justify-content:center; gap:.45rem; padding:.55rem .25rem; text-align:center; border-radius:1.15rem; border:1px solid rgba(57,245,107,.5)!important; background:linear-gradient(145deg,#075322,#031309)!important; box-shadow:inset 0 0 18px rgba(57,245,107,.08),0 8px 22px -16px rgba(57,245,107,.8); }
+.home-streaming .music-video-shortcuts .streaming-shortcut-icon { width:2.55rem;height:2.55rem;border-radius:.8rem;background:rgba(57,245,107,.16)!important;color:#54ff8b!important; }
+.home-streaming .music-video-shortcuts .streaming-shortcut-icon svg { width:1.65rem;height:1.65rem; }
+.home-streaming .music-video-shortcuts .streaming-shortcut b { font-size:.69rem; line-height:1.1; white-space:normal; }
+.home-streaming .music-video-shortcuts .streaming-shortcut small { display:none; }
+.home-streaming .music-video-shortcuts .streaming-shortcut:nth-child(2) { border-color:rgba(255,70,70,.68)!important;background:linear-gradient(145deg,#7c111b,#21070b)!important; }
+.home-streaming .music-video-shortcuts .streaming-shortcut:nth-child(2) .streaming-shortcut-icon { color:#ff9a9a!important;background:rgba(255,255,255,.1)!important; }
+.home-streaming .music-video-shortcuts .streaming-shortcut:nth-child(3) { border-color:rgba(190,90,255,.65)!important;background:linear-gradient(145deg,#4d1380,#170629)!important; }
+.home-streaming .music-video-shortcuts .streaming-shortcut:nth-child(3) .streaming-shortcut-icon { color:#dfb3ff!important;background:rgba(255,255,255,.1)!important; }
+.home-streaming .music-video-shortcuts .streaming-shortcut:nth-child(4) { border-color:rgba(255,202,50,.68)!important;background:linear-gradient(145deg,#765600,#241a02)!important; }
+.home-streaming .music-video-shortcuts .streaming-shortcut:nth-child(4) .streaming-shortcut-icon { color:#ffe27a!important;background:rgba(255,255,255,.1)!important; }
+.home-streaming .streaming-feature { min-height:9rem; border-color:rgba(57,245,107,.42)!important; background:linear-gradient(110deg,#071d0d 0%,#031007 55%,#010302 100%)!important; }
+.home-streaming .streaming-feature h2 { font-size:clamp(1.6rem,7vw,3rem); }
+.home-streaming .streaming-feature button { box-shadow:0 0 22px -7px rgba(57,245,107,.8); }
+.home-streaming .artist-feature-card { border-color:rgba(57,245,107,.3)!important; background:linear-gradient(145deg,#09190d,#030704)!important; }
+.home-streaming .streaming-playlist-card { border-color:rgba(57,245,107,.32)!important; background:linear-gradient(145deg,#0a1c0e,#030704)!important; }
+/* Match the reference's compact, glowing media-player surface */
+.player-purple { --primary:#39f56b!important; --primary-foreground:#031006!important; --ring:#39f56b!important; }
+.player-purple .player-artwork { border-color:rgba(57,245,107,.55)!important; box-shadow:0 0 28px -12px rgba(57,245,107,.7)!important; }
+.player-purple .player-main-layout { gap:1.2rem; }
+.player-purple .player-main-layout h1 { font-size:clamp(1.5rem,6vw,2.2rem); }
+.player-purple .player-immersive button[aria-label="Tocar"], .player-purple .player-immersive button[aria-label="Pausar"] { background:#39f56b!important;color:#031006!important;border-color:#39f56b!important; }
+.player-purple .player-immersive section { border-color:rgba(57,245,107,.3)!important; background:linear-gradient(145deg,rgba(7,28,12,.96),rgba(2,7,4,.98))!important; }
+/* Bottom navigation is compact and legible on mobile, with neon active state */
+.mobile-bottom-nav { border-color:rgba(57,245,107,.35)!important;background:rgba(3,8,4,.96)!important;box-shadow:0 -8px 32px -20px rgba(57,245,107,.7)!important;backdrop-filter:blur(18px); }
+.mobile-bottom-nav a[aria-current="page"] { color:#031006!important;background:#39f56b!important;box-shadow:0 0 24px -8px rgba(57,245,107,.85)!important; }
+@media (max-width:380px) {
+ .home-streaming .music-video-shortcuts { gap:.35rem!important; }
+ .home-streaming .music-video-shortcuts .streaming-shortcut { min-height:6.7rem;padding:.4rem .12rem; }
+ .home-streaming .music-video-shortcuts .streaming-shortcut b { font-size:.61rem; }
+ .home-streaming .music-video-shortcuts .streaming-shortcut-icon { width:2.2rem;height:2.2rem; }
+}
