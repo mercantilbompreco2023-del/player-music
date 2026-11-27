@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, Headphones, Smartphone, ListMusic, Shuffle, Video } from "lucide-react";
+import { AlertTriangle, FolderOpen, Heart, Music, Play, Plus, Search, Settings, Headphones, Smartphone, ListMusic, Shuffle, Video, AudioLines } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HomePlayer, ArtistPhoto } from "@/components/music/HomePlayer";
@@ -22,9 +22,9 @@ import artwork from "@/assets/music-headphones.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Música Player Pro — Início" },
+      { title: "Delícia Coxi’s Music & Video — Início" },
       { name: "description", content: "Ouça seus próprios arquivos de áudio com playlists, favoritos e fila." },
-      { property: "og:title", content: "Música Player Pro" },
+      { property: "og:title", content: "Delícia Coxi’s Music & Video" },
       { property: "og:description", content: "Ouça seus próprios arquivos de áudio com playlists, favoritos e fila." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -45,20 +45,30 @@ function Index() {
   const ownTracks = p.tracks.filter(t => t.source !== "demo");
   return (
     <div className="home-streaming space-y-8 pb-5">
-      <header className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <img src={playerIcon} alt="" width={46} height={46} className="size-11 rounded-2xl object-cover shadow-lg ring-1 ring-primary/25" />
-          <div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">DELÍCIA COXI’S MUSIC & VIDEO</p><h1 className="truncate text-2xl font-extrabold tracking-tight">Music & Video</h1></div>
+      <header className="music-video-brand flex flex-col items-center justify-center gap-2 py-2 text-center">
+        <div className="flex items-center justify-center gap-3">
+          <img src={playerIcon} alt="" width={64} height={64} className="size-16 rounded-full object-cover shadow-[0_0_24px_-5px_rgba(57,245,107,.7)] ring-2 ring-primary/70" />
+          <div className="min-w-0 text-left"><p className="text-[10px] font-black uppercase tracking-[.22em] text-primary">Delícia Coxi’s</p><h1 className="text-2xl font-black italic tracking-tight sm:text-3xl">Music & Video</h1></div>
         </div>
-        <div className="flex shrink-0 items-center gap-1">
-          <Button asChild size="icon" variant="ghost"><Link to="/buscar" aria-label="Buscar músicas"><Search /></Link></Button>
-          <Button asChild size="icon" variant="ghost"><Link to="/configuracoes" aria-label="Configurações"><Settings /></Link></Button>
-        </div>
+        <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[.18em] text-primary"><AudioLines className="size-5"/> Música • Clipes • Shows <AudioLines className="size-5"/></p>
       </header>
+
+      <Link to="/buscar" className="music-video-search flex items-center gap-3 rounded-full border border-primary/45 bg-black/55 px-4 py-3 shadow-[0_0_18px_-10px_rgba(57,245,107,.7)]">
+        <Search className="size-5 shrink-0 text-white/90"/><span className="flex-1 text-left text-sm text-white/75">Buscar músicas ou vídeos...</span><span className="rounded-full border border-primary/50 bg-primary/10 p-2 text-primary"><AudioLines className="size-4"/></span>
+      </Link>
+
+
 
       <section className="rounded-3xl border border-primary/35 bg-gradient-to-r from-[#10271a] to-[#09120d] p-3 shadow-[0_12px_36px_-24px_rgba(34,197,94,.65)]">
         <div className="mb-2 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[.2em] text-primary">Tocando agora</span><Link to="/player" className="text-xs font-semibold text-primary">Abrir reprodução ↗</Link></div>
         <HomePlayer />
+      </section>
+
+      <section className="music-video-shortcuts grid grid-cols-4 gap-2 sm:gap-3" aria-label="Acesso rápido">
+        <Link to="/biblioteca" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Music /></span><span><b>Músicas</b><small>{ownTracks.length} faixas</small></span></Link>
+        <Link to="/pastas" className="streaming-shortcut"><span className="streaming-shortcut-icon"><FolderOpen /></span><span><b>Pastas</b><small>{folders.length} álbuns</small></span></Link>
+        <Link to="/videos" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Video /></span><span><b>Vídeos</b><small>Clipes & shows</small></span></Link>
+        <Link to="/playlists" className="streaming-shortcut"><span className="streaming-shortcut-icon"><ListMusic /></span><span><b>Playlists</b><small>{p.prefs.playlists.length} listas</small></span></Link>
       </section>
 
       <section className="streaming-feature relative isolate overflow-hidden rounded-[1.8rem] border border-primary/35 bg-[#07110b] shadow-2xl shadow-primary/10">
@@ -78,12 +88,7 @@ function Index() {
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Acesso rápido">
-        <Link to="/biblioteca" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Headphones /></span><span><b>Biblioteca</b><small>{ownTracks.length} músicas</small></span></Link>
-        <Link to="/pastas" className="streaming-shortcut"><span className="streaming-shortcut-icon"><FolderOpen /></span><span><b>Pastas</b><small>{folders.length} pastas</small></span></Link>
-        <Link to="/videos" className="streaming-shortcut"><span className="streaming-shortcut-icon"><Video /></span><span><b>Vídeos</b><small>Clipes e shows</small></span></Link>
-        <Link to="/playlists" className="streaming-shortcut"><span className="streaming-shortcut-icon"><ListMusic /></span><span><b>Playlists</b><small>{p.prefs.playlists.length} listas</small></span></Link>
-      </section>
+
 
       <section className="space-y-3 rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/15 via-card to-card p-4">
         <div className="flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-primary">Artistas da sua biblioteca</p><h2 className="text-xl font-extrabold">Cantores em destaque</h2></div><Link to="/biblioteca" className="text-xs font-semibold text-primary">Ver todos ›</Link></div>
