@@ -45,7 +45,7 @@
   --card-foreground: oklch(0.97 0.008 85);
   --popover: oklch(0.16 0.008 75);
   --popover-foreground: oklch(0.97 0.008 85);
-  --primary: oklch(0.78 0.15 82);
+  --primary: oklch(0.82 0.24 140);
   --primary-foreground: oklch(0.13 0.012 75);
   --secondary: oklch(0.24 0.012 75);
   --secondary-foreground: oklch(0.96 0.008 85);
@@ -57,10 +57,10 @@
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.42 0.045 82 / 55%);
   --input: oklch(0.35 0.025 82 / 65%);
-  --ring: oklch(0.78 0.15 82);
+  --ring: oklch(0.82 0.24 140);
   --surface: oklch(0.17 0.01 75 / 0.94);
-  --glow: oklch(0.78 0.15 82);
-  --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.5 0.12 82 / 0.28), transparent 65%);
+  --glow: oklch(0.82 0.24 140);
+  --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.56 0.2 140 / 0.32), transparent 65%);
 }
 
 .dark {
@@ -70,7 +70,7 @@
   --card-foreground: oklch(0.98 0.006 85);
   --popover: oklch(0.15 0.008 75);
   --popover-foreground: oklch(0.98 0.006 85);
-  --primary: oklch(0.8 0.15 82);
+  --primary: oklch(0.84 0.24 140);
   --primary-foreground: oklch(0.12 0.01 75);
   --secondary: oklch(0.22 0.01 75);
   --secondary-foreground: oklch(0.97 0.006 85);
@@ -82,10 +82,10 @@
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.4 0.04 82 / 45%);
   --input: oklch(0.34 0.02 82 / 60%);
-  --ring: oklch(0.8 0.15 82);
+  --ring: oklch(0.84 0.24 140);
   --surface: oklch(0.14 0.008 75 / 0.96);
-  --glow: oklch(0.8 0.15 82);
-  --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.48 0.11 82 / 0.3), transparent 65%);
+  --glow: oklch(0.84 0.24 140);
+  --gradient-hero: radial-gradient(120% 80% at 0% 0%, oklch(0.54 0.2 140 / 0.34), transparent 65%);
 }
 
 @layer base {
@@ -766,3 +766,165 @@ html, body, .dark body {
 .player-purple .bg-gradient-to-r.from-fuchsia-400 { background-image:linear-gradient(90deg,#39f56b,#baff7c,#39f56b)!important; }
 .player-purple .player-waveform, .player-purple [aria-label="Visualização animada da música"] { border-color:rgba(57,245,107,.3)!important; }
 .player-purple .player-waveform span, .player-purple [aria-label="Visualização animada da música"] span { background:linear-gradient(to top,#16a34a,#39f56b,#c4ff8a)!important; }
+
+
+/* Delícia Coxi's Music & Video — reference neon-green screens */
+:root, .dark {
+  --primary: oklch(0.84 0.24 140);
+  --primary-foreground: oklch(0.10 0.02 145);
+  --ring: oklch(0.84 0.24 140);
+  --glow: oklch(0.84 0.24 140);
+  --border: oklch(0.58 0.16 140 / 58%);
+  --input: oklch(0.42 0.12 140 / 60%);
+  --accent: oklch(0.34 0.12 140);
+  --accent-foreground: oklch(0.98 0.01 140);
+}
+body {
+  background-image: radial-gradient(ellipse at 50% 0%, rgb(10 70 20 / 22%), transparent 42%);
+}
+.player-neon-reference {
+  max-width: 860px !important;
+  margin-inline: auto !important;
+  padding: 14px clamp(14px, 3vw, 30px) 28px !important;
+  border: 2px solid #39ff14 !important;
+  border-radius: 34px !important;
+  background: #020603 !important;
+  box-shadow: 0 0 14px #39ff14, inset 0 0 28px rgb(20 255 0 / 12%) !important;
+}
+.player-neon-reference .player-main-layout {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  text-align: center !important;
+}
+.player-neon-reference .player-artwork {
+  width: min(78vw, 530px) !important;
+  max-width: 530px !important;
+  aspect-ratio: 1 / 1 !important;
+  border: 3px solid #39ff14 !important;
+  border-radius: 30px !important;
+  box-shadow: 0 0 22px rgb(57 255 20 / 65%) !important;
+}
+.player-neon-reference .player-main-layout > div:nth-child(2) {
+  justify-content: center !important;
+  text-align: center !important;
+}
+.player-neon-reference .player-main-layout h1 {
+  font-size: clamp(26px, 6vw, 42px) !important;
+  font-weight: 900 !important;
+}
+.player-neon-reference .player-main-layout p { font-size: clamp(18px, 4vw, 26px) !important; }
+.player-neon-reference .player-waveform {
+  height: 66px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  max-width: 100% !important;
+}
+.player-neon-reference .player-waveform span {
+  background: linear-gradient(to top, #39ff14, #c6ff00) !important;
+  box-shadow: 0 0 10px #39ff14 !important;
+}
+.player-neon-reference .player-progress-panel {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 6px !important;
+}
+.player-neon-reference .player-controls {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 10px 0 !important;
+}
+.player-neon-reference .player-controls button { color: #39ff14; }
+.player-neon-reference .player-controls button:nth-child(2),
+.player-neon-reference .player-controls button:nth-child(4) { color: white; }
+.player-neon-reference .player-controls button:nth-child(3) {
+  width: 92px !important; height: 92px !important;
+  border: 3px solid #39ff14 !important;
+  background: #020603 !important;
+  color: white !important;
+  box-shadow: 0 0 22px rgb(57 255 20 / 55%) !important;
+}
+.player-neon-reference .player-controls button:nth-child(3) svg { width: 34px; height: 34px; }
+.player-neon-reference section { border-color: rgb(57 255 20 / 50%) !important; }
+.library-neon-reference {
+  border: 2px solid #39ff14;
+  border-radius: 28px;
+  background: #020603;
+  padding: 16px;
+  box-shadow: 0 0 16px rgb(57 255 20 / 45%), inset 0 0 24px rgb(57 255 20 / 8%);
+}
+.library-neon-reference [role=tablist] {
+  background: #07130a !important;
+  border: 1px solid rgb(57 255 20 / 45%);
+  border-radius: 999px !important;
+}
+.library-neon-reference [role=tab][aria-selected=true] {
+  background: #39ff14 !important;
+  color: #061006 !important;
+  box-shadow: 0 0 14px rgb(57 255 20 / 55%);
+}
+.library-neon-reference .library-artist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.library-neon-reference .library-artist-card {
+  overflow: hidden;
+  border: 1px solid #39ff14;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #102514, #020603);
+  box-shadow: 0 0 12px rgb(57 255 20 / 32%);
+}
+.artist-playlists-page {
+  border: 2px solid #39ff14;
+  border-radius: 28px;
+  background: #020603;
+  padding: 16px;
+  box-shadow: 0 0 16px rgb(57 255 20 / 45%), inset 0 0 24px rgb(57 255 20 / 8%);
+}
+.artist-playlists-page .artist-playlist-card {
+  min-height: 150px;
+  border-color: #39ff14 !important;
+  border-radius: 22px !important;
+  background: linear-gradient(130deg, #0b2812, #080b09 60%, #151027) !important;
+  box-shadow: 0 0 14px rgb(57 255 20 / 30%) !important;
+}
+.artist-playlists-page .artist-playlist-card > div:first-child > div:first-child {
+  width: 92px !important;
+  height: 92px !important;
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+.artist-playlists-page .artist-playlist-card h2 { font-size: 18px !important; }
+.artist-playlists-page button[data-variant="default"],
+.artist-playlists-page .artist-playlist-card button:first-of-type {
+  background: #39ff14 !important;
+  color: #041004 !important;
+}
+.settings-neon.settings-complete {
+  border: 2px solid #39ff14;
+  border-radius: 28px;
+  background: #020603;
+  padding: 14px;
+  box-shadow: 0 0 16px rgb(57 255 20 / 45%), inset 0 0 24px rgb(57 255 20 / 8%);
+}
+.settings-neon.settings-complete .settings-group {
+  border-color: #39ff14 !important;
+  border-radius: 18px !important;
+  background: linear-gradient(145deg, #07150a, #020603) !important;
+  box-shadow: 0 0 12px rgb(57 255 20 / 24%) !important;
+}
+.settings-neon.settings-complete .settings-group h2 { color: #7cff28 !important; }
+.settings-neon.settings-complete header {
+  border-color: #39ff14 !important;
+  background: linear-gradient(100deg, #071a0b, #020603) !important;
+}
+.settings-neon.settings-complete .settings-group .border-b { border-color: rgb(57 255 20 / 22%) !important; }
+@media (max-width: 520px) {
+  .player-neon-reference { border-radius: 26px !important; padding-inline: 12px !important; }
+  .player-neon-reference .player-artwork { width: min(78vw, 420px) !important; border-radius: 24px !important; }
+  .player-neon-reference .player-controls { gap: 2px !important; }
+  .player-neon-reference .player-controls button:nth-child(3) { width: 76px !important; height: 76px !important; }
+  .library-neon-reference, .artist-playlists-page, .settings-neon.settings-complete { padding: 12px; border-radius: 24px; }
+}
