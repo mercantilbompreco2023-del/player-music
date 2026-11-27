@@ -16,9 +16,10 @@ const NAV = [
 
 const MOBILE_NAV = [
   { to: "/", label: "Início", icon: Home },
-  { to: "/biblioteca", label: "Biblioteca", icon: Library },
-  { to: "/pastas", label: "Pastas", icon: FolderOpen },
+  { to: "/biblioteca", label: "Músicas", icon: Library },
   { to: "/videos", label: "Vídeos", icon: Video },
+  { to: "/playlists", label: "Playlists", icon: ListMusic },
+  { to: "/configuracoes", label: "Config.", icon: Settings2 },
 ] as const;
 
 type NowPlayingPrefs = { style: "compact" | "highlighted"; showCover: boolean; showArtist: boolean; showProgress: boolean };
@@ -162,7 +163,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {!onPlayer && (      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-2xl pb-safe lg:hidden">
         {!onPlayer && <MiniPlayer />}
-        <nav className="glass mx-2 mb-2 grid grid-cols-4 rounded-[1.4rem] border border-border/80 p-1.5 shadow-2xl shadow-black/25">
+        <nav className="glass mx-2 mb-2 grid grid-cols-5 rounded-[1.4rem] border border-border/80 p-1.5 shadow-2xl shadow-black/25">
           {MOBILE_NAV.map(({ to, label, icon: Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
             return (
