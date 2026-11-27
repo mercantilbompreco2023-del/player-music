@@ -147,7 +147,7 @@ function BibliotecaPage() {
             onClick={() => { setTab(k); setFolderName(null); limpar(); }}
             className={cn("rounded-full py-2 text-sm font-semibold capitalize", tab === k ? "bg-background text-foreground" : "text-muted-foreground")}
           >
-            {k}
+            {({todas:"Músicas",minhas:"Minhas",pastas:"Pastas",artistas:"Artistas",albuns:"Álbuns",favoritas:"Favoritas",oficiais:"Oficiais",demo:"Demo"} as Record<Tab,string>)[k]}
           </Button>
         ))}
       </div>
